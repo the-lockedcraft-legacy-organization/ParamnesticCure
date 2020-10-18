@@ -1,0 +1,9 @@
+name: ParamnesticCure
+main: com.mc_smp.main
+version: @version@
+description: Spigot patch to prevent rollbacks from stripping creative data
+authors: [InteriorCamping, Frostalf]
+website: https://mc-smp.com
+depend: [CoreProtect, RestrictedCreative]
+api-version: @spigot-version@
+prefix: Paramnestic
