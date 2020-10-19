@@ -1,2 +1,43 @@
+#   _____      ____     ______       ____       __    __        __      _    _____    _____   ________    _____     ____  
+#  (  __ \    (    )   (   __ \     (    )      \ \  / /       /  \    / )  / ___/   / ____\ (___  ___)  (_   _)   / ___) 
+#   ) )_) )   / /\ \    ) (__) )    / /\ \      () \/ ()      / /\ \  / /  ( (__    ( (___       ) )       | |    / /     
+#  (  ___/   ( (__) )  (    __/    ( (__) )     / _  _ \      ) ) ) ) ) )   ) __)    \___ \     ( (        | |   ( (      
+#   ) )       )    (    ) \ \  _    )    (     / / \/ \ \    ( ( ( ( ( (   ( (           ) )     ) )       | |   ( (      
+#  ( (       /  /\  \  ( ( \ \_))  /  /\  \   /_/      \_\   / /  \ \/ /    \ \___   ___/ /     ( (       _| |__  \ \___  
+#  /__\     /__(  )__\  )_) \__/  /__(  )__\ (/          \) (_/    \__/      \____\ /____/      /__\     /_____(   \____) 
+#                                                                                                                     
+#
 #Last version of plugin used.
-configVersion: 0
+configVersion: 2
+#Prunt's restricedCreative is the only creative manager supported at this time.
+creativeManager: 'restrictedCreative'
+#Intelli's coreProtect is the only block logger supported at this time.
+blockLogger: 'coreProtect'
+databases:
+  creative:
+    # MySQL and MariaDB are supported database drivers at this time.
+    driver: MariaDB
+    # Database server address.
+    address: localhost:3306
+    # Database name, username and password.
+    database: 'creative'
+    username: 'root'
+    password: 'pass'
+  logger:
+    # MySQL and MariaDB are supported database drivers at this time.
+    driver: MariaDB
+    # Database server address.
+    address: localhost:3306
+    # Database name, username and password.
+    database: 'logger'
+    username: 'root'
+    password: 'pass'
+  paramnestic:
+    # MySQL and MariaDB are supported database drivers at this time.
+    driver: MariaDB
+    # Database server address.
+    address: localhost:3306
+    # Database name, username and password.
+    database: 'paramnestic'
+    username: 'root'
+    password: 'pass'
