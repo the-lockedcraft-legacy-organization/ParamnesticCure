@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mc_smp</groupId>
     <artifactId>ParamnesticCure</artifactId>
-    <version>0.2.1</version>
+    <version>0.2.2</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -51,5 +51,5 @@
             </resource>
         </resources>
     </build>
-</project>
+    <description>A spigot patch to prevent rollbacks from stripping creative block data.</description>
 </project>
