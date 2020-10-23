@@ -8,36 +8,46 @@
 #                                                                                                                     
 #
 #Last version of plugin used.
-configVersion: 2
+configVersion: 4
 #Prunt's restricedCreative is the only creative manager supported at this time.
 creativeManager: 'restrictedCreative'
 #Intelli's coreProtect is the only block logger supported at this time.
 blockLogger: 'coreProtect'
+blockLoggerRollbackCommands:
+    - co rollback
+    - core rollback
+    - coreprotect rollback
+    - co rb
+    - core rb
+    - coreprotect rb
+    - coreprotect:co rollback
+    - coreprotect:core rollback
+    - coreprotect:coreprotect rollback
+    - coreprotect:co rb
+    - coreprotect:core rb
+    - coreprotect:coreprotect rb
 databases:
+  # MySQL and MariaDB are supported database drivers at this time.
+  driver: MariaDB
+  # Database server address.
+  address: localhost
+  # Database port
+  port: 3306
+  # Database username
+  username: 'root'
+  # Database user password
+  password: 'pass'
+  # Creative database
   creative:
-    # MySQL and MariaDB are supported database drivers at this time.
-    driver: MariaDB
-    # Database server address.
-    address: localhost:3306
-    # Database name, username and password.
+    # Database used by restrictedCreative
     database: 'creative'
-    username: 'root'
-    password: 'pass'
+    # Table of that database where RC stores its block data.
+    table: 'rc_blocks'
   logger:
-    # MySQL and MariaDB are supported database drivers at this time.
-    driver: MariaDB
-    # Database server address.
-    address: localhost:3306
-    # Database name, username and password.
-    database: 'logger'
-    username: 'root'
-    password: 'pass'
+    # Database used by coreProtect
+    database: 'coreprotect'
+    # Table of that database where CP stores its block data.
+    table: 'co_block'
   paramnestic:
-    # MySQL and MariaDB are supported database drivers at this time.
-    driver: MariaDB
-    # Database server address.
-    address: localhost:3306
-    # Database name, username and password.
+    # Name of the database that you would like Paramnestic to use.
     database: 'paramnestic'
-    username: 'root'
-    password: 'pass'

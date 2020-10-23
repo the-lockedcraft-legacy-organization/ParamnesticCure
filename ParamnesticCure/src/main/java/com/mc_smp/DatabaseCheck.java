@@ -15,18 +15,22 @@ import java.util.logging.Logger;
 /**
  * @author Frostalf
  */
+//TODO SQLite errors?
 public class DatabaseCheck {
-
+    
     private BoneCP boneCP;
     private Connection connection;
-
+    
+    //Constructor w/ db info fed to it.
     public DatabaseCheck(String database, String password, String user, String host, int port, int poolSize, int maxConnections) {
+        //Makes a new config w/ fed information
         BoneCPConfig config = new BoneCPConfig();
         config.setPassword(password);
         config.setUser(user);
         config.setJdbcUrl("jdbc:mysql://"+ host + "/" + database);
         config.setPartitionCount(poolSize);
         config.setMaxConnectionsPerPartition(maxConnections);
+        //Makes a connection w/ those details.
         try {
             Class.forName("com.mysql.jdbc.Driver");
             boneCP = new BoneCP(config);
@@ -39,7 +43,8 @@ public class DatabaseCheck {
     public void checkDB() {
 
     }
-
+    
+    //Gets the connection
     public Connection getConnection() {
         if(connection == null) {
             try {

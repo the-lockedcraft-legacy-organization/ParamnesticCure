@@ -12,34 +12,41 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * @author Frostalf
  */
+//Plugin's main class.
 public class ParamnesticCure extends JavaPlugin {
 
+    //Initializes the main class, TrackedBlocks, and implements the Logger.
     private static ParamnesticCure instance;
     private TrackedBlocks trackedBlocks;
     private Logger log;
 
     @Override
     public void onEnable() {
+        //sets instance.
         instance = this;
         trackedBlocks = TrackedBlocks.getInstance();
         log = getLogger();
+        //manages config
         this.saveDefaultConfig();
         byte givenVersion = (byte) getConfig().getInt("configVersion");
-        byte currentVersion = 1;
+        final byte currentVersion = 4;
         if (givenVersion == currentVersion) {
             log.info("[Paramnestic] [Debug] Your config is up to date!.");
         } else {
             log.log(Level.INFO, "[Paramnestic] [Debug] Your config was outdated. It has been updated to v{0}", currentVersion);
+            //TODO add config updater.
             getConfig().set("configVersion", currentVersion);
         }
         log.warning("[Paramnestic] [Dev] You have enabled an early development version of this plugin.");
         log.warning("[Paramnestic] [Dev] It will probably be unstable");
     }
 
+    //Method to get PC instance
     public static ParamnesticCure getInstance() {
         return instance;
     }
-
+    
+    //Method to get tracked blocks (and initialize instance of it).
     public TrackedBlocks getTrackedBlocks() {
         if (trackedBlocks == null) {
             trackedBlocks = TrackedBlocks.getInstance();
