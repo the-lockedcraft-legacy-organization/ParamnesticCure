@@ -32,7 +32,7 @@ public class ParamnesticCureListener implements Listener {
     //Establishes logger
     private Logger log = Bukkit.getLogger();
     //Makes an empty list for the rollback aliases.
-    private List<String> rbAlias = new ArrayList<>(plugin.getConfig().getList("blockLoggerRollbackCommands").size());
+    private List<String> rbAlias = new ArrayList<>(ParamnesticCure.getInstance().getConfig().getList("blockLoggerRollbackCommands").size());
 
     //Sets plugin instance
     public ParamnesticCureListener(ParamnesticCure plugin) {

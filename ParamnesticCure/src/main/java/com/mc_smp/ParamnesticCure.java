@@ -7,6 +7,7 @@ package com.mc_smp;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -18,7 +19,7 @@ public class ParamnesticCure extends JavaPlugin {
     //Initializes the main class, TrackedBlocks, and implements the Logger.
     private static ParamnesticCure instance;
     private TrackedBlocks trackedBlocks;
-    private Logger log;
+    private Logger log = Bukkit.getLogger();
 
     @Override
     public void onEnable() {
@@ -31,14 +32,14 @@ public class ParamnesticCure extends JavaPlugin {
         byte givenVersion = (byte) getConfig().getInt("configVersion");
         final byte currentVersion = 4;
         if (givenVersion == currentVersion) {
-            log.info("[Paramnestic] [Debug] Your config is up to date!.");
+            log.info("[Debug] Your config is up to date!.");
         } else {
-            log.log(Level.INFO, "[Paramnestic] [Debug] Your config was outdated. It has been updated to v{0}", currentVersion);
+            log.info("[Debug] Your config was outdated. It has been updated to v{0}" + currentVersion);
             //TODO add config updater.
             getConfig().set("configVersion", currentVersion);
         }
-        log.warning("[Paramnestic] [Dev] You have enabled an early development version of this plugin.");
-        log.warning("[Paramnestic] [Dev] It will probably be unstable");
+        log.warning("[Dev] You have enabled an early development version of this plugin.");
+        log.warning("[Dev] It will probably be unstable");
     }
 
     //Method to get PC instance
