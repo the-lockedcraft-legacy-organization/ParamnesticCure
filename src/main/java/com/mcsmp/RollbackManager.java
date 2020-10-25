@@ -154,6 +154,6 @@ public class RollbackManager {
 
                 }
             }
-        }, 1200L);
+        }, 40L);
     }
 }
