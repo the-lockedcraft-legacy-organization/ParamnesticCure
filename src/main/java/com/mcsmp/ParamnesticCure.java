@@ -55,9 +55,6 @@ public class ParamnesticCure extends JavaPlugin {
             log.severe("[Debug] Providing you with a new config; please fill it out before running PC.");
             getPluginManager().disablePlugin(this);
         //Needs a database atm
-        } else if (driver.equalsIgnoreCase(SQLITE.toString()) ) {
-            log.severe("[Debug] Sqlite connections are not yet supported by Paramnestic. Please use a database driver such as mySQL");
-            getPluginManager().disablePlugin(this);
         //Loads the config
         } else {
             log.info("[Debug] Loaded Config");
