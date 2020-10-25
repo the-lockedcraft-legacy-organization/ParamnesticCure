@@ -8,7 +8,7 @@
 #                                                                                                                     
 #
 #Last version of plugin used.
-configVersion: 4
+configVersion: 5
 #Prunt's restricedCreative is the only creative manager supported at this time.
 creativeManager: 'restrictedCreative'
 #Intelli's coreProtect is the only block logger supported at this time.
@@ -28,7 +28,7 @@ blockLoggerRollbackCommands:
     - coreprotect:coreprotect rb
 databases:
   # MySQL and MariaDB are supported database drivers at this time.
-  driver: MariaDB
+  driver: Sqlite
   # Database server address.
   address: localhost
   # Database port
@@ -48,6 +48,8 @@ databases:
     database: 'coreprotect'
     # Table of that database where CP stores its block data.
     table: 'co_block'
+    # Table of that database where CP stores its world data.
+    world_table: 'co_world'
   paramnestic:
     # Name of the database that you would like Paramnestic to use.
     database: 'paramnestic'

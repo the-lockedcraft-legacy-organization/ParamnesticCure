@@ -5,7 +5,9 @@
  */
 package com.mc_smp;
 
+import java.io.File;
 import java.util.logging.Logger;
+import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,6 +21,10 @@ public class ParamnesticCure extends JavaPlugin {
     private static ParamnesticCure instance;
     private TrackedBlocks trackedBlocks;
     private Logger log = Bukkit.getLogger();
+    
+    //Import Config
+    //private static final String driver = ParamnesticCure.getConfig().getString("databases.driver");
+    
 
     @Override
     public void onEnable() {
@@ -26,19 +32,34 @@ public class ParamnesticCure extends JavaPlugin {
         instance = this;
         trackedBlocks = TrackedBlocks.getInstance();
         log = getLogger();
+        
+        RestrictedCreativeAPI rcAPI = new RestrictedCreativeAPI();
+        
         //manages config
-        this.saveDefaultConfig();
-        byte givenVersion = (byte) getConfig().getInt("configVersion");
+        //checks version of config
+        final byte givenVersion = (byte) getConfig().getInt("configVersion");
+        final String DRIVER = (String) getConfig().getString("databases.driver");
         final byte currentVersion = 4;
-        if (givenVersion == currentVersion) {
-            log.info("[Debug] Your config is up to date!.");
+        File configVar = new File(getDataFolder(), "config.yml");
+        //if outdated config, rename old config and install new config.
+        if (givenVersion != currentVersion) {
+            if (configVar.exists()){
+                configVar.renameTo(new File(getDataFolder(), "config.old"));
+            }
+            this.saveDefaultConfig();
+            log.warning("[Debug] Invalid config! This is either your first time running PC, or, the config has updated since you last used it.");
+            log.severe("[Debug] Providing you with a new config; please fill it out before running PC.");
+            Bukkit.getPluginManager().disablePlugin(this);
+        //Needs a database atm
+        } else if (DRIVER == "Sqlite") {
+            log.severe("[Debug] Sqlite connections are not yet supported by Paramnestic. Please use a database driver such as mySQL");
+            Bukkit.getPluginManager().disablePlugin(this);
+        //Loads the config
         } else {
-            log.info("[Debug] Your config was outdated. It has been updated to v{0}" + currentVersion);
-            //TODO add config updater.
-            getConfig().set("configVersion", currentVersion);
+            log.info("[Debug] Loaded Config");
+            log.warning("[Dev] You have enabled an early development version of this plugin.");
+            log.warning("[Dev] It will probably be unstable");
         }
-        log.warning("[Dev] You have enabled an early development version of this plugin.");
-        log.warning("[Dev] It will probably be unstable");
     }
 
     //Method to get PC instance

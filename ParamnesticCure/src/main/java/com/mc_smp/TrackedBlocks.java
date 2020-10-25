@@ -15,6 +15,7 @@ import org.bukkit.block.Block;
 //Managing paramnestic's in-house tracking (Φ)
 public class TrackedBlocks {
 
+    //TODO convert TrackedBlocks to use the ParamnesticCure database.
     //blockList is an empty ArrayList of type List<Block>
     private List<Block> blockList = new ArrayList<>();
     //stores TrackedBlocks if initialized.

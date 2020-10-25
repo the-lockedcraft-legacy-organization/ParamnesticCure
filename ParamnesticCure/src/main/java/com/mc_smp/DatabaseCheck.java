@@ -15,21 +15,28 @@ import java.util.logging.Logger;
 /**
  * @author Frostalf
  */
-//TODO SQLite errors?
+//TODO make invalid db connections shut down plugin.
 public class DatabaseCheck {
     
     private BoneCP boneCP;
     private Connection connection;
     
-    //Constructor w/ db info fed to it.
-    public DatabaseCheck(String database, String password, String user, String host, int port, int poolSize, int maxConnections) {
+    private ParamnesticCure plugin;
+    final String DBADDRESS = plugin.getConfig().getString("databases.address");
+    final int DBPORT = plugin.getConfig().getInt("databases.port");
+    final String DBUSER = plugin.getConfig().getString("databases.username");
+    final String DBPASS = plugin.getConfig().getString("databases.password");
+
+    public DatabaseCheck(String database) {
         //Makes a new config w/ fed information
+        final byte POOLSIZE = 10;
+        final byte MAXCONNECT = 20;
         BoneCPConfig config = new BoneCPConfig();
-        config.setPassword(password);
-        config.setUser(user);
-        config.setJdbcUrl("jdbc:mysql://"+ host + "/" + database);
-        config.setPartitionCount(poolSize);
-        config.setMaxConnectionsPerPartition(maxConnections);
+        config.setPassword(DBPASS);
+        config.setUser(DBUSER);
+        config.setJdbcUrl("jdbc:mysql://" + DBADDRESS + ":" + DBPORT + "/" + database);
+        config.setPartitionCount(POOLSIZE);
+        config.setMaxConnectionsPerPartition(MAXCONNECT);
         //Makes a connection w/ those details.
         try {
             Class.forName("com.mysql.jdbc.Driver");
