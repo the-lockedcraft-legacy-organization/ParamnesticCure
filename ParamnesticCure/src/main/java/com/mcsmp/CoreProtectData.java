@@ -6,7 +6,6 @@
 package com.mcsmp;
 
 import java.util.logging.Logger;
-import org.bukkit.Bukkit;
 import static org.bukkit.Bukkit.getLogger;
 import org.bukkit.Location;
 
@@ -20,8 +19,8 @@ public class CoreProtectData{
     private Logger log = getLogger();
     //stores RollbackManager if initialized.
     private static CoreProtectData instance;
-    
+
     public CoreProtectData(boolean cpAction, Location cpWhere){
-        
+
     }
 }

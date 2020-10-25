@@ -25,6 +25,7 @@ public class ParamnesticCure extends JavaPlugin {
     private TrackedBlocks trackedBlocks;
     private Logger log = Bukkit.getLogger();
     private CacheData dataCache;
+    private boolean everythingOK = true;
 
     //Import Config
     //private static final String driver = ParamnesticCure.getConfig().getString("databases.driver");
@@ -82,6 +83,10 @@ public class ParamnesticCure extends JavaPlugin {
 
     public CacheData getCacheData() {
         return this.dataCache;
+    }
+
+    public void setOK(boolean ok) {
+        this.everythingOK = ok;
     }
 
 }

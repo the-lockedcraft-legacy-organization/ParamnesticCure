@@ -23,14 +23,14 @@ public class DataBases {
     private String driver;
     private DatabaseCheck databaseConnection;
 
-    public DataBases(String databaseName, String address, int port, String user, String password, String driver) {
+    public DataBases(String name, String databaseName, String address, int port, String user, String password, String driver) {
         this.databaseName = databaseName;
         this.address = address;
         this.port = port;
         this.user = user;
         this.password = password;
         this.driver = driver;
-        this.databaseConnection = new DatabaseCheck(databaseName, address, port, user, password, driver);
+        this.databaseConnection = new DatabaseCheck(name, databaseName, address, port, user, password, driver);
     }
 
     public String getDatabaseName() {

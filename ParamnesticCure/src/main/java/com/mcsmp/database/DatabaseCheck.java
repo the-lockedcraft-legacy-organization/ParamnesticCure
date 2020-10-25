@@ -8,11 +8,10 @@ package com.mcsmp.database;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 import com.mcsmp.ParamnesticCure;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
-import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 
 /**
@@ -25,7 +24,6 @@ public class DatabaseCheck {
     private Connection connection;
 
     private BoneCPConfig config = null;
-
     private ParamnesticCure plugin;
     private String database;
     private String address;
@@ -34,7 +32,7 @@ public class DatabaseCheck {
     private String password;
     private String driver;
 
-    public DatabaseCheck(String database, String address, int port, String user, String password, String driver) {
+    public DatabaseCheck(String name, String database, String address, int port, String user, String password, String driver) {
         //Makes a new config w/ fed information
         this.database = database;
         this.address = address;
@@ -49,11 +47,17 @@ public class DatabaseCheck {
         config.setMaxConnectionsPerPartition(MAXCONNECT);
         config.setUser(user);
         config.setPassword(password);
-        config.setJdbcUrl("jdbc:"+ driver +"://" + address + ":" + port + "/" + database);
+        if(driver.equalsIgnoreCase("sqlite")) {
+            config.setJdbcUrl("jdbc:"+ driver +"://" + ParamnesticCure.getInstance().getServer().getPluginManager().getPlugin(name).getDataFolder().getPath() + File.pathSeparator + database);
+        } else {
+            config.setJdbcUrl("jdbc:"+ driver +"://" + address + ":" + port + "/" + database);
+        }
+
         try {
             this.boneCP = new BoneCP(config);
         } catch (SQLException ex) {
-            getLogger(DatabaseCheck.class.getName()).log(SEVERE, null, ex);
+            ParamnesticCure.getInstance().getLogger().log(SEVERE, "Error connection to Database: {0}", ex.getSQLState());
+            ParamnesticCure.getInstance().setOK(false);
         }
     }
 
