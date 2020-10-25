@@ -8,7 +8,7 @@
 #                                                                                                                     
 #
 #Last version of plugin used.
-configVersion: 5
+configVersion: maven-config-version
 #Prunt's restricedCreative is the only creative manager supported at this time.
 creativeManager: 'restrictedCreative'
 #Intelli's coreProtect is the only block logger supported at this time.
@@ -26,7 +26,7 @@ blockLoggerRollbackCommands:
     - coreprotect:co rb
     - coreprotect:core rb
     - coreprotect:coreprotect rb
-databases:
+defaultconnection:
   # MySQL and MariaDB are supported database drivers at this time.
   driver: Sqlite
   # Database server address.
@@ -34,22 +34,45 @@ databases:
   # Database port
   port: 3306
   # Database username
-  username: 'root'
+  user: 'root'
   # Database user password
   password: 'pass'
   # Creative database
-  creative:
+ # creative:
     # Database used by restrictedCreative
-    database: 'creative'
+  #  database: 'creative'
     # Table of that database where RC stores its block data.
-    table: 'rc_blocks'
-  logger:
+    #table: 'rc_blocks'
+  #logger:
     # Database used by coreProtect
-    database: 'coreprotect'
+  #  database: 'coreprotect'
     # Table of that database where CP stores its block data.
-    table: 'co_block'
+  # table: 'co_block'
     # Table of that database where CP stores its world data.
-    world_table: 'co_world'
-  paramnestic:
+  #  world_table: 'co_world'
+  # paramnestic:
     # Name of the database that you would like Paramnestic to use.
-    database: 'paramnestic'
+  #  database: 'paramnestic'
+    
+Database_Names:
+    creative:
+        database: "creative"
+        driver: ""
+        address: ""
+        port: ""
+        user: ""
+        password: ""
+    logger:
+        database: "coreprotect"
+        driver: ""
+        address: ""
+        port: ""
+        user: ""
+        password: ""
+    paramestic:
+        database: "paramnestic"
+        driver: ""
+        address: ""
+        port: ""
+        user: ""
+        password: ""
