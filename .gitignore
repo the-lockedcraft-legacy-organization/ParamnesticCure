@@ -351,6 +351,7 @@ buildNumber.properties
 **/nbproject/private/
 **/nbproject/Makefile-*.mk
 **/nbproject/Package-*.bash
+nb-configuration.xml
 build/
 nbbuild/
 nbdist/
