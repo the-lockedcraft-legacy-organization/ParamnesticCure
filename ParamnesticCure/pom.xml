@@ -3,11 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mc_smp</groupId>
     <artifactId>ParamnesticCure</artifactId>
-    <version>0.2.8</version>
+    <version>0.2.9</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spigot-version>1.16</spigot-version>
+        <config-version>6</config-version>
     </properties>
     <repositories>
         <repository>
@@ -20,19 +21,23 @@
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.16.3-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.jolbox</groupId>
             <artifactId>bonecp</artifactId>
             <version>0.8.0.RELEASE</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>me.prunt.restrictedcreative</groupId>
             <artifactId>RestrictedCreativeAPI</artifactId>
             <version>2.4.4</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>
+        <defaultGoal>package install</defaultGoal>
         <finalName>ParamnesticCure-${project.version}</finalName>
 
         <plugins>
@@ -45,16 +50,80 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.3</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>${basedir}/target/classes/*.yml</include>
+                    </includes>
+                    <replacements>
+                        <replacement>
+                            <token>maven-version-number</token>
+                            <value>${project.version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>maven-config-version</token>
+                            <value>${config-version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>Byte.valueOf("maven-config-version")</token>
+                            <value>${config-version}</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <id>javadoc</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <source>8</source>
+                    <doctitle>Paramnestic Cure JavaDocs v${project.version}</doctitle>
+                    <windowtitle>Paramnestic Cure JavaDocs v${project.version}</windowtitle>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <configuration>
+                    <excludes>com.jolbox:bonecp</excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <id>attachsources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/resources/</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>*</include>
-                </includes>
-            </resource>
-        </resources>
     </build>
     <description>A spigot patch to prevent rollbacks from stripping creative block data.</description>
 </project>
