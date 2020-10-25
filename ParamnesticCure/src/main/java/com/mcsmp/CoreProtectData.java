@@ -3,10 +3,11 @@
  *  License, v. 2.0. If a copy of the MPL was not distributed with this
  *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.mc_smp;
+package com.mcsmp;
 
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
+import static org.bukkit.Bukkit.getLogger;
 import org.bukkit.Location;
 
 /**
@@ -16,7 +17,7 @@ public class CoreProtectData{
     //Establishes plugin
     private ParamnesticCure plugin;
     //Establishes logger
-    private Logger log = Bukkit.getLogger();
+    private Logger log = getLogger();
     //stores RollbackManager if initialized.
     private static CoreProtectData instance;
     

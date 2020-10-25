@@ -3,11 +3,12 @@
  *  License, v. 2.0. If a copy of the MPL was not distributed with this
  *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.mc_smp;
+package com.mcsmp;
 
 import java.util.HashMap;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
+import static org.bukkit.Bukkit.getLogger;
 
 /**
  * @author InteriorCamping
@@ -20,23 +21,23 @@ public class RollbackManager {
     //Establishes plugin
     private ParamnesticCure plugin;
     //Establishes logger
-    private Logger log = Bukkit.getLogger();
+    private Logger log = getLogger();
     //stores RollbackManager if initialized.
     private static RollbackManager instance;
-    
+
     //Constructor for RollbackManager
     private RollbackManager() {
-        
+
         HashMap<Integer, CoreProtectData> activeSearch = new HashMap<>();
         HashMap<Integer, String> worldData = new HashMap<>();
         String dbGMC = plugin.getConfig().getString("databases.logger.database");
         //TODO
-        /*_____ ___  ___   ___  
-         |_   _/ _ \|   \ / _ \ 
+        /*_____ ___  ___   ___
+         |_   _/ _ \|   \ / _ \
            | || (_) | |) | (_) |
-           |_| \___/|___/ \___/ 
+           |_| \___/|___/ \___/
          -= Database Query One =-
-        
+
         Query dbGMC
         Put the values of co_world into worldData
         */
@@ -44,40 +45,40 @@ public class RollbackManager {
         double activeY;
         double activeZ;
         boolean activeAction;
-        
+
         while (runCycles <= 20) {
             //TODO
-            /*_____ ___  ___   ___  
-             |_   _/ _ \|   \ / _ \ 
+            /*_____ ___  ___   ___
+             |_   _/ _ \|   \ / _ \
                | || (_) | |) | (_) |
-               |_| \___/|___/ \___/ 
+               |_| \___/|___/ \___/
              -= Database Query Two =-
-            
+
             log_db = "databases.logger.database"
             log_tb = "databases.logger.table"
             log_wd = "databases.logger.world_table"
-                    
+
             SELECT
-            
+
             ALL ROWS in log_db/log_tb
             w/ time >= Instant.now().getEpochSecond() - 10s
             & rolled_back = 1
-            
+
             For each row selected,
             transform into Action (Boolean) and Location (Location)
             using the following columns of co_block
-            
+
             wid = String -->> use worldData to convert to world for location
             x = int
             y = int
             z = int
             action = boolean (represented as 1[place] & 0[break])
-            
-            
+
+
             and store in activeSearch
             */
-            
-            /* 
+
+            /*
              for each Location,
                if Action is 0
                   Check if isTracked()
@@ -91,11 +92,11 @@ public class RollbackManager {
                else
                   severe error.
             */
-            
+
             /* if activeSearch was empty
                byte runCycles++
-            */ 
-        }       
+            */
+        }
     }
     public static RollbackManager manageRollback() {
         if (instance == null) {

@@ -3,12 +3,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.mc_smp;
+package com.mcsmp;
 
+import static com.mcsmp.DriverEnum.SQLITE;
 import java.io.File;
+import static java.lang.Byte.valueOf;
 import java.util.logging.Logger;
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import org.bukkit.Bukkit;
+import static org.bukkit.Bukkit.getPluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -21,39 +24,41 @@ public class ParamnesticCure extends JavaPlugin {
     private static ParamnesticCure instance;
     private TrackedBlocks trackedBlocks;
     private Logger log = Bukkit.getLogger();
-    
+    private CacheData dataCache;
+
     //Import Config
     //private static final String driver = ParamnesticCure.getConfig().getString("databases.driver");
-    
+
 
     @Override
     public void onEnable() {
+        dataCache = new CacheData();
         //sets instance.
         instance = this;
         trackedBlocks = TrackedBlocks.getInstance();
         log = getLogger();
-        
+
         RestrictedCreativeAPI rcAPI = new RestrictedCreativeAPI();
-        
+
         //manages config
         //checks version of config
-        final byte givenVersion = (byte) getConfig().getInt("configVersion");
-        final String DRIVER = (String) getConfig().getString("databases.driver");
-        final byte currentVersion = 4;
+        final byte givenVersion = valueOf(getConfig().getString("configVersion"));
+        final String driver = getConfig().getString("databases.driver");
+        final byte currentVersion = 6;
         File configVar = new File(getDataFolder(), "config.yml");
         //if outdated config, rename old config and install new config.
-        if (givenVersion != currentVersion) {
+        if (givenVersion < currentVersion) {
             if (configVar.exists()){
                 configVar.renameTo(new File(getDataFolder(), "config.old"));
             }
             this.saveDefaultConfig();
             log.warning("[Debug] Invalid config! This is either your first time running PC, or, the config has updated since you last used it.");
             log.severe("[Debug] Providing you with a new config; please fill it out before running PC.");
-            Bukkit.getPluginManager().disablePlugin(this);
+            getPluginManager().disablePlugin(this);
         //Needs a database atm
-        } else if (DRIVER == "Sqlite") {
+        } else if (driver.equalsIgnoreCase(SQLITE.toString()) ) {
             log.severe("[Debug] Sqlite connections are not yet supported by Paramnestic. Please use a database driver such as mySQL");
-            Bukkit.getPluginManager().disablePlugin(this);
+            getPluginManager().disablePlugin(this);
         //Loads the config
         } else {
             log.info("[Debug] Loaded Config");
@@ -66,13 +71,17 @@ public class ParamnesticCure extends JavaPlugin {
     public static ParamnesticCure getInstance() {
         return instance;
     }
-    
+
     //Method to get tracked blocks (and initialize instance of it).
     public TrackedBlocks getTrackedBlocks() {
         if (trackedBlocks == null) {
             trackedBlocks = TrackedBlocks.getInstance();
         }
         return trackedBlocks;
+    }
+
+    public CacheData getCacheData() {
+        return this.dataCache;
     }
 
 }
