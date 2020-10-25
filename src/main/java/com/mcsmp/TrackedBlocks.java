@@ -8,13 +8,11 @@ package com.mcsmp;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -68,7 +66,7 @@ public class TrackedBlocks {
                 try {
                     ResultSet set = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnestic").getResults("Select * FROM blocks");
                     while (set.next()) {
-                        Location location = new Location(ParamnesticCure.getInstance().getServer().getWorld(set.getString("world")), set.getDouble("x"), set.getDouble("y"), set.getDouble("z"));
+                        Location location = new Location(ParamnesticCure.getInstance().getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
                         getBlockList().put(location, set.getInt("id"));
                     }
                 } catch (SQLException ex) {
@@ -85,9 +83,9 @@ public class TrackedBlocks {
                 try {
                     PreparedStatement statement = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnesticcure").getConnection().prepareStatement("INSERT INTO blocks (world, x, y , z) VALUES(?,?,?,?)");
                     statement.setString(1, location.getWorld().toString());
-                    statement.setDouble(2, location.getX());
-                    statement.setDouble(3, location.getY());
-                    statement.setDouble(4, location.getZ());
+                    statement.setDouble(2, location.getBlockX());
+                    statement.setDouble(3, location.getBlockY());
+                    statement.setDouble(4, location.getBlockZ());
                     id = statement.executeQuery().getInt("id");
                 } catch (SQLException ex) {
 
@@ -105,9 +103,9 @@ public class TrackedBlocks {
                     PreparedStatement statement = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnesticcure").getConnection().prepareStatement("UPDATE blocks SET world = ?, SET x = ?, SET y = ?, SET z = ?, WHERE id = ?");
                     for (Location location : blockList.keySet()) {
                         statement.setString(1, location.getWorld().toString());
-                        statement.setDouble(2, location.getX());
-                        statement.setDouble(3, location.getY());
-                        statement.setDouble(4, location.getZ());
+                        statement.setDouble(2, location.getBlockX());
+                        statement.setDouble(3, location.getBlockY());
+                        statement.setDouble(4, location.getBlockZ());
                         statement.setInt(5, blockList.get(location));
                         statement.executeUpdate();
                         ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnesticcure").getConnection().commit();

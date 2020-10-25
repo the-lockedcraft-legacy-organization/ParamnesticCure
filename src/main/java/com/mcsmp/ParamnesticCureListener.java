@@ -9,7 +9,6 @@ import static com.mcsmp.ParamnesticCure.getInstance;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import org.bukkit.Bukkit;
 import static org.bukkit.Bukkit.getLogger;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -70,7 +69,9 @@ public class ParamnesticCureListener implements Listener {
         //if someone types that alias and starts it with a slash, then do stuff.
         for (String command : rbAlias) {
             if(event.getMessage().equalsIgnoreCase(slash.concat(command)));
-                //TODO implement task logic r/ db.
+                RollbackManager rollback = new RollbackManager();
+                rollback.executeTask();
+                break;
             }
         }
 

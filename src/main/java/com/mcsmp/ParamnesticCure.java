@@ -39,8 +39,6 @@ public class ParamnesticCure extends JavaPlugin {
         trackedBlocks = TrackedBlocks.getInstance();
         log = getLogger();
 
-        RestrictedCreativeAPI rcAPI = new RestrictedCreativeAPI();
-
         //manages config
         //checks version of config
         final byte givenVersion = valueOf(getConfig().getString("configVersion"));
@@ -88,5 +86,4 @@ public class ParamnesticCure extends JavaPlugin {
     public void setOK(boolean ok) {
         this.everythingOK = ok;
     }
-
 }

@@ -5,10 +5,16 @@
  */
 package com.mcsmp;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.logging.Logger;
-import org.bukkit.Bukkit;
+import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import static org.bukkit.Bukkit.getLogger;
+import org.bukkit.Location;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * @author InteriorCamping
@@ -26,8 +32,7 @@ public class RollbackManager {
     private static RollbackManager instance;
 
     //Constructor for RollbackManager
-    private RollbackManager() {
-
+    public RollbackManager() {
         HashMap<Integer, CoreProtectData> activeSearch = new HashMap<>();
         HashMap<Integer, String> worldData = new HashMap<>();
         String dbGMC = plugin.getConfig().getString("databases.logger.database");
@@ -46,7 +51,9 @@ public class RollbackManager {
         double activeZ;
         boolean activeAction;
 
-        while (runCycles <= 20) {
+
+
+        //while (runCycles <= 20) {
             //TODO
             /*_____ ___  ___   ___
              |_   _/ _ \|   \ / _ \
@@ -96,14 +103,57 @@ public class RollbackManager {
             /* if activeSearch was empty
                byte runCycles++
             */
-        }
+        //}
     }
-    public static RollbackManager manageRollback() {
-        if (instance == null) {
-            instance = new RollbackManager();
-        } else {
-            runCycles = 0;
-        }
-        return instance;
+
+    public void executeTask() {
+        ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    Connection connection = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("creative").getConnection();
+                    //co_world
+                    PreparedStatement statement = connection.prepareStatement("SELECT * from co_block,co_world INNER JOIN co_world ON co_block.wid=co_world.id");
+                    ResultSet set = statement.executeQuery();
+                    while(set.next()) {
+                        int action = set.getInt("action");
+                        Location location = new Location(ParamnesticCure.getInstance().getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
+                        if(set.getInt("rollback") > 0) {
+                            switch(action) {
+                                case 0:
+                                    if(ParamnesticCure.getInstance().getTrackedBlocks().getBlockList().containsKey(location)) {
+                                        ParamnesticCure.getInstance().getTrackedBlocks().removeFromBlockList(location);
+                                        RestrictedCreativeAPI.add(location.getBlock());
+                                    }
+                                    break;
+                                case 1:
+                                        ParamnesticCure.getInstance().getTrackedBlocks().addToBlockList(location);
+                                        RestrictedCreativeAPI.remove(location.getBlock());
+                                    break;
+                                default: break;
+                            }
+                        } else {
+                            switch(action) {
+                                case 0:
+                                        ParamnesticCure.getInstance().getTrackedBlocks().addToBlockList(location);
+                                        RestrictedCreativeAPI.remove(location.getBlock());
+                                    break;
+                                case 1:
+                                    if(ParamnesticCure.getInstance().getTrackedBlocks().getBlockList().containsKey(location)) {
+                                        ParamnesticCure.getInstance().getTrackedBlocks().removeFromBlockList(location);
+                                        if(!(location.getBlock().isEmpty() || location.getBlock().isLiquid())) {
+                                            RestrictedCreativeAPI.add(location.getBlock());
+                                        }
+                                    }
+                                    break;
+                                default: break;
+                            }
+                        }
+                    }
+                } catch (SQLException ex) {
+
+                }
+            }
+        }, 1200L);
     }
 }
