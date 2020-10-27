@@ -18,40 +18,35 @@ public class CacheData {
 
     private HashMap<String, DataBases> databaseMap = new HashMap<>();
     private ParamnesticCure plugin;
-    /*private int port = plugin.getConfig().getInt("port");
-    private String user = plugin.getConfig().getString("user");
-    private String password = plugin.getConfig().getString("password");
-    private String driver = plugin.getConfig().getString("driver");*/
-    //Bukkit.getLogger().warning("[Debug] Started setting variables based here.");
-    final byte givenVersion = valueOf(plugin.getConfig().getString("configVersion"));
-    private String address = plugin.getConfig().getString("defaultconnection.address");
-    private int port = plugin.getConfig().getInt("defaultconnection.port");
-    private String user = plugin.getConfig().getString("user");
-    private String password = plugin.getConfig().getString("defaultconnection.password");
-    private String driver = plugin.getConfig().getString("defaultconnection.driver");
+    final byte givenVersion = valueOf(ParamnesticCure.getInstance().getConfig().getString("configVersion"));
+    private String address = ParamnesticCure.getInstance().getConfig().getString("defaultconnection.address");
+    private int port = ParamnesticCure.getInstance().getConfig().getInt("defaultconnection.port");
+    private String user = ParamnesticCure.getInstance().getConfig().getString("user");
+    private String password = ParamnesticCure.getInstance().getConfig().getString("defaultconnection.password");
+    private String driver = ParamnesticCure.getInstance().getConfig().getString("defaultconnection.driver");
 
     /**
      * Method to cache database connections.
      */
     public CacheData() {
 
-        for (String databases : plugin.getConfig().getConfigurationSection("Database_Names").getKeys(false)) {
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".address").isEmpty()) {
-                address = plugin.getConfig().getString("Database_Names." + databases + ".address");
+        for (String databases : ParamnesticCure.getInstance().getConfig().getConfigurationSection("Database_Names").getKeys(false)) {
+            if (!ParamnesticCure.getInstance().getConfig().getString("Database_Names." + databases + ".address").isEmpty()) {
+                address = ParamnesticCure.getInstance().getConfig().getString("Database_Names." + databases + ".address");
             }
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".port").isEmpty()) {
-                port = plugin.getConfig().getInt("Database_Names." + databases + ".port");
+            if (!ParamnesticCure.getInstance().getConfig().getString("Database_Names." + databases + ".port").isEmpty()) {
+                port = ParamnesticCure.getInstance().getConfig().getInt("Database_Names." + databases + ".port");
             }
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".user").isEmpty()) {
-                user = plugin.getConfig().getString("Database_Names." + databases + ".user");
+            if (!ParamnesticCure.getInstance().getConfig().getString("Database_Names." + databases + ".user").isEmpty()) {
+                user = ParamnesticCure.getInstance().getConfig().getString("Database_Names." + databases + ".user");
             }
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".password").isEmpty()) {
-                password = plugin.getConfig().getString("Database_Names." + databases + ".password");
+            if (!ParamnesticCure.getInstance().getConfig().getString("Database_Names." + databases + ".password").isEmpty()) {
+                password = ParamnesticCure.getInstance().getConfig().getString("Database_Names." + databases + ".password");
             }
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".driver").isEmpty()) {
-                driver = plugin.getConfig().getString("Database_Names." + databases + ".driver");
+            if (!ParamnesticCure.getInstance().getConfig().getString("Database_Names." + databases + ".driver").isEmpty()) {
+                driver = ParamnesticCure.getInstance().getConfig().getString("Database_Names." + databases + ".driver");
             }
-            DataBases bases = new DataBases(databases, plugin.getConfig().getString("Database_Names." + databases + ".database"), address, port, user, password, driver);
+            DataBases bases = new DataBases(databases, ParamnesticCure.getInstance().getConfig().getString("Database_Names." + databases + ".database"), address, port, user, password, driver);
             databaseMap.put(databases.toLowerCase(), bases);
         }
     }
