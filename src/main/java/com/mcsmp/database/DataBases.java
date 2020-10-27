@@ -58,6 +58,7 @@ public class DataBases {
     /**
      * Checks status of database being interacted with.
      * @return Address of database in question.
+     * @throws java.net.UnknownHostException if the host being connected to is unknown.
      */
     public InetAddress getAddress() throws UnknownHostException {
        return getByName(this.address);
@@ -106,6 +107,8 @@ public class DataBases {
     /**
      * Queries the current database.
      * @param query SQL query expression.
+     * @return returns the results of the SQL query.
+     * @throws java.sql.SQLException any error with the sql query
      */
     public ResultSet getResults(String query) throws SQLException {
         return getConnection().createStatement().executeQuery(query);
