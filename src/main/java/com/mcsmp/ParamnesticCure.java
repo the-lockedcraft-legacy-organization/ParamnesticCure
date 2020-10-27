@@ -40,10 +40,12 @@ public class ParamnesticCure extends JavaPlugin {
         log = getLogger();
         final byte givenVersion = valueOf(getConfig().getString("configVersion"));
         final String driver = getConfig().getString("databases.driver");
+        log.warning("[Debug] That appears to work. Driver was set to" + driver);
         //Temporary variable indicating desired config version.
         //Should ideally be maven-based, but currently isn't due to a bug.
         final byte currentVersion = 7;
         File configVar = new File(getDataFolder(), "config.yml");
+        log.warning("[Debug] Created internal config.yml reference.");
         //if outdated config, rename old config and install a new one.
         
         // Manages plugins config.
