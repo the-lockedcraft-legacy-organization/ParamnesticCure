@@ -1,5 +1,5 @@
 name: ParamnesticCure
-main: com.mc_smp.ParamnesticCure
+main: com.mcsmp.ParamnesticCure
 version: maven-version-number
 description: Spigot patch to prevent rollbacks from stripping creative data
 authors: [InteriorCamping, Frostalf]
