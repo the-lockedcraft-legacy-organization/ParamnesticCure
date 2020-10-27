@@ -51,7 +51,7 @@ public class ParamnesticCure extends JavaPlugin {
         final byte currentVersion = 7;
         File configVar = new File(getDataFolder(), "config.yml");
         //if outdated config, rename old config and install a new one.
-        if (givenVersion < currentVersion) {
+        if (givenVersion != currentVersion) {
             if (configVar.exists()){
                 configVar.renameTo(new File(getDataFolder(), "config.old"));
             }
