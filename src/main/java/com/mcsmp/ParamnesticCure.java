@@ -65,7 +65,7 @@ public class ParamnesticCure extends JavaPlugin {
             log.warning("[Dev] It will probably be unstable");
         }
         //Creates new cache
-        final String driver = getConfig().getString("databases.driver");
+        final String driver = getConfig().getString("defaultconnection.driver");
         log.warning("[Debug] That appears to work. Driver was set to" + driver);
         dataCache = new CacheData();
         //sets instance.
