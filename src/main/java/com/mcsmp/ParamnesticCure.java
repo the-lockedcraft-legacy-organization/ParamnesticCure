@@ -37,13 +37,7 @@ public class ParamnesticCure extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-        //Creates new cache
-        dataCache = new CacheData();
-        //sets instance.
-        instance = this;
-        trackedBlocks = TrackedBlocks.getInstance();
         log = getLogger();
-
         final byte givenVersion = valueOf(getConfig().getString("configVersion"));
         final String driver = getConfig().getString("databases.driver");
         //Temporary variable indicating desired config version.
@@ -51,6 +45,8 @@ public class ParamnesticCure extends JavaPlugin {
         final byte currentVersion = 7;
         File configVar = new File(getDataFolder(), "config.yml");
         //if outdated config, rename old config and install a new one.
+        
+        // Manages plugins config.
         if (givenVersion != currentVersion) {
             if (configVar.exists()){
                 configVar.renameTo(new File(getDataFolder(), "config.old"));
@@ -58,6 +54,7 @@ public class ParamnesticCure extends JavaPlugin {
             this.saveDefaultConfig();
             log.warning("[Startup] Invalid config! This is either your first time running PC, or, the config has updated since you last used it.");
             log.severe("[Startup] Providing you with a new config; please fill it out before running PC.");
+            setOK(false);
             getPluginManager().disablePlugin(this);
         } else {
             log.info("[Startup] Loaded Config");
@@ -65,6 +62,11 @@ public class ParamnesticCure extends JavaPlugin {
             log.warning("[Dev] You have enabled an early development version of this plugin.");
             log.warning("[Dev] It will probably be unstable");
         }
+        //Creates new cache
+        dataCache = new CacheData();
+        //sets instance.
+        instance = this;
+        trackedBlocks = TrackedBlocks.getInstance();
     }
 
     /*
