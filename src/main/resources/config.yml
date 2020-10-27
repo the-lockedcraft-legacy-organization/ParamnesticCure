@@ -12,6 +12,8 @@ configVersion: maven-config-version
 #Prunt's restricedCreative is the only creative manager supported at this time.
 creativeManager: 'restrictedCreative'
 #Intelli's coreProtect is the only block logger supported at this time.
+#Note! Paramnestic does NOT yet support creative inventory rollbacks!
+#Please ensure that any such features are disabled in your blocklogger.
 blockLogger: 'coreProtect'
 blockLoggerRollbackCommands:
     - co rollback

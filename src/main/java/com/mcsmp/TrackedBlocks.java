@@ -19,11 +19,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 /**
  * @author Frostalf
  */
-//Managing paramnestic's in-house tracking (Φ)
+
+/**
+ * Manages Paramnestic's in-house tracking (Φ)
+ */
 public class TrackedBlocks {
 
-    //TODO convert TrackedBlocks to use the ParamnesticCure database.
-    //blockList is an empty ArrayList of type List<Block>
+    //Creates a hashmap for Φ blocks
     private ConcurrentHashMap<Location, Integer> blockList = new ConcurrentHashMap<>();
     //stores TrackedBlocks if initialized.
     private static TrackedBlocks instance;
@@ -34,31 +36,44 @@ public class TrackedBlocks {
         loadBlocks();
     }
 
-    //Method to check if a block is Φ.
+    /**
+     * Method to check if a block is marked as Φ.
+     * @param location a Location to set as Φ
+     * @return returns true if successful, false otherwise.
+     */
     public boolean isTracked(Location location) {
         return this.blockList.containsKey(location);
     }
 
-    //Method to get list of Φ blocks.
+    /**
+     * Produces a list of blocks with Φ status.
+     * @return Returns a ConcurrentHashMap of blocks being tracked by PC.
+     */
     public ConcurrentHashMap<Location, Integer> getBlockList() {
         return this.blockList;
     }
 
-    //Method to set a block as Φ.
     /**
-     *
-     * @param location
+     * Method to set a block as Φ.
+     * @param location a Location to set as Φ
      * @return returns true if successful, false otherwise.
      */
     public boolean addToBlockList(Location location) {
         return this.blockList.putIfAbsent(location, addToDB(location)) != null;
     }
 
-    //Method to unset a block's Φ status.
+    /**
+     * Method to remove a block's Φ status.
+     * @param location a Location to set as Φ
+     */
     public void removeFromBlockList(Location location) {
         this.blockList.remove(location);
     }
 
+    /**
+     * Queries Paramnestic's database and stores all blocks it contains within this class' hashmap.
+     * @return returns true if successful, false otherwise.
+     */
     private void loadBlocks() {
         ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new BukkitRunnable() {
             @Override
@@ -76,6 +91,11 @@ public class TrackedBlocks {
         });
     }
 
+    /**
+     * Manages adding blocks recently marked as Φ to Paramnestic's database.
+     * @param location a Location to set as Φ
+     * @return returns true if successful, false otherwise.
+     */
     private Integer addToDB(Location location) {
         ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new BukkitRunnable() {
             @Override
@@ -95,6 +115,9 @@ public class TrackedBlocks {
         return id;
     }
 
+    /**
+     * Integrates recent changes to Φ into Paramnestic's database.
+     */
     public void save() {
         ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new BukkitRunnable() {
             @Override
@@ -118,7 +141,10 @@ public class TrackedBlocks {
 
     }
 
-    //Initializes the class if it has not already been initialized.
+    /**
+     * Initializes the TrackedBlocks class if it has not already been initialized.
+     * @return returns true if successful, false otherwise.
+     */
     public static TrackedBlocks getInstance() {
         if (instance == null) {
             instance = new TrackedBlocks();

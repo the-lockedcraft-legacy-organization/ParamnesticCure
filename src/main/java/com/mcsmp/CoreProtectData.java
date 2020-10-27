@@ -11,6 +11,8 @@ import org.bukkit.Location;
 
 /**
  * @author InteriorCamping
+ * 
+ * @deprecated This class is not used by the plugin anymore. See classes involving databases.
  */
 public class CoreProtectData{
     //Establishes plugin
@@ -20,7 +22,13 @@ public class CoreProtectData{
     //stores RollbackManager if initialized.
     private static CoreProtectData instance;
 
+    /**
+     * Fragment of an outdated method once used to manage logger data.
+     *
+     * @deprecated no longer used by paramnestic (see classes related to databases)
+     * @param cpAction coreprotect action id.
+     * @param cpWhere Location where action occured.
+     **/
     public CoreProtectData(boolean cpAction, Location cpWhere){
-
     }
 }

@@ -1,3 +1,8 @@
+/*
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package com.mcsmp;
 
 import com.mcsmp.database.DataBases;
@@ -5,7 +10,6 @@ import static com.mcsmp.ParamnesticCure.getInstance;
 import java.util.HashMap;
 
 /**
- *
  * @author Frostalf
  */
 public class CacheData {
@@ -43,7 +47,10 @@ public class CacheData {
             databaseMap.put(databases.toLowerCase(), bases);
         }
     }
-
+    /**
+     * Method to return hashmap of databases.
+     * @return Hashmap listing databases.
+     */
     public HashMap<String, DataBases> getDatabaseMap() {
         return this.databaseMap;
     }

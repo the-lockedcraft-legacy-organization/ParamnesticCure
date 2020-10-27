@@ -20,93 +20,45 @@ import org.bukkit.scheduler.BukkitRunnable;
  * @author InteriorCamping
  */
 
-//Establishes plugin
+/**
+ * Does a series of logical operations to minimize opportunities for rollblacks to mess with creative data.
+ * Note that this does not include rollback interference with inventories!
+ */
 public class RollbackManager {
 
     private static byte runCycles = 1;
-    //Establishes plugin
+    //Establishes plugin instance
     private ParamnesticCure plugin;
     //Establishes logger
     private Logger log = getLogger();
     //stores RollbackManager if initialized.
     private static RollbackManager instance;
 
-    //Constructor for RollbackManager
+    /*
+     * Constructor for Rollbacks.
+     */
     public RollbackManager() {
         HashMap<Integer, CoreProtectData> activeSearch = new HashMap<>();
         HashMap<Integer, String> worldData = new HashMap<>();
-        String dbGMC = plugin.getConfig().getString("databases.logger.database");
-        //TODO
-        /*_____ ___  ___   ___
-         |_   _/ _ \|   \ / _ \
-           | || (_) | |) | (_) |
-           |_| \___/|___/ \___/
-         -= Database Query One =-
-
-        Query dbGMC
-        Put the values of co_world into worldData
-        */
+        
         double activeX;
         double activeY;
         double activeZ;
         boolean activeAction;
-
-
-
-        //while (runCycles <= 20) {
-            //TODO
-            /*_____ ___  ___   ___
-             |_   _/ _ \|   \ / _ \
-               | || (_) | |) | (_) |
-               |_| \___/|___/ \___/
-             -= Database Query Two =-
-
-            log_db = "databases.logger.database"
-            log_tb = "databases.logger.table"
-            log_wd = "databases.logger.world_table"
-
-            SELECT
-
-            ALL ROWS in log_db/log_tb
-            w/ time >= Instant.now().getEpochSecond() - 10s
-            & rolled_back = 1
-
-            For each row selected,
-            transform into Action (Boolean) and Location (Location)
-            using the following columns of co_block
-
-            wid = String -->> use worldData to convert to world for location
-            x = int
-            y = int
-            z = int
-            action = boolean (represented as 1[place] & 0[break])
-
-
-            and store in activeSearch
-            */
-
-            /*
-             for each Location,
-               if Action is 0
-                  Check if isTracked()
-                     Use API to add to Creative
-                        then removeFromBlockList()
-               else if action is 1
-                  Use API to check creative
-                     if creative
-                        addToBlockList()
-                        use API to remove creative
-               else
-                  severe error.
-            */
-
-            /* if activeSearch was empty
-               byte runCycles++
-            */
-        //}
+        
     }
 
-    //DO NOT TOUCH. WILL BREAK EVERYTHING IF YOU DO!
+    // ┌─────────────────────────────────────────── /!\=- 𝗪𝗔𝗥𝗡𝗜𝗡𝗚 /!\ ─────────────────────────────────────────
+    // │
+    // │  𝘛𝘩𝘪𝘴 𝘪𝘴 𝘢 𝘩𝘪𝘨𝘩𝘭𝘺 𝘤𝘰𝘮𝘱𝘭𝘦𝘹 𝘰𝘱𝘦𝘳𝘢𝘵𝘪𝘰𝘯! 𝘐𝘵 𝘤𝘰𝘯𝘴𝘪𝘥𝘦𝘳𝘴 𝘵𝘩𝘳𝘦𝘦 𝘥𝘦𝘨𝘳𝘦𝘦𝘴 𝘰𝘧 𝘣𝘭𝘰𝘤𝘬 𝘰𝘱𝘦𝘳𝘢𝘵𝘪𝘰𝘯𝘴 (𝘵𝘸𝘦𝘭𝘷𝘦 𝘴𝘵𝘢𝘵𝘦𝘴 𝘪𝘯 𝘵𝘰𝘵𝘢𝘭!)
+    // │ 𝘖𝘯𝘭𝘺 𝘵𝘰𝘶𝘤𝘩 𝘵𝘩𝘪𝘴 𝘭𝘰𝘨𝘪𝘤 𝘪𝘧 𝘺𝘰𝘶 𝘩𝘢𝘷𝘦 𝘢 𝘴𝘵𝘳𝘰𝘯𝘨 𝘶𝘯𝘥𝘦𝘳𝘴𝘵𝘢𝘯𝘥𝘪𝘯𝘨 𝘰𝘧 𝘱𝘦𝘳𝘮𝘶𝘵𝘢𝘵𝘪𝘰𝘯𝘴 𝘢𝘯𝘥 𝘮𝘢𝘯𝘺 𝘩𝘰𝘶𝘳𝘴 𝘵𝘰 𝘵𝘦𝘴𝘵 𝘺𝘰𝘶𝘳 𝘤𝘩𝘢𝘯𝘨𝘦𝘴!
+    // │
+    // │           𝗘𝘃𝗲𝗻 𝗼𝗻𝗲 𝘀𝗺𝗮𝗹𝗹 𝗰𝗵𝗮𝗻𝗴𝗲 𝘁𝗼 𝘁𝗵𝗶𝘀 𝘀𝗲𝗰𝘁𝗶𝗼𝗻 𝗶𝘀 𝗲𝗻𝗼𝘂𝗴𝗵 𝘁𝗼 𝗺𝗲𝘀𝘀 𝘁𝗵𝗲 𝘄𝗵𝗼𝗹𝗲 𝘁𝗵𝗶𝗻𝗴 𝘂𝗽!
+    // │
+    // └──────────────────────────────────────────────────────────────────────────────────────────────────────────
+    /*
+     * Performs a series of logical operations to determine if the blocks getting rolled back should be protected by creative mode.
+     */
     public void executeTask() {
         ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new BukkitRunnable() {
             @Override

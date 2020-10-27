@@ -17,7 +17,6 @@ import static java.util.logging.Logger.getLogger;
 /**
  * @author Frostalf
  */
-//TODO make invalid db connections shut down plugin.
 public class DatabaseCheck {
 
     private BoneCP boneCP;
@@ -32,8 +31,17 @@ public class DatabaseCheck {
     private String password;
     private String driver;
 
+    /**
+     * Caches and checks the status of a certain database..
+     * @param name Name of the plugin this database pertains to.
+     * @param database Name of the database being checked.
+     * @param address Address of the database being checked.
+     * @param port Port on which to communicate with the database being checked.
+     * @param user User to use when communicating with the database.
+     * @param password Password to be used when communicating with the database as provided user.
+     * @param driver Driver to use for this database communication.
+     */
     public DatabaseCheck(String name, String database, String address, int port, String user, String password, String driver) {
-        //Makes a new config w/ fed information
         this.database = database;
         this.address = address;
         this.port = port;
@@ -61,7 +69,10 @@ public class DatabaseCheck {
         }
     }
 
-    //Gets the connection
+    /**
+     * Gets the current database connection.
+     * @return Current connection.
+     */
     public Connection getConnection() {
         if(connection == null) {
             try {
