@@ -16,11 +16,16 @@ public class CacheData {
 
     private HashMap<String, DataBases> databaseMap = new HashMap<>();
     private ParamnesticCure plugin = getInstance();
-    private String address = plugin.getConfig().getString("address");
+    /*private String address = plugin.getConfig().getString("address");
     private int port = plugin.getConfig().getInt("port");
     private String user = plugin.getConfig().getString("user");
     private String password = plugin.getConfig().getString("password");
-    private String driver = plugin.getConfig().getString("driver");
+    private String driver = plugin.getConfig().getString("driver");*/
+    private String address = plugin.getConfig().getString("defaultconnection.address");
+    private int port = plugin.getConfig().getInt("defaultconnection.port");
+    private String user = plugin.getConfig().getString("user");
+    private String password = plugin.getConfig().getString("defaultconnection.password");
+    private String driver = plugin.getConfig().getString("defaultconnection.driver");
 
     /**
      * Method to cache database connections.
