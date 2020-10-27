@@ -59,7 +59,7 @@ Database_Names:
     # The database for Paramnestic to send requests related to creative block protection
     # (Your creative manager)
     creative:
-        database: "creative"
+        database: "rc_database"
         driver: ""
         address: ""
         port: ""
@@ -68,7 +68,7 @@ Database_Names:
     # The database for Paramnestic to send requests related to general block logging
     # (Your block logger)
     logger:
-        database: "coreprotect"
+        database: "database"
         driver: ""
         address: ""
         port: ""
