@@ -5,5 +5,5 @@ description: Spigot patch to prevent rollbacks from stripping creative data
 authors: [InteriorCamping, Frostalf]
 website: https://mc-smp.com
 depend: [CoreProtect, RestrictedCreative]
-api-version: @spigot-version@
+api-version: 1.16
 prefix: Paramnestic
