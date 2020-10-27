@@ -17,7 +17,7 @@ import org.bukkit.Bukkit;
 public class CacheData {
 
     private HashMap<String, DataBases> databaseMap = new HashMap<>();
-    private static ParamnesticCure plugin = getInstance();
+    private ParamnesticCure plugin;
     /*private int port = plugin.getConfig().getInt("port");
     private String user = plugin.getConfig().getString("user");
     private String password = plugin.getConfig().getString("password");
