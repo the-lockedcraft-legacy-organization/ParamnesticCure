@@ -37,10 +37,10 @@ public class ParamnesticCure extends JavaPlugin {
      */
     @Override
     public void onEnable() {
+        this.saveDefaultConfig();
         log = getLogger();
+        log.warning("[Debug] Perhaps that created the config?");
         final byte givenVersion = valueOf(getConfig().getString("configVersion"));
-        final String driver = getConfig().getString("databases.driver");
-        log.warning("[Debug] That appears to work. Driver was set to" + driver);
         //Temporary variable indicating desired config version.
         //Should ideally be maven-based, but currently isn't due to a bug.
         final byte currentVersion = 7;
@@ -65,6 +65,8 @@ public class ParamnesticCure extends JavaPlugin {
             log.warning("[Dev] It will probably be unstable");
         }
         //Creates new cache
+        final String driver = getConfig().getString("databases.driver");
+        log.warning("[Debug] That appears to work. Driver was set to" + driver);
         dataCache = new CacheData();
         //sets instance.
         instance = this;
