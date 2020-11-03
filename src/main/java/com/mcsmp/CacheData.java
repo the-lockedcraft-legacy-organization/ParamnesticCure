@@ -1,7 +1,6 @@
 package com.mcsmp;
 
 import com.mcsmp.database.DataBases;
-import static com.mcsmp.ParamnesticCure.getInstance;
 import java.util.HashMap;
 
 /**
@@ -11,7 +10,7 @@ import java.util.HashMap;
 public class CacheData {
 
     private HashMap<String, DataBases> databaseMap = new HashMap<>();
-    private ParamnesticCure plugin = getInstance();
+    private ParamnesticCure plugin = ParamnesticCure.getInstance();
     private String address = plugin.getConfig().getString("address");
     private int port = plugin.getConfig().getInt("port");
     private String user = plugin.getConfig().getString("user");

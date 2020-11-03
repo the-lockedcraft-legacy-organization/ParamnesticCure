@@ -22,7 +22,7 @@ public class ParamnesticCure extends JavaPlugin {
 
     //Initializes the main class, TrackedBlocks, and implements the Logger.
     private static ParamnesticCure instance;
-    private TrackedBlocks trackedBlocks;
+    private static TrackedBlocks trackedBlocks;
     private Logger log = Bukkit.getLogger();
     private CacheData dataCache;
     private boolean everythingOK = true;
@@ -69,10 +69,7 @@ public class ParamnesticCure extends JavaPlugin {
     }
 
     //Method to get tracked blocks (and initialize instance of it).
-    public TrackedBlocks getTrackedBlocks() {
-        if (trackedBlocks == null) {
-            trackedBlocks = TrackedBlocks.getInstance();
-        }
+    public static TrackedBlocks getTrackedBlocks() {
         return trackedBlocks;
     }
 
