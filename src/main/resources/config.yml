@@ -7,11 +7,13 @@
 #  /__\     /__(  )__\  )_) \__/  /__(  )__\ (/          \) (_/    \__/      \____\ /____/      /__\     /_____(   \____) 
 #                                                                                                                     
 #
-#Last version of plugin used.
+# Version of this config. Please do not change.
 configVersion: maven-config-version
 #Prunt's restricedCreative is the only creative manager supported at this time.
 creativeManager: 'restrictedCreative'
 #Intelli's coreProtect is the only block logger supported at this time.
+#Note! Paramnestic does NOT yet support creative inventory rollbacks!
+#Please ensure that any such features are disabled in your blocklogger.
 blockLogger: 'coreProtect'
 blockLoggerRollbackCommands:
     - co rollback
@@ -26,49 +28,54 @@ blockLoggerRollbackCommands:
     - coreprotect:co rb
     - coreprotect:core rb
     - coreprotect:coreprotect rb
+    - co restore
+    - core restore
+    - coreprotect restore
+    - co rs
+    - core rs
+    - coreprotect rs
+    - coreprotect:co restore
+    - coreprotect:core restore
+    - coreprotect:coreprotect restore
+    - coreprotect:co rs
+    - coreprotect:core rs
+    - coreprotect:coreprotect rs
+# Default information used when a value in Database_Names is blank ("")
+# Please ensure that all three of the databases you intend to use have already been configured by your logger and creative manager.
 defaultconnection:
-  # MySQL and MariaDB are supported database drivers at this time.
+  # Database type
   driver: Sqlite
-  # Database server address.
+  # Database location
   address: localhost
-  # Database port
+  # Port used by your db.
   port: 3306
-  # Database username
+  # Username with which to connect to the db.
   user: 'root'
-  # Database user password
+  # Password for that username.
   password: 'pass'
-  # Creative database
- # creative:
-    # Database used by restrictedCreative
-  #  database: 'creative'
-    # Table of that database where RC stores its block data.
-    #table: 'rc_blocks'
-  #logger:
-    # Database used by coreProtect
-  #  database: 'coreprotect'
-    # Table of that database where CP stores its block data.
-  # table: 'co_block'
-    # Table of that database where CP stores its world data.
-  #  world_table: 'co_world'
-  # paramnestic:
-    # Name of the database that you would like Paramnestic to use.
-  #  database: 'paramnestic'
-    
+# Databases for us to send specific requests to.
+# Paramnestic requires all three databases to be running, set up, and seperate to function.
 Database_Names:
+    # The database for Paramnestic to send requests related to creative block protection
+    # (Your creative manager)
     creative:
-        database: "creative"
+        database: "rc_database"
         driver: ""
         address: ""
         port: ""
         user: ""
         password: ""
+    # The database for Paramnestic to send requests related to general block logging
+    # (Your block logger)
     logger:
-        database: "coreprotect"
+        database: "database"
         driver: ""
         address: ""
         port: ""
         user: ""
         password: ""
+    # The database for Paramnestic to store its own data.
+    # (ParamnesticCure)
     paramestic:
         database: "paramnestic"
         driver: ""

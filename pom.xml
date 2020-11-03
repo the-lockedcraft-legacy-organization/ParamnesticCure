@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mc_smp</groupId>
     <artifactId>ParamnesticCure</artifactId>
-    <version>0.3.9</version>
+    <version>0.3.29</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spigot-version>1.16</spigot-version>
-        <config-version>6</config-version>
+        <config-version>7</config-version>
     </properties>
     <repositories>
         <repository>
@@ -102,8 +102,8 @@
                 </executions>
                 <configuration>
                     <source>8</source>
-                    <doctitle>Paramnestic Cure JavaDocs v${project.version}</doctitle>
-                    <windowtitle>Paramnestic Cure JavaDocs v${project.version}</windowtitle>
+                    <doctitle>ParamnesticDocs v${project.version}</doctitle>
+                    <windowtitle>ParamnesticDocs v${project.version}</windowtitle>
                 </configuration>
             </plugin>
             <plugin>

@@ -22,37 +22,49 @@ import org.bukkit.event.server.ServerCommandEvent;
 /**
  * @author Frostalf
  */
-//This is a listener class.
+
+/*
+ * Paramnestic's listener class.
+ */
 public class ParamnesticCureListener implements Listener {
 
-    //The object plugin is of the main class
+    //Establishes plugin's instance
     private ParamnesticCure plugin;
     //Establishes logger
     private Logger log = getLogger();
-    //Makes an empty list for the rollback aliases.
+    //Makes an empty list for the logger's rollback aliases.
     private List<String> rbAlias = new ArrayList<>(getInstance().getConfig().getList("blockLoggerRollbackCommands").size());
 
-    //Sets plugin instance
+    /*
+     * Constructor class
+     * @param plugin Instance of the plugin.
+     */
     public ParamnesticCureListener(ParamnesticCure plugin) {
         this.plugin = plugin;
         //Populates rbAlias with all the aliases specified in the config.
         rbAlias.addAll(plugin.getConfig().getConfigurationSection("").getStringList("blockLoggerRollbackCommands"));
     }
 
-    //on the block break event,
+    /**
+     * Checks ζ block status of manually broken blocks (currently using NBT) sets them as Φ
+     * @param event BlockBreakEvent
+     */
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         //block is the Block broken
         Block block = event.getBlock();
         //blockState is the BlockState of that block
         BlockState blockState = block.getState();
-        //adds any block w/ meta GMC  to PC's block list.
+        //adds any block w/ meta GMC to PC's block list.
         if(blockState.hasMetadata("GMC")) {
             plugin.getTrackedBlocks().addToBlockList(block.getLocation());
         }
 
     }
-    //on the block place event,
+    /**
+     * Checks removes Φ status of any manually placed blocks
+     * @param event BlockBreakEvent
+     */
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         //block is block
@@ -62,26 +74,34 @@ public class ParamnesticCureListener implements Listener {
             plugin.getTrackedBlocks().removeFromBlockList(block.getLocation());
         }
     }
-    //if someone types a command pre-proccess
+    /**
+     * Detects if someone is attempting a rollback operation... and runs a tree of logic to ensure it doesn't mess with creative data.
+     * @param event Command being processed
+     */
     @EventHandler
     public void commandRollBack(PlayerCommandPreprocessEvent event) {
+        //If the command starts with a slash, and would result in a rollback, consider it a rollback operation.
         String slash = "/";
-        //if someone types that alias and starts it with a slash, then do stuff.
         for (String command : rbAlias) {
             if(event.getMessage().equalsIgnoreCase(slash.concat(command)));
+                //Start running paramnestic's rollback logic.
                 RollbackManager rollback = new RollbackManager();
                 rollback.executeTask();
                 break;
             }
         }
 
+    /**
+     * If someone tries a rollback command from console, tell them not to.
+     * Console-based rollbacks add another layer of complexity that we would prefer to avoid at present.
+     * @param event Command being processed
+     */
     @EventHandler
-    //If the server receives a command
     public void serverCommandRollBack(ServerCommandEvent event) {
         //if someone types that alias cancel it.
         for (String command : rbAlias) {
             if(event.getCommand().equalsIgnoreCase(command)){
-                log.info("Console rollbacks are not yet supported by Paramnestic.");
+                log.warning("Console rollbacks are not yet supported by Paramnestic.");
                 event.setCancelled(true);
             }
         }
