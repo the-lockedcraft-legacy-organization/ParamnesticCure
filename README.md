@@ -11,12 +11,9 @@ A spigot patch to prevent rollbacks from stripping creative block data.
 ## Scope
 This project is currently a bare-bones patchwork which may or may not be fully featured in future.
 
-> PC's core goal is to prevent economy contamination; at this stage of development, for simplicity, blocks placed from rollbacks will receive blanket protection.
-> An unfortunate side effect of this is that all blocks placed in a rb get declared as creative -- even if they were originally placed in survival.
-
 ### Features
 - Blocks removed by a rollback are stripped of their creative data to ensure survival blocks later placed in that spot are not declared as creative.
-- Blocks placed by a rollback are declared to be of creative origin to ensure that creative blocks that are part of a rollback operation do not become mineable.
+- Creative data is restored to blocks modified by a rollback.
 
 ## Background
 - This plugin was developed for a temporary collaborative public SMP project
@@ -38,11 +35,32 @@ NO PERMISSIONS YET -- Everyone
 
 # Instructions
 ## Installing:
-This plugin is a drag-and-drop; simply put it in the plugins folder of whatever world is running your creative limiter.
+This plugin is a drag-and-drop; simply put it in the plugins folder of whatever instance is running your creative limiter.
+Note that, if your creative logger and/or block logger uses a database, you will need to supply that information in the config.
+Also note that Paramnestic requires its own database (to track creative info for risk-prone blocks).
 
 # Configuration
 ```
-no-config-yet - This plugin will have configuration options available in a later release.
+configVersion - Last update of PC that substantially changed the config. Do not change.
+creativeManager - The plugin being used to manage creative block states.
+blockLogger - The plugin being used to log, and roll back, player block placement.
+blockLoggerRollbackCommands - All aliases of any command that can be used to trigger a rollback.
+defaultconnection - The database information to be used if nothing is provided under Database_Names
+  driver - Type of database (options Sqlite, MySQL, or MariaDB)
+  address - Location of that database
+  port - Port database can be reached on
+  user - Username used to connect to database
+  password - Password used to connect to database
+Database_Names - Specific database specifications.
+    creative - Database being used by your creativeManager
+        database - Database's name.
+        {See fields under defaultconnection}
+    logger - Database being used by your blockLogger
+        database - Database's name.
+        {See fields under defaultconnection}
+    paramestic - Database to be used by this plugin.
+        database - Database's name.
+        {See fields under defaultconnection}
 ```
 # Changelog
 ```
@@ -51,6 +69,14 @@ Version 0.0.0
         | |_ Feature Release (Adds a new feature)
         |_ Milestone Release (Adds a major feature from /ParamnesticCure/milestones )
 ```
+#### [Version 0.4.0] (CURRENT TARGET)
+ - Fix all readily apparent runtime bugs with PC
+ - Preliminary testing of PC logic.
+#### [Version 0.3.0] (CURRENT RELEASE)
+ - Implemented the plugin's logic.
+#### [Version 0.2.0]
+ - Outlined the logic needed to accomplish PC's goals.
+ - Created some framework classes.
 #### [Version 0.1.0]
  - Initialized the project and created documentation.
  - Set up the project's working environment.
