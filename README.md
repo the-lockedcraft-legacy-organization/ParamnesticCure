@@ -35,7 +35,7 @@ NO PERMISSIONS YET -- Everyone
 
 # Instructions
 ## Installing:
-This plugin is a drag-and-drop; simply put it in the plugins folder of whatever world is running your creative limiter.
+This plugin is a drag-and-drop; simply put it in the plugins folder of whatever instance is running your creative limiter.
 Note that, if your creative logger and/or block logger uses a database, you will need to supply that information in the config.
 Also note that Paramnestic requires its own database (to track creative info for risk-prone blocks).
 
