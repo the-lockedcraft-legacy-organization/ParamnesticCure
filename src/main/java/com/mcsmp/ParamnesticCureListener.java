@@ -33,7 +33,7 @@ public class ParamnesticCureListener implements Listener {
     //Establishes logger
     private Logger log = getLogger();
     //Makes an empty list for the logger's rollback aliases.
-    private List<String> rbAlias = new ArrayList<>(getInstance().getConfig().getList("blockLoggerRollbackCommands").size());
+    private List<String> rbAlias;
 
     /*
      * Constructor class
@@ -41,6 +41,7 @@ public class ParamnesticCureListener implements Listener {
      */
     public ParamnesticCureListener(ParamnesticCure plugin) {
         this.plugin = plugin;
+        rbAlias = new ArrayList<>();
         //Populates rbAlias with all the aliases specified in the config.
         rbAlias.addAll(plugin.getConfig().getConfigurationSection("").getStringList("blockLoggerRollbackCommands"));
     }

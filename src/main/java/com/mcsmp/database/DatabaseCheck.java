@@ -10,8 +10,12 @@ import com.jolbox.bonecp.BoneCPConfig;
 import com.mcsmp.ParamnesticCure;
 import java.io.File;
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
+import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
 
 /**
@@ -56,13 +60,23 @@ public class DatabaseCheck {
         config.setUser(user);
         config.setPassword(password);
         if(driver.equalsIgnoreCase("sqlite")) {
-            config.setJdbcUrl("jdbc:"+ driver +"://" + ParamnesticCure.getInstance().getServer().getPluginManager().getPlugin(name).getDataFolder().getPath() + File.pathSeparator + database);
+            try {
+                Class.forName("org.sqlite.JDBC");
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            config.setJdbcUrl("jdbc:"+ driver +"://" + ParamnesticCure.getInstance().getServer().getPluginManager().getPlugin(name).getDataFolder().getPath() + File.pathSeparator + database + ".db");
         } else {
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
+            }
             config.setJdbcUrl("jdbc:"+ driver +"://" + address + ":" + port + "/" + database);
         }
-
         try {
             this.boneCP = new BoneCP(config);
+            createDB();
         } catch (SQLException ex) {
             ParamnesticCure.getInstance().getLogger().log(SEVERE, "Error connection to Database: {0}", ex.getSQLState());
             ParamnesticCure.getInstance().setOK(false);
@@ -82,5 +96,14 @@ public class DatabaseCheck {
             }
         }
         return connection;
+    }
+
+    private void createDB() {
+        try {
+            PreparedStatement statement = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS blocks(world varchar(20), x int, y int, z int");
+            statement.executeQuery();
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
