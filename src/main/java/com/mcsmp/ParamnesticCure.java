@@ -5,11 +5,9 @@
  */
 package com.mcsmp;
 
-import static com.mcsmp.DriverEnum.SQLITE;
 import java.io.File;
 import static java.lang.Byte.valueOf;
 import java.util.logging.Logger;
-import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import org.bukkit.Bukkit;
 import static org.bukkit.Bukkit.getPluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -38,6 +36,7 @@ public class ParamnesticCure extends JavaPlugin {
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
+        this.getServer().getPluginManager().registerEvents(new ParamnesticCureListener(this), this);
         log = getLogger();
         log.warning("[Debug] Perhaps that created the config?");
         final byte givenVersion = valueOf(getConfig().getString("configVersion"));
@@ -47,7 +46,7 @@ public class ParamnesticCure extends JavaPlugin {
         File configVar = new File(getDataFolder(), "config.yml");
         log.warning("[Debug] Created internal config.yml reference.");
         //if outdated config, rename old config and install a new one.
-        
+
         // Manages plugins config.
         if (givenVersion != currentVersion) {
             if (configVar.exists()){
@@ -67,9 +66,9 @@ public class ParamnesticCure extends JavaPlugin {
         //Creates new cache
         final String driver = getConfig().getString("defaultconnection.driver");
         log.warning("[Debug] That appears to work. Driver was set to" + driver);
-        dataCache = new CacheData();
         //sets instance.
         instance = this;
+        dataCache = new CacheData();stop
         trackedBlocks = TrackedBlocks.getInstance();
     }
 
@@ -85,7 +84,7 @@ public class ParamnesticCure extends JavaPlugin {
      * Initializes an instance of TrackedBlocks
      * @return Returns TrackedBlocks
      */
-    public TrackedBlocks getTrackedBlocks() {
+    public synchronized TrackedBlocks getTrackedBlocks() {
         if (trackedBlocks == null) {
             trackedBlocks = TrackedBlocks.getInstance();
         }

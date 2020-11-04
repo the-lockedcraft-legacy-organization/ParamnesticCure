@@ -26,26 +26,11 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class RollbackManager {
 
-    private static byte runCycles = 1;
-    //Establishes plugin instance
-    private ParamnesticCure plugin;
-    //Establishes logger
-    private Logger log = getLogger();
-    //stores RollbackManager if initialized.
-    private static RollbackManager instance;
-
     /*
      * Constructor for Rollbacks.
      */
     public RollbackManager() {
-        HashMap<Integer, CoreProtectData> activeSearch = new HashMap<>();
-        HashMap<Integer, String> worldData = new HashMap<>();
-        
-        double activeX;
-        double activeY;
-        double activeZ;
-        boolean activeAction;
-        
+        executeTask();
     }
 
     // ┌─────────────────────────────────────────── /!\=- 𝗪𝗔𝗥𝗡𝗜𝗡𝗚 /!\ ─────────────────────────────────────────
@@ -107,6 +92,6 @@ public class RollbackManager {
 
                 }
             }
-        }, 40L);
+        }, 60L);
     }
 }

@@ -8,7 +8,6 @@ package com.mcsmp;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;

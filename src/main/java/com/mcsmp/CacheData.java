@@ -6,10 +6,8 @@
 package com.mcsmp;
 
 import com.mcsmp.database.DataBases;
-import static com.mcsmp.ParamnesticCure.getInstance;
 import static java.lang.Byte.valueOf;
 import java.util.HashMap;
-import org.bukkit.Bukkit;
 
 /**
  * @author Frostalf
@@ -17,7 +15,7 @@ import org.bukkit.Bukkit;
 public class CacheData {
 
     private HashMap<String, DataBases> databaseMap = new HashMap<>();
-    private ParamnesticCure plugin;
+    private final ParamnesticCure plugin = ParamnesticCure.getInstance();
     final byte givenVersion = valueOf(ParamnesticCure.getInstance().getConfig().getString("configVersion"));
     private String address = ParamnesticCure.getInstance().getConfig().getString("defaultconnection.address");
     private int port = ParamnesticCure.getInstance().getConfig().getInt("defaultconnection.port");
