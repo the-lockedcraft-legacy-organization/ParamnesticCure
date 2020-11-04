@@ -8,6 +8,7 @@ package com.mcsmp;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
@@ -75,15 +76,19 @@ public class TrackedBlocks {
      * @return returns true if successful, false otherwise.
      */
     private void loadBlocks() {
-        ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new BukkitRunnable() {
+        ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
             @Override
             public void run() {
                 try {
-                    ResultSet set = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnestic").getResults("Select * FROM blocks");
-                    while (set.next()) {
+                    PreparedStatement statement = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnestic").getConnection().prepareStatement("Select * FROM blocks");
+                    ResultSet set = statement.executeQuery();
+                    if (set != null) {
+                        while (set.next()) {
                         Location location = new Location(ParamnesticCure.getInstance().getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
                         getBlockList().put(location, set.getInt("id"));
+                        }
                     }
+
                 } catch (SQLException ex) {
                     Logger.getLogger(TrackedBlocks.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -97,16 +102,20 @@ public class TrackedBlocks {
      * @return returns true if successful, false otherwise.
      */
     private Integer addToDB(Location location) {
-        ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new BukkitRunnable() {
+        ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
             @Override
             public void run() {
                 try {
-                    PreparedStatement statement = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnesticcure").getConnection().prepareStatement("INSERT INTO blocks (world, x, y , z) VALUES(?,?,?,?)");
+                    PreparedStatement statement = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnesticcure").getConnection().prepareStatement("INSERT INTO blocks (world, x, y , z) VALUES(?,?,?,?) AND SELECT id where ", Statement.RETURN_GENERATED_KEYS);
                     statement.setString(1, location.getWorld().toString());
                     statement.setDouble(2, location.getBlockX());
                     statement.setDouble(3, location.getBlockY());
                     statement.setDouble(4, location.getBlockZ());
-                    id = statement.executeQuery().getInt("id");
+                    statement.execute();
+                    ResultSet set = statement.getGeneratedKeys();
+                    while(set.next()) {
+                        id = set.getInt(1);
+                    }
                 } catch (SQLException ex) {
 
                 }

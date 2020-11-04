@@ -49,7 +49,11 @@ public class DatabaseCheck {
         this.database = database;
         this.address = address;
         this.port = port;
-        this.user = user;
+        if(user == null || user.isBlank()) {
+            this.user = "default";
+        } else {
+            this.user = user;
+        }
         this.password = password;
         this.driver = driver;
         final int POOLSIZE = 10;
@@ -62,14 +66,16 @@ public class DatabaseCheck {
         if(driver.equalsIgnoreCase("sqlite")) {
             try {
                 Class.forName("org.sqlite.JDBC");
-            } catch (ClassNotFoundException ex) {
+                DriverManager.registerDriver(new org.sqlite.JDBC());
+            } catch (SQLException | ClassNotFoundException ex) {
                 Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
             }
-            config.setJdbcUrl("jdbc:"+ driver +"://" + ParamnesticCure.getInstance().getServer().getPluginManager().getPlugin(name).getDataFolder().getPath() + File.pathSeparator + database + ".db");
+            config.setJdbcUrl("jdbc:"+ driver +"://" + ParamnesticCure.getInstance().getDataFolder().getPath() + File.pathSeparator + database + ".db");
         } else {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
-            } catch (ClassNotFoundException ex) {
+                DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+            } catch (SQLException | ClassNotFoundException ex) {
                 Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
             }
             config.setJdbcUrl("jdbc:"+ driver +"://" + address + ":" + port + "/" + database);
@@ -100,7 +106,7 @@ public class DatabaseCheck {
 
     private void createDB() {
         try {
-            PreparedStatement statement = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS blocks(world varchar(20), x int, y int, z int");
+            PreparedStatement statement = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS blocks(id int NOT NULL AUTO_INCREMENT, world varchar(20), x int, y int, z int");
             statement.executeQuery();
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);

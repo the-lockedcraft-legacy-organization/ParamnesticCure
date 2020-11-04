@@ -43,7 +43,7 @@ public class DataBases {
         this.port = port;
         this.user = user;
         this.password = password;
-        this.driver = driver;
+        this.driver = driver.toLowerCase();
         this.databaseConnection = new DatabaseCheck(name, databaseName, address, port, user, password, driver);
     }
 
