@@ -68,7 +68,7 @@ public class ParamnesticCure extends JavaPlugin {
         log.warning("[Debug] That appears to work. Driver was set to" + driver);
         //sets instance.
         instance = this;
-        dataCache = new CacheData();stop
+        dataCache = new CacheData();
         trackedBlocks = TrackedBlocks.getInstance();
     }
 
