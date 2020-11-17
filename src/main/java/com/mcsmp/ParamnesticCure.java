@@ -8,6 +8,7 @@ package com.mcsmp;
 import java.io.File;
 import static java.lang.Byte.valueOf;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -112,9 +113,11 @@ public class ParamnesticCure extends JavaPlugin {
 
     private void createDB() {
         try {
-            Connection connection = this.getCacheData().getDatabaseMap().get("paramnesticcure").getConnection();
-            PreparedStatement statement = connection.prepareStatement("CREATE TABLE [IF NOT EXISTS] blocks(id int NOT NULL, world varchar(20), x int, y int, z int");
-            statement.executeQuery();
+            File dbFile = new File(getDataFolder().getAbsolutePath(), "paramnestic.db");
+            String url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
+            Connection connection = DriverManager.getConnection(url);
+            PreparedStatement statement = connection.prepareStatement("CREATE TABLE [IF NOT EXISTS] paramnesticcure.blocks(id int NOT NULL, world varchar(20), x int, y int, z int");
+            statement.execute();
         } catch (SQLException ex) {
             getLogger().log(Level.SEVERE, null, ex);
         }
