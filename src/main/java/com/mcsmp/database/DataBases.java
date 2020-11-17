@@ -100,7 +100,7 @@ public class DataBases {
      * Check database connection.
      * @return Current database connection.
      */
-    public Connection getConnection() {
+    public Connection getConnection() throws SQLException {
         return this.databaseConnection.getConnection();
     }
 
