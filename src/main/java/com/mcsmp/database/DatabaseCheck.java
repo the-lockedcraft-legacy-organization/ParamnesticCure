@@ -32,6 +32,7 @@ public class DatabaseCheck {
     private String user;
     private String password;
     private String driver;
+    private String url;
 
     /**
      * Caches and checks the status of a certain database..
@@ -67,7 +68,8 @@ public class DatabaseCheck {
             } catch (SQLException ex) {
                 Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
             }
-            config.setJdbcUrl("jdbc:"+ driver +":" + plugin.getDataFolder().getPath() + "/" + this.database + ".db");
+            this.url = ("jdbc:sqlite:" + plugin.getDataFolder().getAbsolutePath() + "/" + this.database + ".db");
+            //config.setJdbcUrl("jdbc:"+ driver +":" + plugin.getDataFolder().getPath() + "/" + this.database + ".db");
         } else {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
@@ -94,12 +96,13 @@ public class DatabaseCheck {
         if(connection == null) {
             try {
                 if(this.driver.equalsIgnoreCase("sqlite")) {
-                    connection = DriverManager.getConnection(config.getJdbcUrl());
+                    connection = DriverManager.getConnection(this.url);
+                    ParamnesticCure.getInstance().getLogger().log(Level.CONFIG, "{0} {1} {2}", new Object[]{this.url, this.user, this.database});
                 } else {
                     connection = this.boneCP.getConnection();
                 }
             } catch (SQLException ex) {
-                plugin.getLogger().log(SEVERE, null, ex);
+                plugin.getLogger().log(SEVERE, ex.getMessage(), ex);
             }
         }
         return connection;
