@@ -92,7 +92,10 @@ public class DatabaseCheck {
      */
     public Connection getConnection() throws SQLException {
         ParamnesticCure.getInstance().getLogger().log(Level.CONFIG, "{0} {1} {2}", new Object[]{this.url, this.user, this.database});
+        if (this.connection == null) {
         return connection = DriverManager.getConnection(this.url);
         //connection = this.boneCP.getConnection();
+        }
+        return this.connection;
     }
 }

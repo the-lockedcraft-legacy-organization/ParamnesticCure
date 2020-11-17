@@ -5,6 +5,7 @@
  */
 package com.mcsmp;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,6 +29,7 @@ public class TrackedBlocks {
 
     //Creates a hashmap for Φ blocks
     private ConcurrentHashMap<Location, Integer> blockList = new ConcurrentHashMap<>();
+    private ParamnesticCure plugin = ParamnesticCure.getInstance();
     //stores TrackedBlocks if initialized.
     private static TrackedBlocks instance;
     public static int id = 0;
@@ -76,17 +78,18 @@ public class TrackedBlocks {
      * @return returns true if successful, false otherwise.
      */
     private void loadBlocks() {
-        ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
+        ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
                 try {
-                    PreparedStatement statement = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnestic").getConnection().prepareStatement("Select * FROM blocks");
+                    Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getConnection();
+                    PreparedStatement statement = connection.prepareStatement("Select * FROM blocks");
                     ResultSet set = statement.executeQuery();
-                    if (set != null) {
-                        while (set.next()) {
-                        Location location = new Location(ParamnesticCure.getInstance().getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
-                        getBlockList().put(location, set.getInt("id"));
-                        }
+                    if (set != null || set.next() == false) {
+                        do {
+                            Location location = new Location(ParamnesticCure.getInstance().getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
+                            getBlockList().put(location, set.getInt("id"));
+                        } while (set.next());
                     }
 
                 } catch (SQLException ex) {
