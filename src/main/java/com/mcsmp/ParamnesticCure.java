@@ -38,13 +38,11 @@ public class ParamnesticCure extends JavaPlugin {
         this.saveDefaultConfig();
         this.getServer().getPluginManager().registerEvents(new ParamnesticCureListener(this), this);
         log = getLogger();
-        log.warning("[Debug] Perhaps that created the config?");
         final byte givenVersion = valueOf(getConfig().getString("configVersion"));
         //Temporary variable indicating desired config version.
         //Should ideally be maven-based, but currently isn't due to a bug.
         final byte currentVersion = 7;
         File configVar = new File(getDataFolder(), "config.yml");
-        log.warning("[Debug] Created internal config.yml reference.");
         //if outdated config, rename old config and install a new one.
 
         // Manages plugins config.
@@ -65,7 +63,7 @@ public class ParamnesticCure extends JavaPlugin {
         }
         //Creates new cache
         final String driver = getConfig().getString("defaultconnection.driver");
-        log.warning("[Debug] That appears to work. Driver was set to" + driver);
+        log.info("[Debug] Set driver to " + driver);
         //sets instance.
         instance = this;
         dataCache = new CacheData();
