@@ -63,28 +63,24 @@ public class DatabaseCheck {
         config.setUser(this.user);
         config.setPassword(this.password);
         if(this.driver.equalsIgnoreCase("sqlite")) {
+            this.url = ("jdbc:sqlite:" + plugin.getDataFolder().getAbsolutePath() + "/" + this.database + ".db");
             try {
+                Class.forName("org.sqlite.JDBC");
                 DriverManager.registerDriver(new org.sqlite.JDBC());
-            } catch (SQLException ex) {
+                connection = DriverManager.getConnection(this.url);
+            } catch (SQLException | ClassNotFoundException ex) {
                 Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
             }
-            this.url = ("jdbc:sqlite:" + plugin.getDataFolder().getAbsolutePath() + "/" + this.database + ".db");
             //config.setJdbcUrl("jdbc:"+ driver +":" + plugin.getDataFolder().getPath() + "/" + this.database + ".db");
         } else {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
                 DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+                this.boneCP = new BoneCP(config);
             } catch (SQLException | ClassNotFoundException ex) {
                 Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
             }
             config.setJdbcUrl("jdbc:"+ this.driver +"://" + this.address + ":" + this.port + "/" + this.database);
-        }
-        try {
-            this.boneCP = new BoneCP(config);
-            plugin.setOK(true);
-        } catch (SQLException ex) {
-            plugin.getLogger().log(SEVERE, "Error connection to Database: {0}", ex.getSQLState());
-            plugin.setOK(false);
         }
     }
 

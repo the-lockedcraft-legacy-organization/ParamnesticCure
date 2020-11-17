@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mc_smp</groupId>
     <artifactId>ParamnesticCure</artifactId>
-    <version>0.3.31</version>
+    <version>0.3.48</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,12 +24,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.16.3-R0.1-snapshot</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.jolbox</groupId>
             <artifactId>bonecp</artifactId>
             <version>0.8.0.RELEASE</version>
@@ -39,6 +33,18 @@
             <groupId>me.prunt.restrictedcreative</groupId>
             <artifactId>RestrictedCreativeAPI</artifactId>
             <version>2.4.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.32.3.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.48</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -74,6 +80,10 @@
                                 <relocation>
                                     <pattern>com.jolbox</pattern>
                                     <shadedPattern>com.mcsmp.bonecp</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.xerial</pattern>
+                                    <shadedPattern>com.mcsmp.xerial</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
