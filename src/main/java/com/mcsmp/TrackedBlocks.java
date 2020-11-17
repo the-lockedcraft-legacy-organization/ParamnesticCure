@@ -5,7 +5,9 @@
  */
 package com.mcsmp;
 
+import java.io.File;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -81,8 +83,10 @@ public class TrackedBlocks {
         ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                try {
-                    Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getConnection();
+                    File dbFile = new File(plugin.getDataFolder().getAbsolutePath(), "paramnestic.db");
+                    String url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
+                try (Connection connection = DriverManager.getConnection(url);){
+                    //Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getConnection();
                     PreparedStatement statement = connection.prepareStatement("Select * FROM blocks");
                     ResultSet set = statement.executeQuery();
                     if (set != null || set.next() == false) {
@@ -91,9 +95,11 @@ public class TrackedBlocks {
                             getBlockList().put(location, set.getInt("id"));
                         } while (set.next());
                     }
-
+                    set.close();
+                    connection.close();
                 } catch (SQLException ex) {
-                    Logger.getLogger(TrackedBlocks.class.getName()).log(Level.SEVERE, null, ex);
+                    plugin.getLogger().log(SEVERE, ex.getMessage(), ex.getCause());
+                    //Logger.getLogger(TrackedBlocks.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
