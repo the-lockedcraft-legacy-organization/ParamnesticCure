@@ -92,16 +92,14 @@ public class DatabaseCheck {
     public Connection getConnection() {
         if(connection == null) {
             try {
-                if(this.driver.equalsIgnoreCase("sqlite")) {
-                    connection = DriverManager.getConnection(this.url);
+
                     ParamnesticCure.getInstance().getLogger().log(Level.CONFIG, "{0} {1} {2}", new Object[]{this.url, this.user, this.database});
-                } else {
-                    connection = this.boneCP.getConnection();
-                }
+                    return connection = DriverManager.getConnection(this.url);
+                    //connection = this.boneCP.getConnection();
             } catch (SQLException ex) {
                 plugin.getLogger().log(SEVERE, ex.getMessage(), ex);
             }
         }
-        return connection;
+        return connection = null;
     }
 }
