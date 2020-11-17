@@ -63,7 +63,8 @@ public class DatabaseCheck {
         config.setUser(this.user);
         config.setPassword(this.password);
         if(this.driver.equalsIgnoreCase("sqlite")) {
-            this.url = ("jdbc:sqlite:" + plugin.getDataFolder().getAbsolutePath() + "/" + this.database + ".db");
+            File dbFile = new File(plugin.getDataFolder().getAbsolutePath(), this.database + ".db");
+            this.url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
             try {
                 Class.forName("org.sqlite.JDBC");
                 DriverManager.registerDriver(new org.sqlite.JDBC());
