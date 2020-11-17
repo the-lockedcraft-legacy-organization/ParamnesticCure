@@ -72,7 +72,7 @@ public class ParamnesticCure extends JavaPlugin {
         instance = this;
         dataCache = new CacheData();
         trackedBlocks = TrackedBlocks.getInstance();
-        //createDB();
+        createDB();
     }
 
     /*
