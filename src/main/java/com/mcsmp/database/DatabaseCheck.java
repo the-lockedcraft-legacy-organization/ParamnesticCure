@@ -67,7 +67,7 @@ public class DatabaseCheck {
             } catch (SQLException ex) {
                 Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
             }
-            config.setJdbcUrl("jdbc:"+ driver +":" + plugin.getDataFolder().getPath() + File.pathSeparator + this.database + ".db");
+            config.setJdbcUrl("jdbc:"+ driver +":" + plugin.getDataFolder().getPath() + "/" + this.database + ".db");
         } else {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
