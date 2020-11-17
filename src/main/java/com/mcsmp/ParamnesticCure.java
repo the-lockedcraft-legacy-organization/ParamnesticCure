@@ -7,6 +7,9 @@ package com.mcsmp;
 
 import java.io.File;
 import static java.lang.Byte.valueOf;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import static org.bukkit.Bukkit.getPluginManager;
@@ -70,6 +73,7 @@ public class ParamnesticCure extends JavaPlugin {
         instance = this;
         dataCache = new CacheData();
         trackedBlocks = TrackedBlocks.getInstance();
+        createDB();
     }
 
     /*
@@ -105,5 +109,14 @@ public class ParamnesticCure extends JavaPlugin {
      */
     public void setOK(boolean ok) {
         this.everythingOK = ok;
+    }
+
+    private void createDB() {
+        try {
+            PreparedStatement statement = getCacheData().getDatabaseMap().get("paramnesticcure").getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS blocks(id int NOT NULL AUTO_INCREMENT, world varchar(20), x int, y int, z int");
+            statement.executeQuery();
+        } catch (SQLException ex) {
+            getLogger().log(Level.SEVERE, null, ex);
+        }
     }
 }

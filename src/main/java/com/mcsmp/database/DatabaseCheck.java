@@ -11,12 +11,10 @@ import com.mcsmp.ParamnesticCure;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
-import static java.util.logging.Logger.getLogger;
 
 /**
  * @author Frostalf
@@ -27,7 +25,7 @@ public class DatabaseCheck {
     private Connection connection;
 
     private BoneCPConfig config = null;
-    private ParamnesticCure plugin;
+    private ParamnesticCure plugin = ParamnesticCure.getInstance();
     private String database;
     private String address;
     private int port;
@@ -61,16 +59,15 @@ public class DatabaseCheck {
         config = new BoneCPConfig();
         config.setPartitionCount(POOLSIZE);
         config.setMaxConnectionsPerPartition(MAXCONNECT);
-        config.setUser(user);
-        config.setPassword(password);
-        if(driver.equalsIgnoreCase("sqlite")) {
+        config.setUser(this.user);
+        config.setPassword(this.password);
+        if(this.driver.equalsIgnoreCase("sqlite")) {
             try {
-                Class.forName("org.sqlite.JDBC");
                 DriverManager.registerDriver(new org.sqlite.JDBC());
-            } catch (SQLException | ClassNotFoundException ex) {
+            } catch (SQLException ex) {
                 Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
             }
-            config.setJdbcUrl("jdbc:"+ driver +"://" + ParamnesticCure.getInstance().getDataFolder().getPath() + File.pathSeparator + database + ".db");
+            config.setJdbcUrl("jdbc:"+ driver +":" + plugin.getDataFolder().getPath() + File.pathSeparator + this.database + ".db");
         } else {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
@@ -78,14 +75,14 @@ public class DatabaseCheck {
             } catch (SQLException | ClassNotFoundException ex) {
                 Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
             }
-            config.setJdbcUrl("jdbc:"+ driver +"://" + address + ":" + port + "/" + database);
+            config.setJdbcUrl("jdbc:"+ this.driver +"://" + this.address + ":" + this.port + "/" + this.database);
         }
         try {
             this.boneCP = new BoneCP(config);
-            createDB();
+            plugin.setOK(true);
         } catch (SQLException ex) {
-            ParamnesticCure.getInstance().getLogger().log(SEVERE, "Error connection to Database: {0}", ex.getSQLState());
-            ParamnesticCure.getInstance().setOK(false);
+            plugin.getLogger().log(SEVERE, "Error connection to Database: {0}", ex.getSQLState());
+            plugin.setOK(false);
         }
     }
 
@@ -96,20 +93,15 @@ public class DatabaseCheck {
     public Connection getConnection() {
         if(connection == null) {
             try {
-                connection = this.boneCP.getConnection();
+                if(this.driver.equalsIgnoreCase("sqlite")) {
+                    connection = DriverManager.getConnection(config.getJdbcUrl());
+                } else {
+                    connection = this.boneCP.getConnection();
+                }
             } catch (SQLException ex) {
-                getLogger(DatabaseCheck.class.getName()).log(SEVERE, null, ex);
+                plugin.getLogger().log(SEVERE, null, ex);
             }
         }
         return connection;
-    }
-
-    private void createDB() {
-        try {
-            PreparedStatement statement = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS blocks(id int NOT NULL AUTO_INCREMENT, world varchar(20), x int, y int, z int");
-            statement.executeQuery();
-        } catch (SQLException ex) {
-            Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 }
