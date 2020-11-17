@@ -88,18 +88,11 @@ public class DatabaseCheck {
     /**
      * Gets the current database connection.
      * @return Current connection.
+     * @throws java.sql.SQLException
      */
-    public Connection getConnection() {
-        if(connection == null) {
-            try {
-
-                    ParamnesticCure.getInstance().getLogger().log(Level.CONFIG, "{0} {1} {2}", new Object[]{this.url, this.user, this.database});
-                    return connection = DriverManager.getConnection(this.url);
-                    //connection = this.boneCP.getConnection();
-            } catch (SQLException ex) {
-                plugin.getLogger().log(SEVERE, ex.getMessage(), ex);
-            }
-        }
-        return connection = null;
+    public Connection getConnection() throws SQLException {
+        ParamnesticCure.getInstance().getLogger().log(Level.CONFIG, "{0} {1} {2}", new Object[]{this.url, this.user, this.database});
+        return connection = DriverManager.getConnection(this.url);
+        //connection = this.boneCP.getConnection();
     }
 }
