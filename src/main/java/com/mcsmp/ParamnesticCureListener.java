@@ -88,7 +88,6 @@ public class ParamnesticCureListener implements Listener {
                 //Start running paramnestic's rollback logic.
                 RollbackManager rollback = new RollbackManager();
                 rollback.executeTask();
-                break;
             }
         }
 
