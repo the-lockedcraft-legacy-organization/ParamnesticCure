@@ -79,8 +79,6 @@ public class DatabaseCheck {
      * @throws java.sql.SQLException
      */
     public Connection getConnection() throws SQLException {
-        plugin.getLogger().log(Level.CONFIG, "{0} {1} {2}", new Object[]{this.url, this.user, this.database});
-
         if (!mysql) {
             return connection = DriverManager.getConnection(this.url);
         }
@@ -88,6 +86,7 @@ public class DatabaseCheck {
         if (mysql) {
             return connection = this.boneCP.getConnection();
         }
+        plugin.getLogger().log(Level.INFO, "{0} {1} {2}", new Object[]{this.url, this.user, this.database, this.connection.toString()});
         return this.connection;
     }
 

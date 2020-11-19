@@ -23,7 +23,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 /**
  * @author Frostalf
  */
-
 /**
  * Manages Paramnestic's in-house tracking (Φ)
  */
@@ -43,6 +42,7 @@ public class TrackedBlocks {
 
     /**
      * Method to check if a block is marked as Φ.
+     *
      * @param location a Location to set as Φ
      * @return returns true if successful, false otherwise.
      */
@@ -52,6 +52,7 @@ public class TrackedBlocks {
 
     /**
      * Produces a list of blocks with Φ status.
+     *
      * @return Returns a ConcurrentHashMap of blocks being tracked by PC.
      */
     public ConcurrentHashMap<Location, Integer> getBlockList() {
@@ -60,6 +61,7 @@ public class TrackedBlocks {
 
     /**
      * Method to set a block as Φ.
+     *
      * @param location a Location to set as Φ
      * @return returns true if successful, false otherwise.
      */
@@ -69,6 +71,7 @@ public class TrackedBlocks {
 
     /**
      * Method to remove a block's Φ status.
+     *
      * @param location a Location to set as Φ
      */
     public void removeFromBlockList(Location location) {
@@ -76,24 +79,30 @@ public class TrackedBlocks {
     }
 
     /**
-     * Queries Paramnestic's database and stores all blocks it contains within this class' hashmap.
+     * Queries Paramnestic's database and stores all blocks it contains within
+     * this class' hashmap.
+     *
      * @return returns true if successful, false otherwise.
      */
     private void loadBlocks() {
         ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                    //File dbFile = new File(plugin.getDataFolder().getAbsolutePath(), "paramnestic.db");
-                    //String url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
-                try (Connection connection = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnestic").getConnection();){
+                //File dbFile = new File(plugin.getDataFolder().getAbsolutePath(), "paramnestic.db");
+                //String url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
+                try (Connection connection = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnestic").getConnection();) {
                     //Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getConnection();
-                    PreparedStatement statement = connection.prepareStatement("Select * FROM blocks");
-                    ResultSet set = statement.executeQuery();
-                    if (set != null || set.next() != false) {
-                        do {
-                            Location location = new Location(ParamnesticCure.getInstance().getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
-                            getBlockList().put(location, set.getInt("id"));
-                        } while (set.next());
+                    if (connection != null) {
+                        PreparedStatement statement = connection.prepareStatement("Select * FROM blocks");
+                        ResultSet set = statement.executeQuery();
+                        if (set != null || set.next() != false) {
+                            do {
+                                Location location = new Location(ParamnesticCure.getInstance().getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
+                                getBlockList().put(location, set.getInt("id"));
+                            } while (set.next());
+                        }
+                    } else {
+                        ParamnesticCure.getInstance().getLogger().log(Level.SEVERE, "connection is null: {0}", connection.toString());
                     }
                 } catch (SQLException ex) {
                     plugin.getLogger().log(SEVERE, ex.getMessage(), ex.getCause());
@@ -105,6 +114,7 @@ public class TrackedBlocks {
 
     /**
      * Manages adding blocks recently marked as Φ to Paramnestic's database.
+     *
      * @param location a Location to set as Φ
      * @return returns true if successful, false otherwise.
      */
@@ -120,7 +130,7 @@ public class TrackedBlocks {
                     statement.setDouble(4, location.getBlockZ());
                     statement.execute();
                     ResultSet set = statement.getGeneratedKeys();
-                    while(set.next()) {
+                    while (set.next()) {
                         id = set.getInt(1);
                     }
                 } catch (SQLException ex) {
@@ -158,7 +168,9 @@ public class TrackedBlocks {
     }
 
     /**
-     * Initializes the TrackedBlocks class if it has not already been initialized.
+     * Initializes the TrackedBlocks class if it has not already been
+     * initialized.
+     *
      * @return returns true if successful, false otherwise.
      */
     public static TrackedBlocks getInstance() {

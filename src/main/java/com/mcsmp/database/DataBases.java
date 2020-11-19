@@ -19,6 +19,7 @@ import java.sql.SQLException;
 
 public class DataBases {
 
+    private String name;
     private String databaseName;
     private String address;
     private int port;
@@ -38,6 +39,7 @@ public class DataBases {
      * @param driver Driver to use for this database communication.
      */
     public DataBases(String name, String databaseName, String address, int port, String user, String password, String driver) {
+        this.name = name;
         this.databaseName = databaseName;
         this.address = address;
         this.port = port;
@@ -45,6 +47,15 @@ public class DataBases {
         this.password = password;
         this.driver = driver.toLowerCase();
         this.databaseConnection = new DatabaseCheck(name, databaseName, address, port, user, password, driver);
+    }
+
+    /**
+     *
+     * @return Config name of database.
+     */
+
+    public String getConfigName() {
+        return this.name;
     }
 
     /**
