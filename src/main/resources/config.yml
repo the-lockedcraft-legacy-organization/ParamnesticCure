@@ -60,6 +60,7 @@ Database_Names:
     # (Your creative manager)
     creative:
         database: "rc_database"
+        location: ""
         driver: ""
         address: ""
         port: ""
@@ -69,6 +70,7 @@ Database_Names:
     # (Your block logger)
     logger:
         database: "database"
+        location: ""
         driver: ""
         address: ""
         port: ""
@@ -78,6 +80,7 @@ Database_Names:
     # (ParamnesticCure)
     paramnestic:
         database: "paramnestic"
+        location: ""
         driver: ""
         address: ""
         port: ""

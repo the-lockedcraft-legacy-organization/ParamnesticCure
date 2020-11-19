@@ -34,6 +34,7 @@ public class DatabaseCheck {
     private String driver;
     private String url;
     private boolean mysql = false;
+    private String location;
 
     /**
      * Caches and checks the status of a certain database..
@@ -45,7 +46,8 @@ public class DatabaseCheck {
      * @param password Password to be used when communicating with the database as provided user.
      * @param driver Driver to use for this database communication.
      */
-    public DatabaseCheck(String name, String database, String address, int port, String user, String password, String driver) {
+    public DatabaseCheck(String name, String database, String address, int port, String user, String password, String driver, String location) {
+        this.location = location;
         this.database = database;
         this.address = address;
         this.port = port;
@@ -59,7 +61,7 @@ public class DatabaseCheck {
 
         if(getDriver() == DriverEnum.SQLITE) {
             try {
-                setupSQLITE();
+                setupSQLITE(location);
             } catch (SQLException ex) {
                 Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -124,8 +126,15 @@ public class DatabaseCheck {
         this.boneCP = new BoneCP(config);
     }
 
-    private void setupSQLITE() throws SQLException {
-        File dbFile = new File(plugin.getDataFolder().getAbsolutePath(), this.database + ".db");
+    private File dbFile;
+
+    private void setupSQLITE(String location) throws SQLException {
+        if (location.isBlank()) {
+            dbFile = new File(plugin.getDataFolder().getAbsoluteFile(), this.database + ".db");
+        } else {
+            dbFile = new File(location, this.database + ".db");
+        }
+
         this.url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
         try {
             Class.forName("org.sqlite.JDBC");

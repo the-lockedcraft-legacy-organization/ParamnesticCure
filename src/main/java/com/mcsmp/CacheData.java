@@ -22,6 +22,7 @@ public class CacheData {
     private String user = plugin.getConfig().getString("user");
     private String password = plugin.getConfig().getString("defaultconnection.password");
     private String driver = plugin.getConfig().getString("defaultconnection.driver");
+    private String location = "";
 
     /**
      * Method to cache database connections.
@@ -44,7 +45,8 @@ public class CacheData {
             if (!plugin.getConfig().getString("Database_Names." + databases + ".driver").isBlank()) {
                 driver = plugin.getConfig().getString("Database_Names." + databases + ".driver");
             }
-            DataBases bases = new DataBases(databases.toLowerCase(), plugin.getConfig().getString("Database_Names." + databases + ".database").toLowerCase(), address, port, user, password, driver);
+            location = plugin.getConfig().getString("Database_Names." + databases + ".location");
+            DataBases bases = new DataBases(databases.toLowerCase(), plugin.getConfig().getString("Database_Names." + databases + ".database").toLowerCase(), address, port, user, password, driver, location);
             databaseMap.put(databases.toLowerCase(), bases);
         }
     }

@@ -27,6 +27,7 @@ public class DataBases {
     private String password;
     private String driver;
     private DatabaseCheck databaseConnection;
+    private String location;
 
     /**
      * Connects to a certain database.
@@ -38,7 +39,7 @@ public class DataBases {
      * @param password Password to be used when communicating with the database as provided user.
      * @param driver Driver to use for this database communication.
      */
-    public DataBases(String name, String databaseName, String address, int port, String user, String password, String driver) {
+    public DataBases(String name, String databaseName, String address, int port, String user, String password, String driver, String location) {
         this.name = name;
         this.databaseName = databaseName;
         this.address = address;
@@ -46,7 +47,8 @@ public class DataBases {
         this.user = user;
         this.password = password;
         this.driver = driver.toLowerCase();
-        this.databaseConnection = new DatabaseCheck(name, databaseName, address, port, user, password, driver);
+        this.location = location;
+        this.databaseConnection = new DatabaseCheck(name, databaseName, address, port, user, password, driver, location);
     }
 
     /**
@@ -112,8 +114,12 @@ public class DataBases {
      * @return Current database connection.
      * @throws java.sql.SQLException
      */
-    public Connection getConnection() throws SQLException {
-        return this.databaseConnection.getConnection();
+    //public Connection getConnection() throws SQLException {
+    //    return this.databaseConnection.getConnection();
+    //}
+
+    public DatabaseCheck getDatabase() {
+        return this.databaseConnection;
     }
 
     /**
@@ -123,6 +129,6 @@ public class DataBases {
      * @throws java.sql.SQLException any error with the sql query
      */
     public ResultSet getResults(String query) throws SQLException {
-        return getConnection().createStatement().executeQuery(query);
+        return this.databaseConnection.getConnection().createStatement().executeQuery(query);
     }
 }

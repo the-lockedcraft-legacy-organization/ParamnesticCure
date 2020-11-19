@@ -31,7 +31,7 @@ public class TrackedBlocks {
 
     //Creates a hashmap for Φ blocks
     private ConcurrentHashMap<Location, Integer> blockList = new ConcurrentHashMap<>();
-    private ParamnesticCure plugin = ParamnesticCure.getInstance();
+    private static ParamnesticCure plugin = ParamnesticCure.getInstance();
     //stores TrackedBlocks if initialized.
     private static TrackedBlocks instance;
     public static int id = 0;
@@ -86,13 +86,13 @@ public class TrackedBlocks {
      * @return returns true if successful, false otherwise.
      */
     private void loadBlocks() {
-        ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
                 //File dbFile = new File(plugin.getDataFolder().getAbsolutePath(), "paramnestic.db");
                 //String url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
                 try {
-                    Connection connection = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnestic").getConnection();
+                    Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getDatabase().getConnection();
                     //Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getConnection();
                     if (connection != null) {
                         PreparedStatement statement = connection.prepareStatement("Select * FROM blocks");
@@ -121,18 +121,19 @@ public class TrackedBlocks {
      * @return returns true if successful, false otherwise.
      */
     private Integer addToDB(Location location) {
-        ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
+        plugin.getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
             @Override
             public void run() {
                 try {
-                    PreparedStatement statement = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnesticcure").getConnection().prepareStatement("INSERT INTO blocks (world, x, y , z) VALUES(?,?,?,?) AND SELECT id where ", Statement.RETURN_GENERATED_KEYS);
+                    Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnesticcure").getDatabase().getConnection();
+                    PreparedStatement statement = connection.prepareStatement("INSERT INTO blocks (world, x, y , z) VALUES(?,?,?,?) AND SELECT id where ", Statement.RETURN_GENERATED_KEYS);
                     statement.setString(1, location.getWorld().toString());
                     statement.setDouble(2, location.getBlockX());
                     statement.setDouble(3, location.getBlockY());
                     statement.setDouble(4, location.getBlockZ());
-                    statement.execute();
+                    statement.executeQuery();
                     ResultSet set = statement.getGeneratedKeys();
-                    while (set.next()) {
+                    if (set.next()) {
                         id = set.getInt(1);
                     }
                 } catch (SQLException ex) {
@@ -151,7 +152,7 @@ public class TrackedBlocks {
             @Override
             public void run() {
                 try {
-                    PreparedStatement statement = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnesticcure").getConnection().prepareStatement("UPDATE blocks SET world = ?, SET x = ?, SET y = ?, SET z = ?, WHERE id = ?");
+                    PreparedStatement statement = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnesticcure").getDatabase().getConnection().prepareStatement("UPDATE blocks SET world = ?, SET x = ?, SET y = ?, SET z = ?, WHERE id = ?");
                     for (Location location : blockList.keySet()) {
                         statement.setString(1, location.getWorld().toString());
                         statement.setDouble(2, location.getBlockX());
@@ -159,7 +160,7 @@ public class TrackedBlocks {
                         statement.setDouble(4, location.getBlockZ());
                         statement.setInt(5, blockList.get(location));
                         statement.executeUpdate();
-                        ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnesticcure").getConnection().commit();
+                        ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnesticcure").getDatabase().getConnection().commit();
                     }
                 } catch (SQLException ex) {
                     getLogger(TrackedBlocks.class.getName()).log(SEVERE, null, ex);
