@@ -90,7 +90,8 @@ public class TrackedBlocks {
             public void run() {
                 //File dbFile = new File(plugin.getDataFolder().getAbsolutePath(), "paramnestic.db");
                 //String url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
-                try (Connection connection = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnestic").getConnection();) {
+                try {
+                    Connection connection = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnestic").getConnection();
                     //Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getConnection();
                     if (connection != null) {
                         PreparedStatement statement = connection.prepareStatement("Select * FROM blocks");
