@@ -148,7 +148,7 @@ public class TrackedBlocks {
             File file = new File(plugin.getDataFolder().getAbsolutePath(), "paramnestic.db");
             String url = ("jdbc:sqlite:" + file.getAbsoluteFile());
             Connection connection = DriverManager.getConnection(url);
-            PreparedStatement statement = connection.prepareStatement("UPDATE blocks SET world = ?, SET x = ?, SET y = ?, SET z = ?, WHERE id = ?");
+            PreparedStatement statement = connection.prepareStatement("UPDATE blocks SET world = ?, x = ?, y = ?, z = ?, WHERE id = ?");
             for (Location location : blockList.keySet()) {
                 statement.setString(1, location.getWorld().toString());
                 statement.setDouble(2, location.getBlockX());
