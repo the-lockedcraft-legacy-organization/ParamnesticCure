@@ -8,7 +8,6 @@ package com.mcsmp.database;
 import java.net.InetAddress;
 import static java.net.InetAddress.getByName;
 import java.net.UnknownHostException;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

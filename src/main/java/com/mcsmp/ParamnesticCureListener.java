@@ -5,7 +5,6 @@
  */
 package com.mcsmp;
 
-import static com.mcsmp.ParamnesticCure.getInstance;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -29,7 +28,7 @@ import org.bukkit.event.server.ServerCommandEvent;
 public class ParamnesticCureListener implements Listener {
 
     //Establishes plugin's instance
-    private ParamnesticCure plugin;
+    private ParamnesticCure plugin = ParamnesticCure.getInstance();
     //Establishes logger
     private Logger log = getLogger();
     //Makes an empty list for the logger's rollback aliases.

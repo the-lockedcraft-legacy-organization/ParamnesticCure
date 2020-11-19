@@ -9,12 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.logging.Logger;
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
-import static org.bukkit.Bukkit.getLogger;
 import org.bukkit.Location;
-import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * @author InteriorCamping
@@ -44,7 +40,7 @@ public class RollbackManager {
      * Performs a series of logical operations to determine if the blocks getting rolled back should be protected by creative mode.
      */
     public void executeTask() {
-        ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new BukkitRunnable() {
+        ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
             @Override
             public void run() {
                 try {
