@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
 import static java.util.logging.Logger.getLogger;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -103,7 +104,7 @@ public class TrackedBlocks {
                             } while (set.next());
                         }
                     } else {
-                        ParamnesticCure.getInstance().getLogger().log(Level.SEVERE, "connection is null: {0}", connection.toString());
+                        Bukkit.getLogger().log(Level.INFO, "connection null");
                     }
                 } catch (SQLException ex) {
                     plugin.getLogger().log(SEVERE, ex.getMessage(), ex.getCause());
