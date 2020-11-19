@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mcsmp</groupId>
     <artifactId>ParamnesticCure</artifactId>
-    <version>0.3.70</version>
+    <version>0.3.71</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
