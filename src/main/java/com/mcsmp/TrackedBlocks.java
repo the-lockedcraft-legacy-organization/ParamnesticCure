@@ -94,7 +94,7 @@ public class TrackedBlocks {
                     if (connection != null) {
                         PreparedStatement statement = connection.prepareStatement("Select * FROM blocks");
                         ResultSet set = statement.executeQuery();
-                        if (set != null || set.next() != false) {
+                        if (set != null) {
                             do {
                                 Location location = new Location(ParamnesticCure.getInstance().getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
                                 getBlockList().put(location, set.getInt("id"));
