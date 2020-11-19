@@ -123,7 +123,7 @@ public class ParamnesticCure extends JavaPlugin {
         try {
             Connection connection = DriverManager.getConnection(url);
             PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS blocks(id int NOT NULL, world varchar(20), x int, y int, z int)");
-            statement.executeQuery();
+            statement.execute();
         } catch (SQLException ex) {
             getLogger().log(Level.SEVERE, null, ex);
         }
