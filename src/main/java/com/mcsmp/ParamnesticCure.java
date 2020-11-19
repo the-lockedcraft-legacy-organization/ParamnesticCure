@@ -115,9 +115,10 @@ public class ParamnesticCure extends JavaPlugin {
         //Connection connection;
         File dbFile = new File(getDataFolder().getAbsolutePath(), "paramnestic.db");
         String url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
-        try (Connection connection = DriverManager.getConnection(url)) {
+        try {
+            Connection connection = DriverManager.getConnection(url);
             PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS blocks(id int NOT NULL, world varchar(20), x int, y int, z int)");
-            statement.execute();
+            statement.executeQuery();
         } catch (SQLException ex) {
             getLogger().log(Level.SEVERE, null, ex);
         }
