@@ -44,7 +44,7 @@ public class CacheData {
             if (!plugin.getConfig().getString("Database_Names." + databases + ".driver").isBlank()) {
                 driver = plugin.getConfig().getString("Database_Names." + databases + ".driver");
             }
-            DataBases bases = new DataBases(databases, plugin.getConfig().getString("Database_Names." + databases + ".database"), address, port, user, password, driver);
+            DataBases bases = new DataBases(databases.toLowerCase(), plugin.getConfig().getString("Database_Names." + databases + ".database").toLowerCase(), address, port, user, password, driver);
             databaseMap.put(databases.toLowerCase(), bases);
         }
     }

@@ -76,7 +76,7 @@ Database_Names:
         password: ""
     # The database for Paramnestic to store its own data.
     # (ParamnesticCure)
-    paramestic:
+    paramnestic:
         database: "paramnestic"
         driver: ""
         address: ""
