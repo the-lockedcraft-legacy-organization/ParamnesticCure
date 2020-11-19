@@ -83,20 +83,18 @@ public class TrackedBlocks {
         ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                    File dbFile = new File(plugin.getDataFolder().getAbsolutePath(), "paramnestic.db");
-                    String url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
-                try (Connection connection = DriverManager.getConnection(url);){
+                    //File dbFile = new File(plugin.getDataFolder().getAbsolutePath(), "paramnestic.db");
+                    //String url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
+                try (Connection connection = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnestic").getConnection();){
                     //Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getConnection();
                     PreparedStatement statement = connection.prepareStatement("Select * FROM blocks");
                     ResultSet set = statement.executeQuery();
-                    if (set != null || set.next() == false) {
+                    if (set != null || set.next() != false) {
                         do {
                             Location location = new Location(ParamnesticCure.getInstance().getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
                             getBlockList().put(location, set.getInt("id"));
                         } while (set.next());
                     }
-                    set.close();
-                    connection.close();
                 } catch (SQLException ex) {
                     plugin.getLogger().log(SEVERE, ex.getMessage(), ex.getCause());
                     //Logger.getLogger(TrackedBlocks.class.getName()).log(Level.SEVERE, null, ex);

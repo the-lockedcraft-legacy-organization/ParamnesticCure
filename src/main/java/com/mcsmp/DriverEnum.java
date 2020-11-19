@@ -14,12 +14,7 @@ package com.mcsmp;
  */
 public enum DriverEnum {
 
-    MYSQL("mysql"),
-    SQLITE("sqlite"),
-    POSTREGSQL("postregsql");
-
-    String driver;
-    DriverEnum(String driver) {
-        this.driver = driver.toUpperCase();
-    }
+    MYSQL,
+    SQLITE,
+    POSTREGSQL;
 }

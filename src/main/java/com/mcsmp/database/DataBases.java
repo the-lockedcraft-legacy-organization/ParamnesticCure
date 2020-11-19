@@ -99,6 +99,7 @@ public class DataBases {
     /**
      * Check database connection.
      * @return Current database connection.
+     * @throws java.sql.SQLException
      */
     public Connection getConnection() throws SQLException {
         return this.databaseConnection.getConnection();

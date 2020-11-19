@@ -7,13 +7,13 @@ package com.mcsmp.database;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
+import com.mcsmp.DriverEnum;
 import com.mcsmp.ParamnesticCure;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
-import static java.util.logging.Level.SEVERE;
 import java.util.logging.Logger;
 
 /**
@@ -33,6 +33,7 @@ public class DatabaseCheck {
     private String password;
     private String driver;
     private String url;
+    private boolean mysql = false;
 
     /**
      * Caches and checks the status of a certain database..
@@ -54,34 +55,21 @@ public class DatabaseCheck {
             this.user = user;
         }
         this.password = password;
-        this.driver = driver;
-        final int POOLSIZE = 10;
-        final int MAXCONNECT = 20;
-        config = new BoneCPConfig();
-        config.setPartitionCount(POOLSIZE);
-        config.setMaxConnectionsPerPartition(MAXCONNECT);
-        config.setUser(this.user);
-        config.setPassword(this.password);
-        if(this.driver.equalsIgnoreCase("sqlite")) {
-            File dbFile = new File(plugin.getDataFolder().getAbsolutePath(), this.database + ".db");
-            this.url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
+        this.driver = setDriver(driver).toString();
+
+        if(getDriver() == DriverEnum.SQLITE) {
             try {
-                Class.forName("org.sqlite.JDBC");
-                DriverManager.registerDriver(new org.sqlite.JDBC());
-                connection = DriverManager.getConnection(this.url);
-            } catch (SQLException | ClassNotFoundException ex) {
+                setupSQLITE();
+            } catch (SQLException ex) {
                 Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
             }
-            //config.setJdbcUrl("jdbc:"+ driver +":" + plugin.getDataFolder().getPath() + "/" + this.database + ".db");
         } else {
+            mysql = true;
             try {
-                Class.forName("com.mysql.jdbc.Driver");
-                DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-                this.boneCP = new BoneCP(config);
-            } catch (SQLException | ClassNotFoundException ex) {
+                setupMySQL();
+            } catch (SQLException ex) {
                 Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
             }
-            config.setJdbcUrl("jdbc:"+ this.driver +"://" + this.address + ":" + this.port + "/" + this.database);
         }
     }
 
@@ -91,11 +79,60 @@ public class DatabaseCheck {
      * @throws java.sql.SQLException
      */
     public Connection getConnection() throws SQLException {
-        ParamnesticCure.getInstance().getLogger().log(Level.CONFIG, "{0} {1} {2}", new Object[]{this.url, this.user, this.database});
-        if (this.connection == null) {
-        return connection = DriverManager.getConnection(this.url);
-        //connection = this.boneCP.getConnection();
+        plugin.getLogger().log(Level.CONFIG, "{0} {1} {2}", new Object[]{this.url, this.user, this.database});
+
+        if (!mysql) {
+            return connection = DriverManager.getConnection(this.url);
+        }
+
+        if (mysql) {
+            return connection = this.boneCP.getConnection();
         }
         return this.connection;
+    }
+
+    public DriverEnum setDriver(String driver) {
+        if(driver.equalsIgnoreCase("mysql") || driver.equalsIgnoreCase("mariadb")) {
+            return DriverEnum.MYSQL;
+        } else {
+            return DriverEnum.SQLITE;
+        }
+    }
+
+    public DriverEnum getDriver() {
+        return DriverEnum.valueOf(this.driver.toUpperCase());
+    }
+
+    public DriverEnum getDriver(String driver) {
+        return DriverEnum.valueOf(driver.toUpperCase());
+    }
+
+    private void setupMySQL() throws SQLException {
+        final int POOLSIZE = 10;
+        final int MAXCONNECT = 20;
+        this.config = new BoneCPConfig();
+        this.config.setPartitionCount(POOLSIZE);
+        this.config.setMaxConnectionsPerPartition(MAXCONNECT);
+        this.config.setUser(this.user);
+        this.config.setPassword(this.password);
+        config.setJdbcUrl("jdbc:"+ this.driver +"://" + this.address + ":" + this.port + "/" + this.database);
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+        this.boneCP = new BoneCP(config);
+    }
+
+    private void setupSQLITE() throws SQLException {
+        File dbFile = new File(plugin.getDataFolder().getAbsolutePath(), this.database + ".db");
+        this.url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        DriverManager.registerDriver(new org.sqlite.JDBC());
     }
 }

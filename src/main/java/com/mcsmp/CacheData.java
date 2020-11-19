@@ -7,21 +7,21 @@ package com.mcsmp;
 
 import com.mcsmp.database.DataBases;
 import static java.lang.Byte.valueOf;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Frostalf
  */
 public class CacheData {
 
-    private HashMap<String, DataBases> databaseMap = new HashMap<>();
+    private ConcurrentHashMap<String, DataBases> databaseMap = new ConcurrentHashMap<>();
     private final ParamnesticCure plugin = ParamnesticCure.getInstance();
-    final byte givenVersion = valueOf(ParamnesticCure.getInstance().getConfig().getString("configVersion"));
-    private String address = ParamnesticCure.getInstance().getConfig().getString("defaultconnection.address");
-    private int port = ParamnesticCure.getInstance().getConfig().getInt("defaultconnection.port");
-    private String user = ParamnesticCure.getInstance().getConfig().getString("user");
-    private String password = ParamnesticCure.getInstance().getConfig().getString("defaultconnection.password");
-    private String driver = ParamnesticCure.getInstance().getConfig().getString("defaultconnection.driver");
+    private final byte givenVersion = valueOf(ParamnesticCure.getInstance().getConfig().getString("configVersion"));
+    private String address = plugin.getConfig().getString("defaultconnection.address");
+    private int port = plugin.getConfig().getInt("defaultconnection.port");
+    private String user = plugin.getConfig().getString("user");
+    private String password = plugin.getConfig().getString("defaultconnection.password");
+    private String driver = plugin.getConfig().getString("defaultconnection.driver");
 
     /**
      * Method to cache database connections.
@@ -52,7 +52,7 @@ public class CacheData {
      * Method to return hashmap of databases.
      * @return Hashmap listing databases.
      */
-    public HashMap<String, DataBases> getDatabaseMap() {
+    public ConcurrentHashMap<String, DataBases> getDatabaseMap() {
         return this.databaseMap;
     }
 
