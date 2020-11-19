@@ -143,14 +143,15 @@ public class TrackedBlocks {
      */
     public void save() {
         try {
-            PreparedStatement statement = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnestic").getDatabase().getConnection().prepareStatement("UPDATE blocks SET world = ?, SET x = ?, SET y = ?, SET z = ?, WHERE id = ?");
+            Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getDatabase().getConnection();
+            PreparedStatement statement = connection.prepareStatement("UPDATE blocks SET world = ?, SET x = ?, SET y = ?, SET z = ?, WHERE id = ?");
             for (Location location : blockList.keySet()) {
                 statement.setString(1, location.getWorld().toString());
                 statement.setDouble(2, location.getBlockX());
                 statement.setDouble(3, location.getBlockY());
                 statement.setDouble(4, location.getBlockZ());
                 statement.setInt(5, blockList.get(location));
-                statement.executeQuery();
+                statement.execute();
             }
         } catch (SQLException ex) {
             getLogger(TrackedBlocks.class.getName()).log(SEVERE, null, ex);
