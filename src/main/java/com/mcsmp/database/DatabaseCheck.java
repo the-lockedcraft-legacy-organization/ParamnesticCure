@@ -45,6 +45,7 @@ public class DatabaseCheck {
      * @param user User to use when communicating with the database.
      * @param password Password to be used when communicating with the database as provided user.
      * @param driver Driver to use for this database communication.
+     * @param location location of db file.
      */
     public DatabaseCheck(String name, String database, String address, int port, String user, String password, String driver, String location) {
         this.location = location;

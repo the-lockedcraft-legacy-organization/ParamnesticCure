@@ -38,6 +38,7 @@ public class DataBases {
      * @param user User to use when communicating with the database.
      * @param password Password to be used when communicating with the database as provided user.
      * @param driver Driver to use for this database communication.
+     * @param location db file location.
      */
     public DataBases(String name, String databaseName, String address, int port, String user, String password, String driver, String location) {
         this.name = name;
@@ -112,7 +113,6 @@ public class DataBases {
     /**
      * Check database connection.
      * @return Current database connection.
-     * @throws java.sql.SQLException
      */
     //public Connection getConnection() throws SQLException {
     //    return this.databaseConnection.getConnection();
