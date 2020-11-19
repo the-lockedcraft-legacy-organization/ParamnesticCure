@@ -5,7 +5,9 @@
  */
 package com.mcsmp;
 
+import java.io.File;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -143,7 +145,9 @@ public class TrackedBlocks {
      */
     public void save() {
         try {
-            Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getDatabase().getConnection();
+            File file = new File(plugin.getDataFolder().getAbsolutePath(), "paramnestic.db");
+            String url = ("jdbc:sqlite:" + file.getAbsoluteFile());
+            Connection connection = DriverManager.getConnection(url);
             PreparedStatement statement = connection.prepareStatement("UPDATE blocks SET world = ?, SET x = ?, SET y = ?, SET z = ?, WHERE id = ?");
             for (Location location : blockList.keySet()) {
                 statement.setString(1, location.getWorld().toString());
@@ -151,7 +155,8 @@ public class TrackedBlocks {
                 statement.setDouble(3, location.getBlockY());
                 statement.setDouble(4, location.getBlockZ());
                 statement.setInt(5, blockList.get(location));
-                statement.execute();
+                statement.executeUpdate();
+                connection.commit();
             }
         } catch (SQLException ex) {
             getLogger(TrackedBlocks.class.getName()).log(SEVERE, null, ex);
