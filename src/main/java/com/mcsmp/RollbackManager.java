@@ -44,7 +44,7 @@ public class RollbackManager {
             @Override
             public void run() {
                 try {
-                    Connection connection = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("creative").getDatabase().getConnection();
+                    Connection connection = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("coreprotect").getDatabase().getConnection();
                     //co_world
                     PreparedStatement statement = connection.prepareStatement("SELECT * from co_block,co_world INNER JOIN co_world ON co_block.wid=co_world.id");
                     ResultSet set = statement.executeQuery();

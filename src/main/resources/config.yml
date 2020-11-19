@@ -68,7 +68,7 @@ Database_Names:
         password: ""
     # The database for Paramnestic to send requests related to general block logging
     # (Your block logger)
-    logger:
+    coreprotect:
         database: "database"
         location: ""
         driver: ""

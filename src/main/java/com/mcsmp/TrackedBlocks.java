@@ -119,7 +119,7 @@ public class TrackedBlocks {
             @Override
             public void run() {
                 try {
-                    Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnesticcure").getDatabase().getConnection();
+                    Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getDatabase().getConnection();
                     PreparedStatement statement = connection.prepareStatement("INSERT INTO blocks (world, x, y , z) VALUES(?,?,?,?) AND SELECT id where ", Statement.RETURN_GENERATED_KEYS);
                     statement.setString(1, location.getWorld().toString());
                     statement.setDouble(2, location.getBlockX());
@@ -143,7 +143,7 @@ public class TrackedBlocks {
      */
     public void save() {
         try {
-            PreparedStatement statement = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnesticcure").getDatabase().getConnection().prepareStatement("UPDATE blocks SET world = ?, SET x = ?, SET y = ?, SET z = ?, WHERE id = ?");
+            PreparedStatement statement = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("paramnestic").getDatabase().getConnection().prepareStatement("UPDATE blocks SET world = ?, SET x = ?, SET y = ?, SET z = ?, WHERE id = ?");
             for (Location location : blockList.keySet()) {
                 statement.setString(1, location.getWorld().toString());
                 statement.setDouble(2, location.getBlockX());
