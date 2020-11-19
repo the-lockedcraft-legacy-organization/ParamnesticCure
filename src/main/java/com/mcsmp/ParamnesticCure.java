@@ -76,6 +76,11 @@ public class ParamnesticCure extends JavaPlugin {
         createDB();
     }
 
+    @Override
+    public void onDisable() {
+        getTrackedBlocks().save();
+    }
+
     /*
      * Gets this plugin's instance.
      * @return Returns plugin's instance.
