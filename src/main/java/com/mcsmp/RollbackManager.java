@@ -46,9 +46,13 @@ public class RollbackManager {
                 try {
                     Connection connection = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("coreprotect").getDatabase().getConnection();
                     //co_world
-                    PreparedStatement statement = connection.prepareStatement("SELECT * from co_block,co_world INNER JOIN co_world ON co_block.wid=co_world.id");
+                    PreparedStatement statement = connection.prepareStatement(
+                    		"SELECT * from co_block,co_world"
+                    		+ " INNER JOIN co_world"
+                    		+ " ON co_block.wid=co_world.id");
+                    
                     ResultSet set = statement.executeQuery();
-                    do {
+                    while(set.next()){
                         int action = set.getInt("action");
                         Location location = new Location(ParamnesticCure.getInstance().getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
                         if(set.getInt("rollback") > 0) {
@@ -82,7 +86,7 @@ public class RollbackManager {
                                 default: break;
                             }
                         }
-                    } while (set.next());
+                    } 
                 } catch (SQLException ex) {
 
                 }

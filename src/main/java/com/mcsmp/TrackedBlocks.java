@@ -97,10 +97,10 @@ public class TrackedBlocks {
                     PreparedStatement statement = connection.prepareStatement("Select * FROM blocks");
                     ResultSet set = statement.executeQuery();
                     if (set != null) {
-                        do {
+                    	while (set.next()) {
                             Location location = new Location(plugin.getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
                             getBlockList().put(location, set.getInt("id"));
-                        } while (set.next());
+                        }
                     }
                 } catch (SQLException ex) {
                     plugin.getLogger().log(SEVERE, ex.getMessage(), ex.getCause());
@@ -122,7 +122,13 @@ public class TrackedBlocks {
             public void run() {
                 try {
                     Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getDatabase().getConnection();
-                    PreparedStatement statement = connection.prepareStatement("INSERT INTO blocks (world, x, y , z) VALUES(?,?,?,?) AND SELECT id where ", Statement.RETURN_GENERATED_KEYS);
+                    
+                    PreparedStatement statement = connection.prepareStatement(
+                    		"INSERT INTO blocks (world, x, y , z)"
+                    		+ " VALUES(?,?,?,?)"
+                    		+ " AND SELECT id where "
+                    		, Statement.RETURN_GENERATED_KEYS);
+                    
                     statement.setString(1, location.getWorld().toString());
                     statement.setDouble(2, location.getBlockX());
                     statement.setDouble(3, location.getBlockY());
