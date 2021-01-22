@@ -6,11 +6,13 @@
 package com.mcsmp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import static org.bukkit.Bukkit.getLogger;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -32,7 +34,7 @@ public class ParamnesticCureListener implements Listener {
     //Establishes logger
     private Logger log = getLogger();
     //Makes an empty list for the logger's rollback aliases.
-    private List<String> rbAlias;
+    private ConfigurationSection configSektion;
 
     /*
      * Constructor class
@@ -40,9 +42,8 @@ public class ParamnesticCureListener implements Listener {
      */
     public ParamnesticCureListener(ParamnesticCure plugin) {
         this.plugin = plugin;
-        rbAlias = new ArrayList<>();
-        //Populates rbAlias with all the aliases specified in the config.
-        rbAlias.addAll(plugin.getConfig().getConfigurationSection("").getStringList("blockLoggerRollbackCommands"));
+        //
+        configSektion = plugin.getConfig().getConfigurationSection("");
     }
 
     /**
@@ -56,6 +57,7 @@ public class ParamnesticCureListener implements Listener {
         //blockState is the BlockState of that block
         BlockState blockState = block.getState();
         //adds any block w/ meta GMC to PC's block list.
+        plugin.getLogger().info("[Manual Debug] You broke a block hasMetadata('GMC')= " + blockState.hasMetadata("GMC"));
         if(blockState.hasMetadata("GMC")) {
             plugin.getTrackedBlocks().addToBlockList(block.getLocation());
         }
@@ -70,6 +72,7 @@ public class ParamnesticCureListener implements Listener {
         //block is block
         Block block = event.getBlock();
         //if block is tracked, untrack it.
+        plugin.getLogger().info("[Manual Debug] You placed a block: hasMetadata('GMC')= " + block.getState().hasMetadata("GMC"));
         if(plugin.getTrackedBlocks().isTracked(block.getLocation())) {
             plugin.getTrackedBlocks().removeFromBlockList(block.getLocation());
         }
@@ -80,16 +83,30 @@ public class ParamnesticCureListener implements Listener {
      */
     @EventHandler
     public void commandRollBack(PlayerCommandPreprocessEvent event) {
-        //If the command starts with a slash, and would result in a rollback, consider it a rollback operation.
-        String slash = "/";
-        for (String command : rbAlias) {
-            if(event.getMessage().equalsIgnoreCase(slash.concat(command)));
-                //Start running paramnestic's rollback logic.
-                RollbackManager rollback = new RollbackManager();
-                rollback.executeTask();
-            }
-        }
-
+    	
+    	String command = event.getMessage().toLowerCase();
+    	String[] commandListed = command.split(" "); //All hail the father of List
+    	
+    	List<String> commandIdentifiers = configSektion.getStringList("blockLoggerCommands.alias");
+    	
+    	//to lazy to find a command for this
+    	int i = 0;
+    	while(i++ < commandIdentifiers.size()){
+    		//the first string from commandListed will have / in front, all commandIdentifiers should as well:
+    		commandIdentifiers.set(i, "/" + commandIdentifiers.get(i));
+    	}
+    	
+    	
+    	if(!commandIdentifiers.contains(commandListed[0])) return;
+    	
+    	if(configSektion.getStringList("blockLoggerCommands.rollback").contains(commandListed[1])) { //innitiate rollbackmanager
+    		RollbackManager rollback = new RollbackManager(command);
+    		rollback.executeTask();
+    	}
+    	if(configSektion.getStringList("blockLoggerCommands.restore").contains(commandListed[1])) {
+    		 //innitiate restoremanager (not created yet)
+    	}
+    }
     /**
      * If someone tries a rollback command from console, tell them not to.
      * Console-based rollbacks add another layer of complexity that we would prefer to avoid at present.
@@ -98,11 +115,12 @@ public class ParamnesticCureListener implements Listener {
     @EventHandler
     public void serverCommandRollBack(ServerCommandEvent event) {
         //if someone types that alias cancel it.
-        for (String command : rbAlias) {
-            if(event.getCommand().equalsIgnoreCase(command)){
-                log.warning("Console rollbacks are not yet supported by Paramnestic.");
-                event.setCancelled(true);
-            }
-        }
+    	String command = event.getCommand().toLowerCase();
+    	String[] commandListed = command.split(" ");
+    	
+    	if(!configSektion.getStringList("blockLoggerCommands.alias").contains(commandListed[0])) {
+            log.warning("Console rollbacks are not yet supported by Paramnestic.");
+            event.setCancelled(true);
+    	}
     }
 }

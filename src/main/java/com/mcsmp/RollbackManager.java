@@ -25,7 +25,8 @@ public class RollbackManager {
     /*
      * Constructor for Rollbacks.
      */
-    public RollbackManager() {
+    public RollbackManager(String command) {
+    	
     }
 
     // ┌─────────────────────────────────────────── /!\=- 𝗪𝗔𝗥𝗡𝗜𝗡𝗚 /!\ ─────────────────────────────────────────
@@ -55,6 +56,7 @@ public class RollbackManager {
                     while(set.next()){
                         int action = set.getInt("action");
                         Location location = new Location(ParamnesticCure.getInstance().getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
+                        
                         if(set.getInt("rollback") > 0) {
                             switch(action) {
                                 case 0:
@@ -69,7 +71,8 @@ public class RollbackManager {
                                     break;
                                 default: break;
                             }
-                        } else {
+                        } 
+                        else {
                             switch(action) {
                                 case 0:
                                         ParamnesticCure.getInstance().getTrackedBlocks().addToBlockList(location);
@@ -86,7 +89,10 @@ public class RollbackManager {
                                 default: break;
                             }
                         }
+                        
                     } 
+                    
+                    
                 } catch (SQLException ex) {
 
                 }

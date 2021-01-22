@@ -15,31 +15,20 @@ creativeManager: 'restrictedCreative'
 #Note! Paramnestic does NOT yet support creative inventory rollbacks!
 #Please ensure that any such features are disabled in your blocklogger.
 blockLogger: 'coreProtect'
-blockLoggerRollbackCommands:
-    - co rollback
-    - core rollback
-    - coreprotect rollback
-    - co rb
-    - core rb
-    - coreprotect rb
-    - coreprotect:co rollback
-    - coreprotect:core rollback
-    - coreprotect:coreprotect rollback
-    - coreprotect:co rb
-    - coreprotect:core rb
-    - coreprotect:coreprotect rb
-    - co restore
-    - core restore
-    - coreprotect restore
-    - co rs
-    - core rs
-    - coreprotect rs
-    - coreprotect:co restore
-    - coreprotect:core restore
-    - coreprotect:coreprotect restore
-    - coreprotect:co rs
-    - coreprotect:core rs
-    - coreprotect:coreprotect rs
+blockLoggerCommands:
+    identifiers:
+        - co
+        - core
+        - coreprotect
+        - coreprotect:co
+        - coreprotect:core
+        - coreprotect:coreprotect
+    rollback:
+    - rollback
+    - rb
+    restore:
+    - restore
+    - rs
 # Default information used when a value in Database_Names is blank ("")
 # Please ensure that all three of the databases you intend to use have already been configured by your logger and creative manager.
 defaultconnection:
