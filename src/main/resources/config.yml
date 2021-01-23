@@ -16,19 +16,19 @@ creativeManager: 'restrictedCreative'
 #Please ensure that any such features are disabled in your blocklogger.
 blockLogger: 'coreProtect'
 blockLoggerCommands:
-    identifiers:
-        - co
-        - core
-        - coreprotect
-        - coreprotect:co
-        - coreprotect:core
-        - coreprotect:coreprotect
-    rollback:
-    - rollback
-    - rb
-    restore:
-    - restore
-    - rs
+  alias:
+      - co
+      - core
+      - coreprotect
+      - coreprotect:co
+      - coreprotect:core
+      - coreprotect:coreprotect
+  rollback:
+      - rollback
+      - rb
+  restore:
+      - restore
+      - rs
 # Default information used when a value in Database_Names is blank ("")
 # Please ensure that all three of the databases you intend to use have already been configured by your logger and creative manager.
 defaultconnection:

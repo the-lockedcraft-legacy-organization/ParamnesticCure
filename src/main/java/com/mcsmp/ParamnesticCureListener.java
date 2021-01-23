@@ -96,15 +96,18 @@ public class ParamnesticCureListener implements Listener {
     		commandIdentifiers.set(i, "/" + commandIdentifiers.get(i));
     	}
     	
-    	
+    	//if not containing alias
     	if(!commandIdentifiers.contains(commandListed[0])) return;
     	
-    	if(configSektion.getStringList("blockLoggerCommands.rollback").contains(commandListed[1])) { //innitiate rollbackmanager
+    	if(configSektion.getStringList("blockLoggerCommands.rollback").contains(commandListed[1])) { 
+    		plugin.getLogger().info("[Manual Debug] Triggered as a rollback");
+    		//innitiate rollbackmanager
     		RollbackManager rollback = new RollbackManager(command);
     		rollback.executeTask();
     	}
     	if(configSektion.getStringList("blockLoggerCommands.restore").contains(commandListed[1])) {
     		 //innitiate restoremanager (not created yet)
+    		plugin.getLogger().info("[Manual Debug] Triggered as a restore");
     	}
     }
     /**
@@ -118,7 +121,7 @@ public class ParamnesticCureListener implements Listener {
     	String command = event.getCommand().toLowerCase();
     	String[] commandListed = command.split(" ");
     	
-    	if(!configSektion.getStringList("blockLoggerCommands.alias").contains(commandListed[0])) {
+    	if(configSektion.getStringList("blockLoggerCommands.alias").contains(commandListed[0])) {
             log.warning("Console rollbacks are not yet supported by Paramnestic.");
             event.setCancelled(true);
     	}
