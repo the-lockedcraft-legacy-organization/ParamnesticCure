@@ -53,21 +53,23 @@ public class RollbackManager {
     			//if this only was a identifier, then the next argument should be it's value, and that value should not be checked as if it were an identifier
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			//interpret action argument into a list
-    			this.action_list = ;
+    			not finished yet
+    			String[] argumentSplited = argument.split(",");
+    			for(String part : argumentSplited) {  this.action_list.add( Integer.parseInt(argument) );  }
     		}
     		else if(argument.contains("block:")) {
     			argument = argument.replaceAll("block:","");
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
-    			//interpret action argument into a list, convert into material type
-    			//Bukkit.createBlockData(stringOfMaterial);
-    			
-    			this.restrict_blocks = ;//a list of all the materials
+    			//interpret action argument into a list, then convert into material type
+    			String[] argumentSplited = argument.split(",");
+    			for(String part : argumentSplited) {  this.restrict_blocks.add( Bukkit.createBlockData(part) );  }
     		}
     		else if(argument.contains("exclude:")) {
     			argument = argument.replaceAll("exclude:","");
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			//same as above
-    			this.exclude_blocks = ;
+    			String[] argumentSplited = argument.split(",");
+    			for(String part : argumentSplited) {  this.exclude_blocks.add( Bukkit.createBlockData(part) );  }
     		}
     		else if(argument.contains("radius:")) {
     			argument = argument.replaceAll("radius:","");
@@ -85,21 +87,21 @@ public class RollbackManager {
     			String[] splitedArgument = argument.split(",");
     			//convert to seconds (don't know any already existing functions that does this)
     			
-    			for(String arg : splitedArgument) {
+    			for(String part : splitedArgument) {
 	    			if(argument.contains("w")){ 
-	    				time += 604800 * Integer.parseInt(argument.substring( 0 , argument.indexOf('w')-1 ));
+	    				time += 604800 * Integer.parseInt(part.substring( 0 , part.indexOf('w')-1 ));
 	    			}
 	    			if(argument.contains("d")){ 
-	    				time += 86400 * Integer.parseInt(argument.substring( 0 , argument.indexOf('d')-1 ));
+	    				time += 86400 * Integer.parseInt(part.substring( 0 , part.indexOf('d')-1 ));
 	    			}
 	    			if(argument.contains("h")){ 
-	    				time += 3600 * Integer.parseInt(argument.substring( 0 , argument.indexOf('h')-1 ));
+	    				time += 3600 * Integer.parseInt(part.substring( 0 , part.indexOf('h')-1 ));
 	    			}
 	    			if(argument.contains("m")){ 
-	    				time += 60 * Integer.parseInt(argument.substring( 0 , argument.indexOf('m')-1 ));
+	    				time += 60 * Integer.parseInt(part.substring( 0 , part.indexOf('m')-1 ));
 	    			}
 	    			if(argument.contains("s")){ 
-	    				time += Integer.parseInt(argument.substring( 0 , argument.indexOf('s')-1 ));
+	    				time += Integer.parseInt(part.substring( 0 , part.indexOf('s')-1 ));
 	    			}
     			}
     			this.time = time;
@@ -108,10 +110,11 @@ public class RollbackManager {
     			argument = argument.replaceAll("user:","");
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			
-    			this.restrict_users =  ;
+    			
+    			String[] argumentSplited = argument.split(",");
+    			for(String part : argumentSplited) {  this.restrict_users.add(part);  }
     		}
-    		else {
-    			//i have not messed around with lists that much, this might cause an error
+    		else if(argument != ""){
     			this.restrict_users.add(argument);
     		}
     		
