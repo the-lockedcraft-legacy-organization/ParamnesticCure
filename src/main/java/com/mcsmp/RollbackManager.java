@@ -57,20 +57,14 @@ public class RollbackManager {
     		//check identifiers
     		if(argument.contains("action:")) {
     			argument = argument.replaceAll("action:","");
-    			//if this only was a identifier, then the next argument should be it's value
-    			if(argument.length() == 0) {
-    				i++;
-    				argument = arguments[i];
-    			}
+    			//if this only was a identifier, then the next argument should be it's value, and that value should not be checked as if it were an identifier
+    			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			//interpret action argument into a list
     			this.action_list =;
     		}
     		else if(argument.contains("block:")) {
     			argument = argument.replaceAll("block:","");
-    			if(argument.length() == 0) {
-    				i++;
-    				argument = arguments[i];
-    			}
+    			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			//interpret action argument into a list, convert into material type
     			//Bukkit.createBlockData(stringOfMaterial);
     			
@@ -78,42 +72,30 @@ public class RollbackManager {
     		}
     		else if(argument.contains("exclude:")) {
     			argument = argument.replaceAll("exclude:","");
-    			if(argument.length() == 0) {
-    				i++;
-    				argument = arguments[i];
-    			}
+    			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			//same as above
     			this.exclude_blocks =;
     		}
     		else if(argument.contains("radius:")) {
     			argument = argument.replaceAll("radius:","");
-    			if(argument.length() == 0) {
-    				i++;
-    				argument = arguments[i];
-    			}
+    			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			this.radius = Integer.parseInt(argument); 
     			this.radius_location = ;
     		}
     		else if(argument.contains("time:")){
     			argument = argument.replaceAll("time:","");
-    			if(argument.length() == 0) {
-    				i++;
-    				argument = arguments[i];
-    			}
+    			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			
     			//convert this to int seconds
     		}
     		else if(argument.contains("user:")) {
     			argument = argument.replaceAll("user:","");
-    			if(argument.length() == 0) {
-    				i++;
-    				argument = arguments[i];
-    			}
+    			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			//make a list of all the users
     		}
     		else {
-    		//i have not messed around with lists that much, this might cause an error
-    		this.restrict_users.add(argument);
+    			//i have not messed around with lists that much, this might cause an error
+    			this.restrict_users.add(argument);
     		}
     	}
     }
