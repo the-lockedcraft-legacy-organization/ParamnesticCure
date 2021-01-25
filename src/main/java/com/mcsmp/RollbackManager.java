@@ -53,7 +53,7 @@ public class RollbackManager {
     			//if this only was a identifier, then the next argument should be it's value, and that value should not be checked as if it were an identifier
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			//interpret action argument into a list
-    			this.action_list =;
+    			this.action_list = ;
     		}
     		else if(argument.contains("block:")) {
     			argument = argument.replaceAll("block:","");
@@ -67,7 +67,7 @@ public class RollbackManager {
     			argument = argument.replaceAll("exclude:","");
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			//same as above
-    			this.exclude_blocks =;
+    			this.exclude_blocks = ;
     		}
     		else if(argument.contains("radius:")) {
     			argument = argument.replaceAll("radius:","");
@@ -79,7 +79,30 @@ public class RollbackManager {
     			argument = argument.replaceAll("time:","");
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			
-    			//convert this to int seconds
+    			int time = 0;//s
+    			int prevPos = 0;
+    			//convert to second
+    			if(argument.contains("w")){ 
+    				time = 604800 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('w')-1 ));
+    				prevPos = argument.indexOf('w')+1;
+    			}
+    			if(argument.contains("d")){ 
+    				time = 86400 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('d')-1 ));
+    				prevPos = argument.indexOf('w')+1;
+    			}
+    			if(argument.contains("h")){ 
+    				time = 3600 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('h')-1 ));
+    				prevPos = argument.indexOf('w')+1;
+    			}
+    			if(argument.contains("m")){ 
+    				time = 60 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('m')-1 ));
+    				prevPos = argument.indexOf('w')+1;
+    			}
+    			if(argument.contains("s")){ 
+    				time = Integer.parseInt(argument.substring( prevPos , argument.indexOf('s')-1 ));
+    				prevPos = argument.indexOf('w')+1;
+    			}
+    			this.time = time;
     		}
     		else if(argument.contains("user:")) {
     			argument = argument.replaceAll("user:","");
@@ -90,6 +113,8 @@ public class RollbackManager {
     			//i have not messed around with lists that much, this might cause an error
     			this.restrict_users.add(argument);
     		}
+    		
+    		
     	}
     }
 
