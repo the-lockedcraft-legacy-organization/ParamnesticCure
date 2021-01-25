@@ -81,7 +81,7 @@ public class RollbackManager {
     			
     			int time = 0;//s
     			int prevPos = 0;
-    			//convert to second
+    			//convert to second (don't know any already existing functions that does this)
     			if(argument.contains("w")){ 
     				time += 604800 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('w')-1 ));
     				prevPos = argument.indexOf('w')+1;
