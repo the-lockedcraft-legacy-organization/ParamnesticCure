@@ -41,15 +41,8 @@ public class RollbackManager {
      * Constructor for Rollbacks
      * String[] arguments: should be the arguments of the rollback command
      */
-    public RollbackManager(String[] arguments) {
-    	this.time = 0;
-    	this.restrict_users = null;
-    	this.exclude_users = null;
-    	this.restrict_blocks = null;
-    	this.exclude_blocks = null;
-    	this.action_list = null;
-    	this.radius = 0;
-    	this.radius_location = null;
+    public RollbackManager(String[] arguments, Location radius_location) {
+    	
     	String argument;
     	
     	for(int i = 0; i < arguments.length ; i++) {
@@ -80,7 +73,7 @@ public class RollbackManager {
     			argument = argument.replaceAll("radius:","");
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			this.radius = Integer.parseInt(argument); 
-    			this.radius_location = ;
+    			this.radius_location = radius_location;
     		}
     		else if(argument.contains("time:")){
     			argument = argument.replaceAll("time:","");
