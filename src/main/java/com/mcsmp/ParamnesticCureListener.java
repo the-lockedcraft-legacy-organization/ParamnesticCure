@@ -102,7 +102,7 @@ public class ParamnesticCureListener implements Listener {
     	if(configSektion.getStringList("blockLoggerCommands.rollback").contains(commandListed[1])) { 
     		plugin.getLogger().info("[Manual Debug] Triggered as a rollback");
     		//innitiate rollbackmanager
-    		RollbackManager rollback = new RollbackManager(command);
+    		RollbackManager rollback = new RollbackManager(   Arrays.copyOfRange(commandListed, 2, commandListed.length)   );
     		rollback.executeTask();
     	}
     	if(configSektion.getStringList("blockLoggerCommands.restore").contains(commandListed[1])) {

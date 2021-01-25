@@ -9,7 +9,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 /**
@@ -22,11 +27,68 @@ import org.bukkit.Location;
  */
 public class RollbackManager {
 
-    /*
-     * Constructor for Rollbacks.
+    
+	private int time;
+	private List<String> restrict_users;
+	private List<String> exclude_users;
+	private List<Object> restrict_blocks;
+	private List<Object> exclude_blocks;
+	private List<Integer> action_list;
+	private int radius;
+	private Location radius_location;
+	
+	/*
+     * Constructor for Rollbacks
+     * String[] arguments: should be the arguments of the rollback command
      */
-    public RollbackManager(String command) {
-    	
+    public RollbackManager(String[] arguments) {
+    	this.time = 0;
+    	this.restrict_users = null;
+    	this.exclude_users = null;
+    	this.restrict_blocks = null;
+    	this.exclude_blocks = null;
+    	this.action_list = null;
+    	this.radius = 0;
+    	this.radius_location = null;
+    	for(String argument : arguments) {//
+    		if(argument.contains("action:")) {
+    			//interpret action argument into a list
+    			this.action_list =;
+    			continue;
+    		}
+    		if(argument.contains("block:")) {
+    			//interpret action argument into a list, convert into material type
+    			//Bukkit.createBlockData(stringOfMaterial);
+    			
+    			this.restrict_blocks = ;//a list of all the materials
+    			continue;
+    		}
+    		if(argument.contains("exclude:")) {
+    			//same as above
+    			this.exclude_blocks =;
+    			continue;
+    		}
+    		if(argument.contains("radius:")) {
+    			argument = argument.replaceAll("radius:","");
+    			this.radius = Integer.parseInt(argument.replaceAll(" ", ""));
+    			this.radius_location = ;
+    			continue;
+    		}
+    		if(argument.contains("time:")){
+    			argument = argument.replaceAll("radius:","");
+    			String time = argument.replaceAll(" ", "");
+    			//convert this to int seconds
+    			continue;
+    		}
+    		if(argument.contains("user:")) {
+    			argument = argument.replaceAll("user:","");
+    			String time = argument.replaceAll(" ", "");
+    			//make a list of all the users
+    			continue;
+    		}
+    		//i have not messed around with lists that much, this might cause an error
+    		this.restrict_users.add(argument);
+    	}
     }
 
     // ┌─────────────────────────────────────────── /!\=- 𝗪𝗔𝗥𝗡𝗜𝗡𝗚 /!\ ─────────────────────────────────────────
