@@ -60,14 +60,14 @@ public class RollbackManager {
     		else if(argument.contains("block:")) {
     			argument = argument.replaceAll("block:","");
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
-    			//interpret action argument into a list, then convert into material type
+    			//interpret block argument into a list, then convert into material type
     			String[] argumentSplited = argument.split(",");
     			for(String part : argumentSplited) {  this.restrict_blocks.add( Bukkit.createBlockData(part) );  }
     		}
     		else if(argument.contains("exclude:")) {
     			argument = argument.replaceAll("exclude:","");
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
-    			//same as above
+    			
     			String[] argumentSplited = argument.split(",");
     			for(String part : argumentSplited) {  this.exclude_blocks.add( Bukkit.createBlockData(part) );  }
     		}
@@ -85,8 +85,8 @@ public class RollbackManager {
     			
     			int prevPos = 0;
     			String[] splitedArgument = argument.split(",");
-    			//convert to seconds (don't know any already existing functions that does this)
     			
+    			//convert to seconds (don't know any already existing functions that does this)
     			for(String part : splitedArgument) {
 	    			if(argument.contains("w")){ 
 	    				time += 604800 * Integer.parseInt(part.substring( 0 , part.indexOf('w')-1 ));
@@ -117,7 +117,6 @@ public class RollbackManager {
     		else if(argument != ""){
     			this.restrict_users.add(argument);
     		}
-    		
     		
     	}
     }

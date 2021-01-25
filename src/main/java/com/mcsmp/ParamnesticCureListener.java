@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import static org.bukkit.Bukkit.getLogger;
+
+import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
@@ -50,6 +52,7 @@ public class ParamnesticCureListener implements Listener {
      * Checks ζ block status of manually broken blocks (currently using NBT) sets them as Φ
      * @param event BlockBreakEvent
      */
+    //should not be needed anymore
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         //block is the Block broken
@@ -70,12 +73,12 @@ public class ParamnesticCureListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         //block is block
+    	if(event.getPlayer().getGameMode() != GameMode.CREATIVE) return;
+        plugin.getLogger().info("[Manual Debug] You placed a block in creative");
+    	
         Block block = event.getBlock();
-        //if block is tracked, untrack it.
-        plugin.getLogger().info("[Manual Debug] You placed a block: hasMetadata('GMC')= " + block.getState().hasMetadata("GMC"));
-        if(plugin.getTrackedBlocks().isTracked(block.getLocation())) {
-            plugin.getTrackedBlocks().removeFromBlockList(block.getLocation());
-        }
+        
+        // change the creative identifier for this action in the CO database
     }
     /**
      * Detects if someone is attempting a rollback operation... and runs a tree of logic to ensure it doesn't mess with creative data.
