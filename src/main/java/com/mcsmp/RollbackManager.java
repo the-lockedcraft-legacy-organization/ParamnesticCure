@@ -83,23 +83,23 @@ public class RollbackManager {
     			int prevPos = 0;
     			//convert to second
     			if(argument.contains("w")){ 
-    				time = 604800 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('w')-1 ));
+    				time += 604800 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('w')-1 ));
     				prevPos = argument.indexOf('w')+1;
     			}
     			if(argument.contains("d")){ 
-    				time = 86400 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('d')-1 ));
+    				time += 86400 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('d')-1 ));
     				prevPos = argument.indexOf('w')+1;
     			}
     			if(argument.contains("h")){ 
-    				time = 3600 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('h')-1 ));
+    				time += 3600 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('h')-1 ));
     				prevPos = argument.indexOf('w')+1;
     			}
     			if(argument.contains("m")){ 
-    				time = 60 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('m')-1 ));
+    				time += 60 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('m')-1 ));
     				prevPos = argument.indexOf('w')+1;
     			}
     			if(argument.contains("s")){ 
-    				time = Integer.parseInt(argument.substring( prevPos , argument.indexOf('s')-1 ));
+    				time += Integer.parseInt(argument.substring( prevPos , argument.indexOf('s')-1 ));
     				prevPos = argument.indexOf('w')+1;
     			}
     			this.time = time;
