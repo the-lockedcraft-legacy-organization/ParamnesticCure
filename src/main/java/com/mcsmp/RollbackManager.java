@@ -39,7 +39,7 @@ public class RollbackManager {
 	
 	/*
      * Constructor for Rollbacks
-     * String[] arguments: should be the arguments of the rollback command
+     * String[] arguments: the arguments of the rollback command
      */
     public RollbackManager(String[] arguments, Location radius_location) {
     	
@@ -80,34 +80,35 @@ public class RollbackManager {
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			
     			int time = 0;//s
+    			
     			int prevPos = 0;
-    			//convert to second (don't know any already existing functions that does this)
-    			if(argument.contains("w")){ 
-    				time += 604800 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('w')-1 ));
-    				prevPos = argument.indexOf('w')+1;
-    			}
-    			if(argument.contains("d")){ 
-    				time += 86400 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('d')-1 ));
-    				prevPos = argument.indexOf('w')+1;
-    			}
-    			if(argument.contains("h")){ 
-    				time += 3600 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('h')-1 ));
-    				prevPos = argument.indexOf('w')+1;
-    			}
-    			if(argument.contains("m")){ 
-    				time += 60 * Integer.parseInt(argument.substring( prevPos , argument.indexOf('m')-1 ));
-    				prevPos = argument.indexOf('w')+1;
-    			}
-    			if(argument.contains("s")){ 
-    				time += Integer.parseInt(argument.substring( prevPos , argument.indexOf('s')-1 ));
-    				prevPos = argument.indexOf('w')+1;
+    			String[] splitedArgument = argument.split(",");
+    			//convert to seconds (don't know any already existing functions that does this)
+    			
+    			for(String arg : splitedArgument) {
+	    			if(argument.contains("w")){ 
+	    				time += 604800 * Integer.parseInt(argument.substring( 0 , argument.indexOf('w')-1 ));
+	    			}
+	    			if(argument.contains("d")){ 
+	    				time += 86400 * Integer.parseInt(argument.substring( 0 , argument.indexOf('d')-1 ));
+	    			}
+	    			if(argument.contains("h")){ 
+	    				time += 3600 * Integer.parseInt(argument.substring( 0 , argument.indexOf('h')-1 ));
+	    			}
+	    			if(argument.contains("m")){ 
+	    				time += 60 * Integer.parseInt(argument.substring( 0 , argument.indexOf('m')-1 ));
+	    			}
+	    			if(argument.contains("s")){ 
+	    				time += Integer.parseInt(argument.substring( 0 , argument.indexOf('s')-1 ));
+	    			}
     			}
     			this.time = time;
     		}
     		else if(argument.contains("user:")) {
     			argument = argument.replaceAll("user:","");
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
-    			//make a list of all the users
+    			
+    			this.restrict_users =  ;
     		}
     		else {
     			//i have not messed around with lists that much, this might cause an error
