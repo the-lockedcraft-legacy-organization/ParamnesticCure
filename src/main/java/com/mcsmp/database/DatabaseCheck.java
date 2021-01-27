@@ -117,6 +117,7 @@ public class DatabaseCheck {
         this.config.setMaxConnectionsPerPartition(MAXCONNECT);
         this.config.setUser(this.user);
         this.config.setPassword(this.password);
+        ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Values: " + this.driver + "," + this.address + "," + this.port + "," + this.database);
         config.setJdbcUrl("jdbc:"+ this.driver +"://" + this.address + ":" + this.port + "/" + this.database);
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -124,13 +125,14 @@ public class DatabaseCheck {
             Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
         }
         DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+        
         this.boneCP = new BoneCP(config);
     }
 
     private File dbFile;
 
     private void setupSQLITE(String location) throws SQLException {
-        if (location.isBlank()) {
+        if (location.chars().allMatch(Character::isWhitespace)) {
             dbFile = new File(plugin.getDataFolder().getAbsoluteFile(), this.database + ".db");
         } else {
             dbFile = new File(location, this.database + ".db");

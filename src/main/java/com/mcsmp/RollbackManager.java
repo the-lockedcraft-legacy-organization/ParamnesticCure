@@ -115,6 +115,7 @@ public class RollbackManager {
     			for(String part : argumentSplited) {  this.restrict_users.add(part);  }
     		}
     		else if(argument != ""){
+    			ParamnesticCure.getInstance().getLogger().info("[Manual Debug] point 1:[" + argument + "]");
     			this.restrict_users.add(argument);
     		}
     		

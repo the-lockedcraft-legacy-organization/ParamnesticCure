@@ -73,13 +73,9 @@ public class ParamnesticCure extends JavaPlugin {
         final String driver = getConfig().getString("defaultconnection.driver");
         log.info("[Debug] Set driver to " + driver);
         //sets instance.
-        log.info("[Manual Debug] point 1");
         instance = this;
-        log.info("[Manual Debug] point 2");
         dataCache = new CacheData();
-        log.info("[Manual Debug] point 3");
         trackedBlocks = TrackedBlocks.getInstance();
-        log.info("[Manual Debug] point 4");
 
         createDB();
     }

@@ -86,29 +86,33 @@ public class ParamnesticCureListener implements Listener {
      */
     @EventHandler
     public void commandRollBack(PlayerCommandPreprocessEvent event) {
-    	
     	String command = event.getMessage().toLowerCase();
     	String[] commandListed = command.split(" "); //All hail the father of List
     	
     	List<String> commandIdentifiers = configSektion.getStringList("blockLoggerCommands.alias");
-    	
+    	String test = commandListed[0];
     	//to lazy to find a command for this
     	int i = 0;
-    	while(i++ < commandIdentifiers.size()){
+    	
+    	while(i < commandIdentifiers.size()){
     		//the first string from commandListed will have / in front, all commandIdentifiers should as well:
     		commandIdentifiers.set(i, "/" + commandIdentifiers.get(i));
+    		i++;
     	}
     	
     	//if not containing alias
-    	if(!commandIdentifiers.contains(commandListed[0])) return;
+    	if(!commandIdentifiers.contains(commandListed[0])||commandListed.length < 2) return;
     	
-    	if(configSektion.getStringList("blockLoggerCommands.rollback").contains(commandListed[1])) { 
+    	
+    	List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
+    	if(rollbackAlias.contains(commandListed[1])) { 
     		plugin.getLogger().info("[Manual Debug] Triggered as a rollback");
     		//innitiate rollbackmanager
-    		RollbackManager rollback = new RollbackManager(   Arrays.copyOfRange(commandListed, 2, commandListed.length),   event.getPlayer().getLocation()   );
+    		RollbackManager rollback = new RollbackManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   event.getPlayer().getLocation()   );
     		rollback.executeTask();
     	}
-    	if(configSektion.getStringList("blockLoggerCommands.restore").contains(commandListed[1])) {
+    	List<String> restoreAlias = configSektion.getStringList("blockLoggerCommands.restore");
+    	if(restoreAlias.contains(commandListed[1])) {
     		 //innitiate restoremanager (not created yet)
     		plugin.getLogger().info("[Manual Debug] Triggered as a restore");
     	}
