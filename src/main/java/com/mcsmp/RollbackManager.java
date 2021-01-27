@@ -142,14 +142,14 @@ public class RollbackManager {
      * Performs a series of logical operations to determine if the blocks getting rolled back should be protected by creative mode.
      */
     public void executeTask() {
-    	
     	List<String[]> affectedBlocksMsg = this.coreprotect.performRollback(
-    			this.time, this.restrict_users, this.exclude_users, this.restrict_blocks, this.exclude_users, this.radius, this.radius_location
+    			this.time, this.restrict_users, this.exclude_users, this.restrict_blocks, this.exclude_blocks,this.action_list, this.radius, this.radius_location
     			);
     	
     	for(String[] affectedBlockMsg : affectedBlocksMsg) {
     		ParseResult affectedBlock = this.coreprotect.parseResult(affectedBlockMsg);
-    		// check what action
+    		// check what action core protect will do
+    		
     	}
         ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
             @Override
