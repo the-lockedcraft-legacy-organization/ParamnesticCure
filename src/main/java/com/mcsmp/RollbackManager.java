@@ -43,6 +43,11 @@ public class RollbackManager {
      */
     public RollbackManager(String[] arguments, Location radius_location) {
     	
+    	this.restrict_users = new ArrayList<String>();
+    	this.exclude_users = new ArrayList<String>();
+    	this.restrict_blocks = new ArrayList<Object>();
+    	this.exclude_blocks = new ArrayList<Object>();
+
     	String argument;
     	
     	for(int i = 0; i < arguments.length ; i++) {
