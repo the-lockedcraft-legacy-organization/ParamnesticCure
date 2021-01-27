@@ -94,19 +94,19 @@ public class RollbackManager {
     			//convert to seconds (don't know any already existing functions that does this)
     			for(String part : splitedArgument) {
 	    			if(argument.contains("w")){ 
-	    				time += 604800 * Integer.parseInt(part.substring( 0 , part.indexOf('w')-1 ));
+	    				time += 604800 * Integer.parseInt(part.substring( 0 , part.indexOf('w') ));
 	    			}
 	    			if(argument.contains("d")){ 
-	    				time += 86400 * Integer.parseInt(part.substring( 0 , part.indexOf('d')-1 ));
+	    				time += 86400 * Integer.parseInt(part.substring( 0 , part.indexOf('d') ));
 	    			}
 	    			if(argument.contains("h")){ 
-	    				time += 3600 * Integer.parseInt(part.substring( 0 , part.indexOf('h')-1 ));
+	    				time += 3600 * Integer.parseInt(part.substring( 0 , part.indexOf('h') ));
 	    			}
 	    			if(argument.contains("m")){ 
-	    				time += 60 * Integer.parseInt(part.substring( 0 , part.indexOf('m')-1 ));
+	    				time += 60 * Integer.parseInt(part.substring( 0 , part.indexOf('m') ));
 	    			}
 	    			if(argument.contains("s")){ 
-	    				time += Integer.parseInt(part.substring( 0 , part.indexOf('s')-1 ));
+	    				time += Integer.parseInt(part.substring( 0 , part.indexOf('s') ));
 	    			}
     			}
     			this.time = time;
@@ -120,7 +120,6 @@ public class RollbackManager {
     			for(String part : argumentSplited) {  this.restrict_users.add(part);  }
     		}
     		else if(argument != ""){
-    			ParamnesticCure.getInstance().getLogger().info("[Manual Debug] point 1:[" + argument + "]");
     			this.restrict_users.add(argument);
     		}
     		
