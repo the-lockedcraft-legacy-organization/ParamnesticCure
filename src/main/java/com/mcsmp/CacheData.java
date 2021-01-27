@@ -30,21 +30,25 @@ public class CacheData {
     public CacheData() {
 
         for (String databases : plugin.getConfig().getConfigurationSection("Database_Names").getKeys(false)) {
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".address").isBlank()) {
+            if (  !(plugin.getConfig().getString("Database_Names." + databases + ".address").chars().allMatch(Character::isWhitespace))) {
                 address = plugin.getConfig().getString("Database_Names." + databases + ".address");
             }
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".port").isBlank()) {
+            if (  !(plugin.getConfig().getString("Database_Names." + databases + ".port").chars().allMatch(Character::isWhitespace))  ) {
                 port = plugin.getConfig().getInt("Database_Names." + databases + ".port");
             }
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".user").isBlank()) {
+            if (  !(plugin.getConfig().getString("Database_Names." + databases + ".user").chars().allMatch(Character::isWhitespace))) {
                 user = plugin.getConfig().getString("Database_Names." + databases + ".user");
             }
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".password").isBlank()) {
+            if (  !(plugin.getConfig().getString("Database_Names." + databases + ".password").chars().allMatch(Character::isWhitespace))) {
                 password = plugin.getConfig().getString("Database_Names." + databases + ".password");
             }
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".driver").isBlank()) {
+            if (  !(plugin.getConfig().getString("Database_Names." + databases + ".driver").chars().allMatch(Character::isWhitespace))) {
                 driver = plugin.getConfig().getString("Database_Names." + databases + ".driver");
             }
+            plugin.getLogger().info(
+            		"[Manual Debug] Connecting to " + databases.getClass().getSimpleName() + "," + address.getClass().getSimpleName() + "," + port + "," 
+            		+ user.getClass().getSimpleName() + "," + password.getClass().getSimpleName() + "," + driver.getClass().getSimpleName()
+            		);
             location = plugin.getConfig().getString("Database_Names." + databases + ".location");
             DataBases bases = new DataBases(databases.toLowerCase(), plugin.getConfig().getString("Database_Names." + databases + ".database").toLowerCase(), address, port, user, password, driver, location);
             databaseMap.put(databases.toLowerCase(), bases);

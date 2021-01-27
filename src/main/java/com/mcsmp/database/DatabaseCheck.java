@@ -52,7 +52,8 @@ public class DatabaseCheck {
         this.database = database;
         this.address = address;
         this.port = port;
-        if(user == null || user.isBlank()) {
+        ParamnesticCure.getInstance().getLogger().info("[Manual Debug] user = " + user);
+        if(user == null || user.chars().allMatch(Character::isWhitespace)) {
             this.user = "default";
         } else {
             this.user = user;
