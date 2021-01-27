@@ -60,7 +60,7 @@ public class RollbackManager {
     			//interpret action argument into a list
     			//not finished yet
     			String[] argumentSplited = argument.split(",");
-    			for(String part : argumentSplited) {  this.action_list.add( Integer.parseInt(argument) );  }
+    			for(String part : argumentSplited) {  this.action_list.add( Integer.parseInt(part) );  }
     		}
     		else if(argument.contains("block:")) {
     			argument = argument.replaceAll("block:","");
