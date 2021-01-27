@@ -15,8 +15,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import static org.bukkit.Bukkit.getPluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+import net.coreprotect.CoreProtect;
+import net.coreprotect.CoreProtectAPI;
 /**
  * @author Frostalf
  */
@@ -70,9 +73,13 @@ public class ParamnesticCure extends JavaPlugin {
         final String driver = getConfig().getString("defaultconnection.driver");
         log.info("[Debug] Set driver to " + driver);
         //sets instance.
+        log.info("[Manual Debug] point 1");
         instance = this;
+        log.info("[Manual Debug] point 2");
         dataCache = new CacheData();
+        log.info("[Manual Debug] point 3");
         trackedBlocks = TrackedBlocks.getInstance();
+        log.info("[Manual Debug] point 4");
 
         createDB();
     }
@@ -136,4 +143,26 @@ public class ParamnesticCure extends JavaPlugin {
             getLogger().log(Level.SEVERE, null, ex);
         }
     }
+
+    public CoreProtectAPI getCoreProtect() {
+        Plugin plugin = getServer().getPluginManager().getPlugin("CoreProtect");
+     
+        // Check that CoreProtect is loaded
+        if (plugin == null || !(plugin instanceof CoreProtect)) {
+            return null;
+        }
+
+        // Check that the API is enabled
+        CoreProtectAPI CoreProtect = ((CoreProtect) plugin).getAPI();
+        if (CoreProtect.isEnabled() == false) {
+            return null;
+        }
+
+        // Check that a compatible version of the API is loaded
+        if (CoreProtect.APIVersion() < 6) {
+            return null;
+        }
+
+        return CoreProtect;
+}
 }
