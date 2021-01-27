@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
+import net.coreprotect.CoreProtectAPI;
+import net.coreprotect.CoreProtectAPI.ParseResult;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -27,7 +29,7 @@ import org.bukkit.Location;
  */
 public class RollbackManager {
 
-    
+    private CoreProtectAPI coreprotect;
 	private int time;
 	private List<String> restrict_users;
 	private List<String> exclude_users;
@@ -42,6 +44,8 @@ public class RollbackManager {
      * String[] arguments: the arguments of the rollback command
      */
     public RollbackManager(String[] arguments, Location radius_location) {
+    	
+    	this.coreprotect = ParamnesticCure.getInstance().getCoreProtect();
     	
     	this.restrict_users = new ArrayList<String>();
     	this.exclude_users = new ArrayList<String>();
@@ -138,6 +142,15 @@ public class RollbackManager {
      * Performs a series of logical operations to determine if the blocks getting rolled back should be protected by creative mode.
      */
     public void executeTask() {
+    	
+    	List<String[]> affectedBlocksMsg = this.coreprotect.performRollback(
+    			this.time, this.restrict_users, this.exclude_users, this.restrict_blocks, this.exclude_users, this.radius, this.radius_location
+    			);
+    	
+    	for(String[] affectedBlockMsg : affectedBlocksMsg) {
+    		ParseResult affectedBlock = this.coreprotect.parseResult(affectedBlockMsg);
+    		// check what action
+    	}
         ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
             @Override
             public void run() {

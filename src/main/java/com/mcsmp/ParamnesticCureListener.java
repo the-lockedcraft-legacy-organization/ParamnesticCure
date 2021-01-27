@@ -110,6 +110,8 @@ public class ParamnesticCureListener implements Listener {
     		//innitiate rollbackmanager
     		RollbackManager rollback = new RollbackManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   event.getPlayer().getLocation()   );
     		rollback.executeTask();
+    		
+    		event.setCancelled(true);
     	}
     	List<String> restoreAlias = configSektion.getStringList("blockLoggerCommands.restore");
     	if(restoreAlias.contains(commandListed[1])) {
