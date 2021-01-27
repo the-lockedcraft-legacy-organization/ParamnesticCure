@@ -53,7 +53,7 @@ public class RollbackManager {
     			//if this only was a identifier, then the next argument should be it's value, and that value should not be checked as if it were an identifier
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			//interpret action argument into a list
-    			not finished yet
+    			//not finished yet
     			String[] argumentSplited = argument.split(",");
     			for(String part : argumentSplited) {  this.action_list.add( Integer.parseInt(argument) );  }
     		}

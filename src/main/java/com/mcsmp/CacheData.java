@@ -45,10 +45,6 @@ public class CacheData {
             if (  !(plugin.getConfig().getString("Database_Names." + databases + ".driver").chars().allMatch(Character::isWhitespace))) {
                 driver = plugin.getConfig().getString("Database_Names." + databases + ".driver");
             }
-            plugin.getLogger().info(
-            		"[Manual Debug] Connecting to " + databases.getClass().getSimpleName() + "," + address.getClass().getSimpleName() + "," + port + "," 
-            		+ user.getClass().getSimpleName() + "," + password.getClass().getSimpleName() + "," + driver.getClass().getSimpleName()
-            		);
             location = plugin.getConfig().getString("Database_Names." + databases + ".location");
             DataBases bases = new DataBases(databases.toLowerCase(), plugin.getConfig().getString("Database_Names." + databases + ".database").toLowerCase(), address, port, user, password, driver, location);
             databaseMap.put(databases.toLowerCase(), bases);
