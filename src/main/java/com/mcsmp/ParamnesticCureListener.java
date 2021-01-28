@@ -18,9 +18,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
+
+import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 
 /**
  * @author Frostalf
@@ -72,13 +75,9 @@ public class ParamnesticCureListener implements Listener {
      */
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        //block is block
-    	if(event.getPlayer().getGameMode() != GameMode.CREATIVE) return;
+        //block is block <= yes that seems about right
+    	if(!RestrictedCreativeAPI.isCreative(event.getBlock())) return;
         plugin.getLogger().info("[Manual Debug] You placed a block in creative");
-    	
-        Block block = event.getBlock();
-        
-        // change the creative identifier for this action in the CO database
     }
     /**
      * Detects if someone is attempting a rollback operation... and runs a tree of logic to ensure it doesn't mess with creative data.
