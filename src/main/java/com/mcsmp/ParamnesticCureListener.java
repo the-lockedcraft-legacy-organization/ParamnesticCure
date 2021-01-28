@@ -90,18 +90,17 @@ public class ParamnesticCureListener implements Listener {
     	String[] commandListed = command.split(" "); //All hail the father of List
     	
     	List<String> commandIdentifiers = configSektion.getStringList("blockLoggerCommands.alias");
-    	String test = commandListed[0];
+    	
     	//to lazy to find a command for this
     	int i = 0;
-    	
     	while(i < commandIdentifiers.size()){
     		//the first string from commandListed will have / in front, all commandIdentifiers should as well:
-    		commandIdentifiers.set(i, "/" + commandIdentifiers.get(i));
+    		commandIdentifiers.set(  i  ,  "/" + commandIdentifiers.get(i)  );
     		i++;
     	}
     	
-    	//if not containing alias
-    	if(!commandIdentifiers.contains(commandListed[0])||commandListed.length < 2) return;
+    	//if not containing alias or length is too low
+    	if(!commandIdentifiers.contains(commandListed[0])||commandListed.length < 3) return;
     	
     	
     	List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
@@ -110,7 +109,6 @@ public class ParamnesticCureListener implements Listener {
     		//innitiate rollbackmanager
     		RollbackManager rollback = new RollbackManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   event.getPlayer().getLocation()   );
     		rollback.executeTask();
-    		
     		event.setCancelled(true);
     	}
     	List<String> restoreAlias = configSektion.getStringList("blockLoggerCommands.restore");
@@ -130,9 +128,10 @@ public class ParamnesticCureListener implements Listener {
     	String command = event.getCommand().toLowerCase();
     	String[] commandListed = command.split(" ");
     	
-    	if(configSektion.getStringList("blockLoggerCommands.alias").contains(commandListed[0])) {
-            log.warning("Console rollbacks are not yet supported by Paramnestic.");
-            event.setCancelled(true);
+    	if(!configSektion.getStringList("blockLoggerCommands.alias").contains(commandListed[0])) {
+            return;
     	}
+    	log.warning("Console rollbacks are not yet supported by Paramnestic.");
+        event.setCancelled(true);
     }
 }

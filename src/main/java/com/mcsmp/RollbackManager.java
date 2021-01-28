@@ -31,14 +31,14 @@ public class RollbackManager {
 
     private CoreProtectAPI coreprotect;
 	private int time;
-	private List<String> restrict_users;
-	private List<String> exclude_users;
-	private List<Object> restrict_blocks;
-	private List<Object> exclude_blocks;
-	private List<Integer> action_list;
+	private List<String> restrict_users = null;
+	private List<String> exclude_users = null;
+	private List<Object> restrict_blocks = null;
+	private List<Object> exclude_blocks = null;
+	private List<Integer> action_list = null;
 	private int radius;
-	private Location radius_location;
-	
+	private Location radius_location = null;
+	private static RollbackManager instance;
 	/*
      * Constructor for Rollbacks
      * String[] arguments: the arguments of the rollback command
@@ -47,11 +47,6 @@ public class RollbackManager {
     	
     	this.coreprotect = ParamnesticCure.getInstance().getCoreProtect();
     	
-    	this.restrict_users = new ArrayList<String>();
-    	this.exclude_users = new ArrayList<String>();
-    	this.restrict_blocks = new ArrayList<Object>();
-    	this.exclude_blocks = new ArrayList<Object>();
-
     	String argument;
     	
     	for(int i = 0; i < arguments.length ; i++) {
@@ -62,7 +57,8 @@ public class RollbackManager {
     			//if this only was a identifier, then the next argument should be it's value, and that value should not be checked as if it were an identifier
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			//interpret action argument into a list
-    			//not finished yet
+    			//TODO convert string identifiers to the right integer
+    			this.action_list = new ArrayList<Integer>();
     			String[] argumentSplited = argument.split(",");
     			for(String part : argumentSplited) {  this.action_list.add( Integer.parseInt(part) );  }
     		}
@@ -70,6 +66,7 @@ public class RollbackManager {
     			argument = argument.replaceAll("block:","");
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			//interpret block argument into a list, then convert into material type
+    			this.restrict_blocks = new ArrayList<Object>();
     			String[] argumentSplited = argument.split(",");
     			for(String part : argumentSplited) {  this.restrict_blocks.add( Bukkit.createBlockData(part) );  }
     		}
@@ -77,6 +74,7 @@ public class RollbackManager {
     			argument = argument.replaceAll("exclude:","");
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			
+    			this.exclude_blocks = new ArrayList<Object>();
     			String[] argumentSplited = argument.split(",");
     			for(String part : argumentSplited) {  this.exclude_blocks.add( Bukkit.createBlockData(part) );  }
     		}
@@ -119,11 +117,13 @@ public class RollbackManager {
     			argument = argument.replaceAll("user:","");
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			
+    			this.restrict_users = new ArrayList<String>();
     			
     			String[] argumentSplited = argument.split(",");
     			for(String part : argumentSplited) {  this.restrict_users.add(part);  }
     		}
     		else if(argument != ""){
+    			this.restrict_users = new ArrayList<String>();
     			this.restrict_users.add(argument);
     		}
     		
@@ -142,15 +142,58 @@ public class RollbackManager {
      * Performs a series of logical operations to determine if the blocks getting rolled back should be protected by creative mode.
      */
     public void executeTask() {
-    	List<String[]> affectedBlocksMsg = this.coreprotect.performRollback(
-    			this.time, this.restrict_users, this.exclude_users, this.restrict_blocks, this.exclude_blocks,this.action_list, this.radius, this.radius_location
-    			);
     	
-    	for(String[] affectedBlockMsg : affectedBlocksMsg) {
-    		ParseResult affectedBlock = this.coreprotect.parseResult(affectedBlockMsg);
-    		// check what action core protect will do
+    	
+    	
+    	String exclude_users = "";
+    	if (this.exclude_users == null) exclude_users = "null";
+    	else for(String user : this.exclude_users) exclude_users = exclude_users + "," + user;
+    	
+    	String restrict_users = "";
+    	if (this.restrict_users == null) restrict_users = "null";
+    	else for(String user : this.restrict_users) restrict_users = restrict_users + "," + user;
+    	
+    	String restrict_blocks = "";
+    	if (this.restrict_blocks == null) restrict_blocks = "null";
+    	else for(Object block : this.restrict_blocks) restrict_blocks = restrict_blocks + "," + block.toString();
+    	
+    	String exclude_blocks = "";
+    	if (this.exclude_blocks == null) exclude_blocks = "null";
+    	else for(Object block : this.restrict_blocks) exclude_blocks = exclude_blocks + "," + block.toString();
+    	
+    	ParamnesticCure.getInstance().getLogger().info(
+    			"[Manual Debug]" + String.valueOf(this.time) + ":" + restrict_users + ":" + exclude_users + ":" + restrict_blocks + ":" + exclude_blocks
+    	);
+    	
+    	instance = this;
+    	
+    	ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+				
+				RollbackManager RBmanager = RollbackManager.getInstance();
+				CoreProtectAPI coreprotect = ParamnesticCure.getInstance().getCoreProtect();
+				long startTime = System.nanoTime();
+				
+				List<String[]> affectedBlocksMsg = RBmanager.coreprotect.performRollback(
+						RBmanager.time, RBmanager.restrict_users, RBmanager.exclude_users, RBmanager.restrict_blocks, RBmanager.exclude_blocks,RBmanager.action_list, RBmanager.radius, RBmanager.radius_location
+		    			);
+		    	
+		    	long endTime = System.nanoTime();
+		    	
+		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(endTime-startTime));
+		    	
+		    	for(String[] affectedBlockMsg : affectedBlocksMsg) {
+		    		ParseResult affectedBlock = RBmanager.coreprotect.parseResult(affectedBlockMsg);
+		    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Returned block " + affectedBlock.toString());
+		    		// check what action core protect will do
+		    		
+		    	}
+			}
     		
-    	}
+    	},60L);
+    	
         ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
             @Override
             public void run() {
@@ -208,5 +251,9 @@ public class RollbackManager {
                 }
             }
         }, 60L);
+    }
+    
+    public static RollbackManager getInstance() {
+    	return instance;
     }
 }
