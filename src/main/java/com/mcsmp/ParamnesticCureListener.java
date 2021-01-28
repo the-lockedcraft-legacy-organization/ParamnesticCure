@@ -55,16 +55,18 @@ public class ParamnesticCureListener implements Listener {
      * Checks ζ block status of manually broken blocks (currently using NBT) sets them as Φ
      * @param event BlockBreakEvent
      */
-    //should not be needed anymore
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        //block is the Block broken
+        
         Block block = event.getBlock();
-        //blockState is the BlockState of that block
+
         BlockState blockState = block.getState();
-        //adds any block w/ meta GMC to PC's block list.
-        plugin.getLogger().info("[Manual Debug] You broke a block hasMetadata('GMC')= " + blockState.hasMetadata("GMC"));
-        if(blockState.hasMetadata("GMC")) {
+
+        plugin.getLogger().info("[Manual Debug] You broke a block hasMetadata('GMC')= " + RestrictedCreativeAPI.isCreative(event.getBlock()));
+        
+        //check if creative
+        if(RestrictedCreativeAPI.isCreative(event.getBlock())) {
+        	//TODO logic that compares this to the CO database
             plugin.getTrackedBlocks().addToBlockList(block.getLocation());
         }
 
@@ -88,18 +90,17 @@ public class ParamnesticCureListener implements Listener {
     	String command = event.getMessage().toLowerCase();
     	String[] commandListed = command.split(" "); //All hail the father of List
     	
-    	List<String> commandIdentifiers = configSektion.getStringList("blockLoggerCommands.alias");
+    	List<String> commandAlias = configSektion.getStringList("blockLoggerCommands.alias");
     	
-    	//to lazy to find a command for this
     	int i = 0;
-    	while(i < commandIdentifiers.size()){
-    		//the first string from commandListed will have / in front, all commandIdentifiers should as well:
-    		commandIdentifiers.set(  i  ,  "/" + commandIdentifiers.get(i)  );
+    	while(i < commandAlias.size()){
+    		//the first string from commandListed will have / in front, all commandAlias should as well:
+    		commandAlias.set(  i  ,  "/" + commandAlias.get(i)  );
     		i++;
     	}
     	
     	//if not containing alias or length is too low
-    	if(!commandIdentifiers.contains(commandListed[0])||commandListed.length < 3) return;
+    	if(!commandAlias.contains(commandListed[0])||commandListed.length < 3) return;
     	
     	
     	List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
