@@ -117,16 +117,19 @@ public class TrackedBlocks {
      * @return returns true if successful, false otherwise.
      */
     private Integer addToDB(Location location) {
+    	
+    	Integer time = Math.round( System.currentTimeMillis()/1000);//Seconds
+    	
         plugin.getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
             @Override
             public void run() {
                 try {
-                    Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getDatabase().getConnection();
+                    Connection connection = plugin.getCacheData().getDatabaseMap().get("coreprotect").getDatabase().getConnection();
                     
                     PreparedStatement statement = connection.prepareStatement(
-                    		"INSERT INTO blocks (world, x, y , z)"
-                    		+ " VALUES(?,?,?,?)"
-                    		+ " AND SELECT id where "
+                    		"UPDATE co_block"
+                    		+ " SET creative = 1"
+                    		+ " WHERE"
                     		, Statement.RETURN_GENERATED_KEYS);
                     
                     statement.setString(1, location.getWorld().toString());
@@ -154,7 +157,10 @@ public class TrackedBlocks {
             File file = new File(plugin.getDataFolder().getAbsolutePath(), "paramnestic.db");
             String url = ("jdbc:sqlite:" + file.getAbsoluteFile());
             Connection connection = DriverManager.getConnection(url);
-            PreparedStatement statement = connection.prepareStatement("UPDATE blocks SET world = ?, x = ?, y = ?, z = ? WHERE id = ?");
+            PreparedStatement statement = connection.prepareStatement(
+            		"UPDATE blocks"
+            		+ " SET world = ?, x = ?, y = ?, z = ?"
+            		+ " WHERE id = ?");
             for (Location location : blockList.keySet()) {
                 statement.setString(1, location.getWorld().toString());
                 statement.setDouble(2, location.getBlockX());

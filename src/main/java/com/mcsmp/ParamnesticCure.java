@@ -138,6 +138,19 @@ public class ParamnesticCure extends JavaPlugin {
         } catch (SQLException ex) {
             getLogger().log(Level.SEVERE, null, ex);
         }
+        
+        
+        //Adds another row called creative to the co_block table
+        try {
+        	Connection connection = getCacheData().getDatabaseMap().get("coreprotect").getDatabase().getConnection();
+        	PreparedStatement statement = connection.prepareStatement(
+        				"ALTER TABLE co_block "
+        				+ "ADD creative int;"
+        				);
+        	statement.execute();
+        //should always throw sql exception except on first run
+        }catch (SQLException ex) {getLogger().info("[Manual Debug] " + ex);}
+        
     }
 
     public CoreProtectAPI getCoreProtect() {
