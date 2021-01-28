@@ -18,6 +18,7 @@ import net.coreprotect.CoreProtectAPI.ParseResult;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 
 /**
  * @author InteriorCamping
@@ -89,11 +90,11 @@ public class RollbackManager {
     			if(argument.length() == 0) { i++; argument = arguments[i]; }
     			
     			int time = 0;//s
-    			
-    			int prevPos = 0;
+
     			String[] splitedArgument = argument.split(",");
     			
-    			//convert to seconds (don't know any already existing functions that does this)
+    			//convert to seconds
+    			//TODO make this to work for 1d2w and 1d,2w
     			for(String part : splitedArgument) {
 	    			if(argument.contains("w")){ 
 	    				time += 604800 * Integer.parseInt(part.substring( 0 , part.indexOf('w') ));
@@ -144,7 +145,7 @@ public class RollbackManager {
     public void executeTask() {
     	
     	
-    	
+    	//For debug
     	String exclude_users = "";
     	if (this.exclude_users == null) exclude_users = "null";
     	else for(String user : this.exclude_users) exclude_users = exclude_users + "," + user;
@@ -161,9 +162,21 @@ public class RollbackManager {
     	if (this.exclude_blocks == null) exclude_blocks = "null";
     	else for(Object block : this.restrict_blocks) exclude_blocks = exclude_blocks + "," + block.toString();
     	
+    	String action_list = "";
+    	if (this.action_list == null) action_list = "null";
+    	else for(Integer number : this.action_list) action_list = action_list + "," + String.valueOf(number);
+    	
+    	String radius = String.valueOf(this.radius);
+    	
+    	String radius_location;
+    	if (this.radius_location == null) radius_location = "null";
+    	else radius_location = this.radius_location.toString();
+    	
     	ParamnesticCure.getInstance().getLogger().info(
-    			"[Manual Debug]" + String.valueOf(this.time) + ":" + restrict_users + ":" + exclude_users + ":" + restrict_blocks + ":" + exclude_blocks
+    			"[Manual Debug]" + String.valueOf(this.time) + ":" + restrict_users + ":" + exclude_users + ":" +
+    			restrict_blocks + ":" + exclude_blocks + ":" + action_list + ":" + radius + ":" + radius_location
     	);
+    	//No longer debug
     	
     	instance = this;
     	
@@ -173,7 +186,6 @@ public class RollbackManager {
 			public void run() {
 				
 				RollbackManager RBmanager = RollbackManager.getInstance();
-				CoreProtectAPI coreprotect = ParamnesticCure.getInstance().getCoreProtect();
 				long startTime = System.nanoTime();
 				
 				List<String[]> affectedBlocksMsg = RBmanager.coreprotect.performRollback(
@@ -186,9 +198,15 @@ public class RollbackManager {
 		    	
 		    	for(String[] affectedBlockMsg : affectedBlocksMsg) {
 		    		ParseResult affectedBlock = RBmanager.coreprotect.parseResult(affectedBlockMsg);
-		    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Returned block " + affectedBlock.toString());
-		    		// check what action core protect will do
+		    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Checking block " + affectedBlock.toString());
 		    		
+		    		String player = affectedBlock.getPlayer();
+		    		Material material = affectedBlock.getType();
+		    		int x = affectedBlock.getX();
+		    		int y = affectedBlock.getY();
+		    		int z = affectedBlock.getZ();
+		    		String world = affectedBlock.worldName();
+		    		//TODO compare to database
 		    	}
 			}
     		
