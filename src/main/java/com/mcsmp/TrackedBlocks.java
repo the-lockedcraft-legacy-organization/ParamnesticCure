@@ -35,23 +35,23 @@ public class TrackedBlocks {
             public void run() {
                 try {
                     Connection connection = plugin.getCacheData().getDatabaseMap().get("coreprotect").getDatabase().getConnection();
-
-
+                    
                     PreparedStatement getWorldID = connection.prepareStatement(
                     		"SELECT id FROM co_world"
                     		+ " WHERE world = ?"
                     		);
-                    getWorldID.setString(1,location.getWorld().toString());
+                    
+                    String worldName = location.getWorld().getName();
+                    getWorldID.setString(1,worldName);
                     
                     
                     ResultSet set = getWorldID.executeQuery();
-                    set.next();
                     Integer worldID = set.getInt(1);
                     
                     plugin.getLogger().info("[Manual Debug] worldID: " + String.valueOf(worldID));
                     
                     //TODO make better SQL code that doesn't repeat itself
-                    // This gets the latest action of this block, action = 1 is equal to "placed a block"
+                    // This gets the latest action on this block, action = 1 is equal to "placed a block"
                     PreparedStatement updateCreativeID = connection.prepareStatement(
                     		"UPDATE co_block"
                     		+ " SET creative = 1"
@@ -75,7 +75,7 @@ public class TrackedBlocks {
                     
                     
                     
-                    updateCreativeID.executeQuery();
+                    updateCreativeID.execute();
                     
                 } catch (SQLException ex) {
                 	plugin.getLogger().log(SEVERE, ex.getMessage(), ex.getCause());
