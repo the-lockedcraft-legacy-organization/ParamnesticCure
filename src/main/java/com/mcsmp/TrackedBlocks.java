@@ -5,20 +5,11 @@
  */
 package com.mcsmp;
 
-import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import static java.util.logging.Level.SEVERE;
-import static java.util.logging.Logger.getLogger;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * @author Frostalf
@@ -28,23 +19,15 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class TrackedBlocks {
 
-    //Creates a hashmap for Φ blocks
-    private ConcurrentHashMap<Location, Integer> blockList = new ConcurrentHashMap<>();
+    
     private static ParamnesticCure plugin = ParamnesticCure.getInstance();
-    //stores TrackedBlocks if initialized.
-    private static TrackedBlocks instance;
-
-    //Constructor for TrackedBlocks
-
+    
     /**
-     * Manages adding blocks recently marked as Φ to Paramnestic's database.
+     * Adds the creative ID into coreprotects database
      *
-     * @param location a Location to set as Φ
-     * @return returns true if successful, false otherwise.
+     * @param location of the creative block
      */
-    public void updateCreativeIDInDB(Location location) {
-    	
-    	Integer time = Math.round( System.currentTimeMillis()/1000);//Seconds
+    public static void updateCreativeIDInDB(Location location) {
     	
         plugin.getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
             @Override
@@ -65,6 +48,7 @@ public class TrackedBlocks {
                     
                     
                     //TODO make better SQL code that doesn't repeat itself
+                    // This gets the latest action of this block, action = 1 is equal to "placed a block"
                     PreparedStatement updateCreativeID = connection.prepareStatement(
                     		"UPDATE co_block"
                     		+ " SET creative = 1"
@@ -96,44 +80,6 @@ public class TrackedBlocks {
             }
         });
     }
-
-    /**
-     * Integrates recent changes to Φ into Paramnestic's database.
-     */
-    //no real need for this
-    public void save() {
-        try {
-            File file = new File(plugin.getDataFolder().getAbsolutePath(), "paramnestic.db");
-            String url = ("jdbc:sqlite:" + file.getAbsoluteFile());
-            Connection connection = DriverManager.getConnection(url);
-            PreparedStatement statement = connection.prepareStatement(
-            		"UPDATE blocks"
-            		+ " SET world = ?, x = ?, y = ?, z = ?"
-            		+ " WHERE id = ?");
-            for (Location location : blockList.keySet()) {
-                statement.setString(1, location.getWorld().toString());
-                statement.setDouble(2, location.getBlockX());
-                statement.setDouble(3, location.getBlockY());
-                statement.setDouble(4, location.getBlockZ());
-                statement.setInt(5, blockList.get(location));
-                statement.executeUpdate();
-                connection.commit();
-            }
-        } catch (SQLException ex) {
-            getLogger(TrackedBlocks.class.getName()).log(SEVERE, null, ex);
-        }
-    }
-
-    /**
-     * Initializes the TrackedBlocks class if it has not already been
-     * initialized.
-     *
-     * @return returns true if successful, false otherwise.
-     */
-    public static TrackedBlocks getInstance() {
-        if (instance == null) {
-            instance = new TrackedBlocks();
-        }
-        return instance;
-    }
+    
+    
 }

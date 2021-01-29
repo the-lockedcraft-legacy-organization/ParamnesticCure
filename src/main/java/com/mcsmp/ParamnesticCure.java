@@ -75,14 +75,12 @@ public class ParamnesticCure extends JavaPlugin {
         //sets instance.
         instance = this;
         dataCache = new CacheData();
-        trackedBlocks = TrackedBlocks.getInstance();
-
         createDB();
     }
 
     @Override
     public void onDisable() {
-        getTrackedBlocks().save();
+        // No data? no data!
     }
 
     /*
@@ -92,18 +90,6 @@ public class ParamnesticCure extends JavaPlugin {
     public static ParamnesticCure getInstance() {
         return instance;
     }
-
-    /*
-     * Initializes an instance of TrackedBlocks
-     * @return Returns TrackedBlocks
-     */
-    public synchronized TrackedBlocks getTrackedBlocks() {
-        if (trackedBlocks == null) {
-            trackedBlocks = TrackedBlocks.getInstance();
-        }
-        return trackedBlocks;
-    }
-
     /*
      * Gets cached data
      * @return Returns dataCache
