@@ -26,7 +26,7 @@ import org.bukkit.event.server.ServerCommandEvent;
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 
 /**
- * @author Frostalf
+ * @author Frostalf, Thorin
  */
 
 /*
@@ -60,14 +60,11 @@ public class ParamnesticCureListener implements Listener {
         
         Block block = event.getBlock();
 
-        BlockState blockState = block.getState();
-
         plugin.getLogger().info("[Manual Debug] You broke a block hasMetadata('GMC')= " + RestrictedCreativeAPI.isCreative(event.getBlock()));
         
         //check if creative
         if(RestrictedCreativeAPI.isCreative(event.getBlock())) {
-        	//TODO logic that compares this to the CO database
-            plugin.getTrackedBlocks().updateCreativeIDInDB(block.getLocation());
+            TrackedBlocks.updateCreativeIDInDB(block.getLocation());
         }
 
     }
@@ -107,7 +104,7 @@ public class ParamnesticCureListener implements Listener {
     	if(rollbackAlias.contains(commandListed[1])) { 
     		plugin.getLogger().info("[Manual Debug] Triggered as a rollback");
     		//innitiate rollbackmanager
-    		RollbackManager rollback = new RollbackManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   event.getPlayer().getLocation()   );
+    		RollbackManager rollback = new RollbackManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   event.getPlayer().getLocation()  );
     		rollback.executeTask();
     		event.setCancelled(true);
     	}

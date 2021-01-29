@@ -7,12 +7,13 @@ package com.mcsmp;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import static java.util.logging.Level.SEVERE;
 import org.bukkit.Location;
 
 /**
- * @author Frostalf
+ * @author Frostalf, Thorin
  */
 /**
  * Manages Paramnestic's in-house tracking (Φ)
@@ -37,15 +38,17 @@ public class TrackedBlocks {
 
 
                     PreparedStatement getWorldID = connection.prepareStatement(
-                    		"SELECT * co_world"
+                    		"SELECT id FROM co_world"
                     		+ " WHERE world = ?"
                     		);
                     getWorldID.setString(1,location.getWorld().toString());
                     
                     
-                    Integer worldID = getWorldID.executeQuery().getInt(1);
+                    ResultSet set = getWorldID.executeQuery();
+                    set.next();
+                    Integer worldID = set.getInt(1);
                     
-                    
+                    plugin.getLogger().info("[Manual Debug] worldID: " + String.valueOf(worldID));
                     
                     //TODO make better SQL code that doesn't repeat itself
                     // This gets the latest action of this block, action = 1 is equal to "placed a block"

@@ -5,6 +5,8 @@
  */
 package com.mcsmp;
 
+import static java.util.logging.Level.SEVERE;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,9 +21,11 @@ import net.coreprotect.CoreProtectAPI.ParseResult;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 
 /**
- * @author InteriorCamping
+ * @author InteriorCamping, Thorin
  */
 
 /**
@@ -40,9 +44,10 @@ public class RollbackManager {
 	private int radius;
 	private Location radius_location = null;
 	private static RollbackManager instance;
-	/*
-     * Constructor for Rollbacks
-     * String[] arguments: the arguments of the rollback command
+	/**
+     * Constructor for RollbackManager
+     * @param Location radius_location; location where command was thrown
+     * @param String [] arguments; The arguments of the command
      */
     public RollbackManager(String[] arguments, Location radius_location) {
     	
@@ -194,20 +199,89 @@ public class RollbackManager {
 		    	
 		    	long endTime = System.nanoTime();
 		    	
-		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(endTime-startTime));
+		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf( (endTime-startTime) / Math.pow(10, 9)) + " Seconds");
 		    	
-		    	for(String[] affectedBlockMsg : affectedBlocksMsg) {
-		    		ParseResult affectedBlock = RBmanager.coreprotect.parseResult(affectedBlockMsg);
-		    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Checking block " + affectedBlock.toString());
-		    		
-		    		String player = affectedBlock.getPlayer();
-		    		Material material = affectedBlock.getType();
-		    		int x = affectedBlock.getX();
-		    		int y = affectedBlock.getY();
-		    		int z = affectedBlock.getZ();
-		    		String world = affectedBlock.worldName();
-		    		//TODO compare to database
-		    	}
+		    	try {
+			    	Connection connection = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("coreprotect").getDatabase().getConnection();
+			    	
+			    	int time;
+			    	int x;
+			    	int y;
+			    	int z;
+			    	String worldname;
+			    	String playername;
+			    	Integer worldID;
+			    	Integer playerID;
+			    	Integer creative;
+			    	for(String[] affectedBlockMsg : affectedBlocksMsg) {
+			    		ParseResult affectedBlock = RBmanager.coreprotect.parseResult(affectedBlockMsg);
+			    		
+			    		
+			    		worldname = affectedBlock.worldName();
+			    		
+			    		List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
+			    		World world = null;
+			    		
+			    		for (World worldTest : worldlist)
+			    			if(worldTest.toString() == worldname) world = worldTest;
+			    		
+			    		
+			    		x = affectedBlock.getX();
+			    		y = affectedBlock.getY();
+			    		z = affectedBlock.getZ();
+			    		Block block = world.getBlockAt(x, y, z);
+			    		
+			    		//if the block is creative, there would be problems when you undo rollbacks. This check prevents that
+			    		if(RestrictedCreativeAPI.isCreative(block))  TrackedBlocks.updateCreativeIDInDB(block.getLocation());
+			            
+			    		//TODO Might be unnecessary to do this on every block
+			    		PreparedStatement getWorldID = connection.prepareStatement(
+	                    		"SELECT id FROM co_world"
+	                            + " WHERE world = ?"
+	                            );
+	                    getWorldID.setString(1,worldname);
+	                    
+	                    ResultSet set = getWorldID.executeQuery();
+	                    set.next();
+	                    worldID = set.getInt(1);
+
+	                    
+	                    
+	                    playername = affectedBlock.getPlayer();
+			    		PreparedStatement getPlayerID = connection.prepareStatement(
+	                    		"SELECT id FROM co_user"
+	                            + " WHERE user = ?"
+	                            );
+			    		getPlayerID.setString(1,playername);
+	                    
+	                    set = getPlayerID.executeQuery();
+	                    set.next();
+	                    playerID = set.getInt(1);
+	                    
+	                    
+			    		time = affectedBlock.getTime();
+	                    
+	                    
+	                    ParamnesticCure.getInstance().getLogger().info("[Manual Debug] worldID: " + String.valueOf(worldID));
+	                    
+	                    PreparedStatement getCreativeStatus = connection.prepareStatement(
+	                    		"SELECT creative FROM co_block"
+	                    		+ " WHERE wid = ? AND x = ? AND y = ? AND z = ? AND time = ? AND user = ? AND action = 1"
+	                    		);
+	                    getCreativeStatus.setInt(1, worldID);
+	                    getCreativeStatus.setInt(2, x);
+	                    getCreativeStatus.setInt(3, y);
+	                    getCreativeStatus.setInt(4, z);
+	                    getCreativeStatus.setInt(5, time);
+	                    getCreativeStatus.setInt(6, playerID);
+	                    
+	                    set = getCreativeStatus.executeQuery();
+	                    set.next();
+	                    creative = set.getInt(1);
+	                    
+	                    if(creative == 1) RestrictedCreativeAPI.add(block);
+			    	}
+		    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
 			}
     		
     	},60L);

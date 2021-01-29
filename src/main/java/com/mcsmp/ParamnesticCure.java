@@ -31,7 +31,6 @@ public class ParamnesticCure extends JavaPlugin {
 
     //Initializes the main class, TrackedBlocks, and implements the Logger.
     private static ParamnesticCure instance;
-    private static TrackedBlocks trackedBlocks;
     private Logger log = Bukkit.getLogger();
     private CacheData dataCache;
     //Variable to ensure databases are connected properly.
@@ -107,26 +106,8 @@ public class ParamnesticCure extends JavaPlugin {
     }
 
     private void createDB() {
-        //Connection connection;
-        //File dbFile = new File(getDataFolder().getAbsolutePath(), "paramnestic.db");
-        //String url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
     	
-        try {
-            //Connection connection = DriverManager.getConnection(url);
-            Connection connection = getCacheData().getDatabaseMap().get("paramnestic").getDatabase().getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-            			"CREATE TABLE IF NOT EXISTS blocks("
-            			+ "id int NOT NULL,"
-            			+ " world varchar(20),"
-            			+ " x int, y int, z int)");
-            
-            statement.execute();
-        } catch (SQLException ex) {
-            getLogger().log(Level.SEVERE, null, ex);
-        }
-        
-        
-        //Adds another row called creative to the co_block table
+        //Adds another column called creative to the co_block table
         try {
         	Connection connection = getCacheData().getDatabaseMap().get("coreprotect").getDatabase().getConnection();
         	PreparedStatement statement = connection.prepareStatement(
@@ -134,8 +115,8 @@ public class ParamnesticCure extends JavaPlugin {
         				+ "ADD creative INTEGER;"
         				);
         	statement.execute();
-        //should always throw sql exception except on first run
-        }catch (SQLException ex) {getLogger().info("[Manual Debug] " + ex);}
+        //should always throw SQL exception except on first run (there might be some way to not initialise this exception all the time)
+        }catch (SQLException ex) {}
         
     }
 
