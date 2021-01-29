@@ -33,82 +33,8 @@ public class TrackedBlocks {
     private static ParamnesticCure plugin = ParamnesticCure.getInstance();
     //stores TrackedBlocks if initialized.
     private static TrackedBlocks instance;
-    public static int id = 0;
 
     //Constructor for TrackedBlocks
-    private TrackedBlocks() {
-        loadBlocks();
-    }
-
-    /**
-     * Method to check if a block is marked as Φ.
-     *
-     * @param location a Location to set as Φ
-     * @return returns true if successful, false otherwise.
-     */
-    public boolean isTracked(Location location) {
-        return this.blockList.containsKey(location);
-    }
-
-    /**
-     * Produces a list of blocks with Φ status.
-     *
-     * @return Returns a ConcurrentHashMap of blocks being tracked by PC.
-     */
-    public ConcurrentHashMap<Location, Integer> getBlockList() {
-        return this.blockList;
-    }
-
-    /**
-     * Method to set a block as Φ.
-     *
-     * @param location a Location to set as Φ
-     * @return returns true if successful, false otherwise.
-     */
-    public boolean addToBlockList(Location location) {
-        return this.blockList.putIfAbsent(location, addToDB(location)) != null;
-    }
-
-    /**
-     * Method to remove a block's Φ status.
-     *
-     * @param location a Location to set as Φ
-     */
-    public void removeFromBlockList(Location location) {
-        this.blockList.remove(location);
-    }
-
-    /**
-     * Queries Paramnestic's database and stores all blocks it contains within
-     * this class' hashmap.
-     *
-     * @return returns true if successful, false otherwise.
-     */
-    private void loadBlocks() {
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                //File dbFile = new File(plugin.getDataFolder().getAbsolutePath(), "paramnestic.db");
-                //String url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
-                try {
-                    Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getDatabase().getConnection();
-                    //Connection connection = plugin.getCacheData().getDatabaseMap().get("paramnestic").getConnection();
-
-                    PreparedStatement statement = connection.prepareStatement("Select * FROM blocks");
-                    ResultSet set = statement.executeQuery();
-                    if (set != null) {
-                    	while (set.next()) {
-                            Location location = new Location(plugin.getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
-                            getBlockList().put(location, set.getInt("id"));
-                        }
-                    }
-                } catch (SQLException ex) {
-                    plugin.getLogger().log(SEVERE, ex.getMessage(), ex.getCause());
-                    //Logger.getLogger(TrackedBlocks.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-    }
 
     /**
      * Manages adding blocks recently marked as Φ to Paramnestic's database.
@@ -116,7 +42,7 @@ public class TrackedBlocks {
      * @param location a Location to set as Φ
      * @return returns true if successful, false otherwise.
      */
-    private Integer addToDB(Location location) {
+    public void updateCreativeIDInDB(Location location) {
     	
     	Integer time = Math.round( System.currentTimeMillis()/1000);//Seconds
     	
@@ -125,33 +51,56 @@ public class TrackedBlocks {
             public void run() {
                 try {
                     Connection connection = plugin.getCacheData().getDatabaseMap().get("coreprotect").getDatabase().getConnection();
+
+
+                    PreparedStatement getWorldID = connection.prepareStatement(
+                    		"SELECT * co_world"
+                    		+ " WHERE world = ?"
+                    		);
+                    getWorldID.setString(1,location.getWorld().toString());
                     
-                    PreparedStatement statement = connection.prepareStatement(
+                    
+                    Integer worldID = getWorldID.executeQuery().getInt(1);
+                    
+                    
+                    
+                    //TODO make better SQL code that doesn't repeat itself
+                    PreparedStatement updateCreativeID = connection.prepareStatement(
                     		"UPDATE co_block"
                     		+ " SET creative = 1"
-                    		+ " WHERE"
-                    		, Statement.RETURN_GENERATED_KEYS);
+                    		+ " WHERE x = ? AND y = ? AND z = ? AND action = 1 AND wid = ?"
+                    		+ " AND co_block.time IN("
+                    			+ " SELECT MAX(co_block.time) FROM co_block"
+                    			+ " WHERE x = ? AND y = ? AND z = ? AND action = 1 AND wid = ?"
+                    		+ ")"
+                    		);
+                    // Don't look here
+                    updateCreativeID.setInt(1, location.getBlockX());
+                    updateCreativeID.setInt(2, location.getBlockY());
+                    updateCreativeID.setInt(3, location.getBlockZ());
+                    updateCreativeID.setInt(4, worldID);
+                    // This does not exist
+                    updateCreativeID.setInt(5, location.getBlockX());
+                    updateCreativeID.setInt(6, location.getBlockY());
+                    updateCreativeID.setInt(7, location.getBlockZ());
+                    updateCreativeID.setInt(8, worldID);
+                    // Don't take shrooms
                     
-                    statement.setString(1, location.getWorld().toString());
-                    statement.setDouble(2, location.getBlockX());
-                    statement.setDouble(3, location.getBlockY());
-                    statement.setDouble(4, location.getBlockZ());
-                    statement.executeQuery();
-                    ResultSet set = statement.getGeneratedKeys();
-                    if (set.next()) {
-                        id = set.getInt(1);
-                    }
+                    
+                    
+                    updateCreativeID.executeQuery();
+                    
                 } catch (SQLException ex) {
-
+                	plugin.getLogger().log(SEVERE, ex.getMessage(), ex.getCause());
                 }
             }
         });
-        return id;
     }
 
     /**
      * Integrates recent changes to Φ into Paramnestic's database.
      */
+    //no real need for this
     public void save() {
         try {
             File file = new File(plugin.getDataFolder().getAbsolutePath(), "paramnestic.db");

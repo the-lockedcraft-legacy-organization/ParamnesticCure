@@ -67,7 +67,7 @@ public class ParamnesticCureListener implements Listener {
         //check if creative
         if(RestrictedCreativeAPI.isCreative(event.getBlock())) {
         	//TODO logic that compares this to the CO database
-            plugin.getTrackedBlocks().addToBlockList(block.getLocation());
+            plugin.getTrackedBlocks().updateCreativeIDInDB(block.getLocation());
         }
 
     }

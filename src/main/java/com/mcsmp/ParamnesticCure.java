@@ -145,7 +145,7 @@ public class ParamnesticCure extends JavaPlugin {
         	Connection connection = getCacheData().getDatabaseMap().get("coreprotect").getDatabase().getConnection();
         	PreparedStatement statement = connection.prepareStatement(
         				"ALTER TABLE co_block "
-        				+ "ADD creative int;"
+        				+ "ADD creative INTEGER;"
         				);
         	statement.execute();
         //should always throw sql exception except on first run

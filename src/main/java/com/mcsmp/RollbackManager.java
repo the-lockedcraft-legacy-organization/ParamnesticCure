@@ -211,64 +211,6 @@ public class RollbackManager {
 			}
     		
     	},60L);
-    	
-        ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Connection connection = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("coreprotect").getDatabase().getConnection();
-                    //co_world
-                    PreparedStatement statement = connection.prepareStatement(
-                    		"SELECT * from co_block,co_world"
-                    		+ " INNER JOIN co_world"
-                    		+ " ON co_block.wid=co_world.id");
-                    
-                    ResultSet set = statement.executeQuery();
-                    while(set.next()){
-                        int action = set.getInt("action");
-                        Location location = new Location(ParamnesticCure.getInstance().getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
-                        
-                        if(set.getInt("rollback") > 0) {
-                            switch(action) {
-                                case 0:
-                                    if(ParamnesticCure.getInstance().getTrackedBlocks().getBlockList().containsKey(location)) {
-                                        ParamnesticCure.getInstance().getTrackedBlocks().removeFromBlockList(location);
-                                        RestrictedCreativeAPI.add(location.getBlock());
-                                    }
-                                    break;
-                                case 1:
-                                        ParamnesticCure.getInstance().getTrackedBlocks().addToBlockList(location);
-                                        RestrictedCreativeAPI.remove(location.getBlock());
-                                    break;
-                                default: break;
-                            }
-                        } 
-                        else {
-                            switch(action) {
-                                case 0:
-                                        ParamnesticCure.getInstance().getTrackedBlocks().addToBlockList(location);
-                                        RestrictedCreativeAPI.remove(location.getBlock());
-                                    break;
-                                case 1:
-                                    if(ParamnesticCure.getInstance().getTrackedBlocks().getBlockList().containsKey(location)) {
-                                        ParamnesticCure.getInstance().getTrackedBlocks().removeFromBlockList(location);
-                                        if(!(location.getBlock().isEmpty() || location.getBlock().isLiquid())) {
-                                            RestrictedCreativeAPI.add(location.getBlock());
-                                        }
-                                    }
-                                    break;
-                                default: break;
-                            }
-                        }
-                        
-                    } 
-                    
-                    
-                } catch (SQLException ex) {
-
-                }
-            }
-        }, 60L);
     }
     
     public static RollbackManager getInstance() {
