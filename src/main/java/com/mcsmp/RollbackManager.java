@@ -46,8 +46,8 @@ public class RollbackManager {
 	private static RollbackManager instance;
 	/**
      * Constructor for RollbackManager
-     * @param Location radius_location; location where command was thrown
-     * @param String [] arguments; The arguments of the command
+     * @param arguments ; The arguments of the command
+     * @param radius_location ; location where command was thrown
      */
     public RollbackManager(String[] arguments, Location radius_location) {
     	
