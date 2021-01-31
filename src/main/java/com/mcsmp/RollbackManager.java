@@ -198,7 +198,7 @@ public class RollbackManager {
 		    	
 		    	long endTime = System.nanoTime();
 		    	
-		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf( (endTime-startTime) / Math.pow(10, 9)) + " Seconds");
+		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(  endTime-startTime  ) + " Seconds");
 		    	
 		    	try {
 		    		
@@ -216,12 +216,8 @@ public class RollbackManager {
 			    		String msg = "";
 			    		
 			    		for(String temp : affectedBlockMsg) msg = msg + ":" + temp;//debug
-			    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] MSG:" + msg);
 			    		
 			    		ParseResult affectedBlock = coreprotect.parseResult(affectedBlockMsg);
-			    		if(affectedBlock.isRolledBack()) return;
-			    		
-			    		
 			    		
 			    		
 			    		worldname = affectedBlock.worldName();
@@ -259,14 +255,16 @@ public class RollbackManager {
 
 			    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] block:" + block.toString() +", time:" + time);
 	                    
-	                    if (set.next()) if(set.getInt(1) == 1) {
+	                    if (set.next()) {
+	                    	if(set.getInt(1) == 1) {
 		                    	RestrictedCreativeAPI.add(block);
 		                    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block rollbacked to creative");
 	                    	}
+	                    }
 	                    else {
 	                    	RestrictedCreativeAPI.remove(block);
 	                    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block rollbacked to survival");
-	                    	}
+	                    }
 	                    
 			    		//if the block is creative, there would be problems when you undo rollbacks. This check prevents that
 	                    TrackedBlocks.updateCreativeIDInDB(block);
