@@ -58,18 +58,16 @@ public class ParamnesticCureListener implements Listener {
      */
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        
-        Block block = event.getBlock();
 
         plugin.getLogger().info("[Manual Debug] You broke a block hasMetadata('GMC')= " + RestrictedCreativeAPI.isCreative(event.getBlock()));
         
-        //check if creative
+        //Tracked block checks if the block is creative/critical
         TrackedBlocks.updateCreativeIDInDB(event.getBlock());
 
     }
     /**
      * Currently not in use
-     * @param event BlockBreakEvent
+     * @param event BlockPlaceEvent
      */
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {

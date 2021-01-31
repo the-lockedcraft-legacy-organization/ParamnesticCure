@@ -35,9 +35,7 @@ public class TrackedBlocks {
     public static void updateCreativeIDInDB(Block block) {
     	boolean isCreative = RestrictedCreativeAPI.isCreative(block);
 
-    	// Any block that has had an creative action is deemed as a critical block; all actions needs to be logged
-    	if(isCreative) {}
-    	else if(!isInDatabase(block)) return;
+    	
 
         plugin.getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
             @Override
@@ -56,6 +54,8 @@ public class TrackedBlocks {
             		time = action.getTime();
             		break;//The returned data from parsResult seems to be ordered highest time to lowest, this should return the most recent block place action
             	}
+            	// Any block that has had an creative action is deemed as a critical block; all actions needs to be logged
+            	if(!isCreative && (isInDatabase(block,time) != 1)) return;
             	
             	try {
                 Connection connection = ParamnesticCure.getInstance().getConnection();
@@ -78,24 +78,36 @@ public class TrackedBlocks {
             }
         });
     }
-    
-    public static boolean isInDatabase(Block block) {
+    /**
+     * 
+     * @param block
+     * @param time
+     * @return 0 => No, 1 => yes, but not this action, 2 => yes, the action is already stored
+     */
+    public static int isInDatabase(Block block, int time) {
 
     	try {
-    	Connection connection = ParamnesticCure.getInstance().getConnection();
-        PreparedStatement getCreativeStatus = connection.prepareStatement(
-        		"SELECT time FROM blockAction"
-        		+ " WHERE world = ? AND x = ? AND y = ? AND z = ?"
-        		);
-        getCreativeStatus.setString(  1, block.getWorld().getName()  );
-        getCreativeStatus.setInt(  2, block.getX()  );
-        getCreativeStatus.setInt(  3, block.getY()  );
-        getCreativeStatus.setInt(  4, block.getZ()  );
-        
-        ResultSet set = getCreativeStatus.executeQuery();
-        
-        if (set.next()) return true;
-    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
-    	return false;
+	    	Connection connection = ParamnesticCure.getInstance().getConnection();
+	        PreparedStatement getCreativeStatus = connection.prepareStatement(
+	        		"SELECT time FROM blockAction"
+	        		+ " WHERE world = ? AND x = ? AND y = ? AND z = ?"
+	        		);
+	        getCreativeStatus.setString(  1, block.getWorld().getName()  );
+	        getCreativeStatus.setInt(  2, block.getX()  );
+	        getCreativeStatus.setInt(  3, block.getY()  );
+	        getCreativeStatus.setInt(  4, block.getZ()  );
+	        
+	        ResultSet set = getCreativeStatus.executeQuery();
+	        
+	        
+	        
+	        while ( set.next() ) {
+	        	if( set.getInt(1) == time )
+	        		return 2;
+	        	return 1;
+        	}
+    	}
+    	catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+    	return 0;
     }
 }
