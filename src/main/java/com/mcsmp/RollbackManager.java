@@ -260,8 +260,8 @@ public class RollbackManager {
 	                    ParamnesticCure.getInstance().getLogger().info("[Manual Debug] hasNext: " + hasNext);
 	                    
 	                    if (hasNext && set.getInt(1) == 1) {
-		                    	RestrictedCreativeAPI.add(block);
-		                    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block rollbacked to creative");
+		                    RestrictedCreativeAPI.add(block);
+		                    ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block rollbacked to creative");
 	                    }
 	                    else {
 	                    	RestrictedCreativeAPI.remove(block);
