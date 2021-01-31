@@ -177,7 +177,7 @@ public class RollbackManager {
     	else radius_location = this.radius_location.toString();
     	
     	ParamnesticCure.getInstance().getLogger().info(
-    			"[Manual Debug]" + String.valueOf(this.time) + ":" + restrict_users + ":" + exclude_users + ":" +
+    			"[Manual Debug RollbackManager] Inputs: " + String.valueOf(this.time) + ":" + restrict_users + ":" + exclude_users + ":" +
     			restrict_blocks + ":" + exclude_blocks + ":" + action_list + ":" + radius + ":" + radius_location
     	);
     	//No longer debug
@@ -198,7 +198,7 @@ public class RollbackManager {
 		    	
 		    	long endTime = System.nanoTime();
 		    	
-		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(  endTime-startTime  ) + " Seconds");
+		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(  endTime-startTime  ) + " ns");
 		    	
 		    	try {
 		    		
@@ -219,7 +219,6 @@ public class RollbackManager {
 			    		
 			    		ParseResult affectedBlock = coreprotect.parseResult(affectedBlockMsg);
 			    		
-			    		
 			    		worldname = affectedBlock.worldName();
 			    		playername = affectedBlock.getPlayer();
 			    		time = affectedBlock.getTime();
@@ -230,15 +229,14 @@ public class RollbackManager {
 			        	Connection connection = ParamnesticCure.getInstance().getConnection();
 	                    PreparedStatement getCreativeStatus = connection.prepareStatement(
 	                    		"SELECT is_creative FROM blockAction"
-	                    		+ " WHERE time = ? AND user = ? AND world = ? AND x = ? AND y = ? AND z = ?"
+	                    		+ " WHERE time < ? AND world = ? AND x = ? AND y = ? AND z = ?"
 	                    		+ " ORDER BY time DESC"
 	                    		); // Should return a list ordered by the most recent action that happened before the rollback
 	                    getCreativeStatus.setInt(1, time);
-	                    getCreativeStatus.setString(2, playername);
-	                    getCreativeStatus.setString(3, worldname);
-	                    getCreativeStatus.setInt(4, x);
-	                    getCreativeStatus.setInt(5, y);
-	                    getCreativeStatus.setInt(6, z);
+	                    getCreativeStatus.setString(2, worldname);
+	                    getCreativeStatus.setInt(3, x);
+	                    getCreativeStatus.setInt(4, y);
+	                    getCreativeStatus.setInt(5, z);
 	                    
 	                    ResultSet set = getCreativeStatus.executeQuery();
 	                    
@@ -254,8 +252,14 @@ public class RollbackManager {
 			    		Block block = world.getBlockAt(x, y, z);
 
 			    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] block:" + block.toString() +", time:" + time);
+
+			    		//if the block is creative, there would be problems when you undo rollbacks. This check prevents that
+	                    TrackedBlocks.updateCreativeIDInDB(block);
 	                    
-	                    if (set.next() && set.getInt(1) == 1) {
+	                    boolean hasNext = set.next();
+	                    ParamnesticCure.getInstance().getLogger().info("[Manual Debug] hasNext: " + hasNext);
+	                    
+	                    if (hasNext && set.getInt(1) == 1) {
 		                    	RestrictedCreativeAPI.add(block);
 		                    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block rollbacked to creative");
 	                    }
@@ -264,8 +268,6 @@ public class RollbackManager {
 	                    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block rollbacked to survival");
 	                    }
 	                    
-			    		//if the block is creative, there would be problems when you undo rollbacks. This check prevents that
-	                    TrackedBlocks.updateCreativeIDInDB(block);
 			    	}
 		    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
 			}
