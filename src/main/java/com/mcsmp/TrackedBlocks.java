@@ -9,80 +9,93 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import static java.util.logging.Level.SEVERE;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+
+import me.prunt.restrictedcreative.RestrictedCreativeAPI;
+import net.coreprotect.CoreProtectAPI;
+import net.coreprotect.CoreProtectAPI.ParseResult;
 
 /**
- * @author Frostalf, Thorin
- */
-/**
  * Manages Paramnestic's in-house tracking (Φ)
+ * @author Frostalf
+ * @author Thorin
  */
 public class TrackedBlocks {
 
-    
     private static ParamnesticCure plugin = ParamnesticCure.getInstance();
-    
+    private static CoreProtectAPI coreprotect = plugin.getCoreProtect();
     /**
-     * Adds the creative ID into coreprotects database
+     * Adds a critical block action into coreprotects database, 
      *
-     * @param location of the creative block
+     * @param block the block that is going to inspected
      */
-    public static void updateCreativeIDInDB(Location location) {
-    	
+    public static void updateCreativeIDInDB(Block block) {
+    	boolean isCreative = RestrictedCreativeAPI.isCreative(block);
+
+    	// Any block that has had an creative action is deemed as a critical block; all actions needs to be logged
+    	if(isCreative) {}
+    	else if(!isInDatabase(block)) return;
+
         plugin.getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
             @Override
             public void run() {
-                try {
-                    Connection connection = plugin.getCacheData().getDatabaseMap().get("coreprotect").getDatabase().getConnection();
-                    
-                    PreparedStatement getWorldID = connection.prepareStatement(
-                    		"SELECT id FROM co_world"
-                    		+ " WHERE world = ?"
-                    		);
-                    
-                    String worldName = location.getWorld().getName();
-                    getWorldID.setString(1,worldName);
-                    
-                    
-                    ResultSet set = getWorldID.executeQuery();
-                    Integer worldID = set.getInt(1);
-                    
-                    plugin.getLogger().info("[Manual Debug] worldID: " + String.valueOf(worldID));
-                    
-                    //TODO make better SQL code that doesn't repeat itself
-                    // This gets the latest action on this block, action = 1 is equal to "placed a block"
-                    PreparedStatement updateCreativeID = connection.prepareStatement(
-                    		"UPDATE co_block"
-                    		+ " SET creative = 1"
-                    		+ " WHERE x = ? AND y = ? AND z = ? AND action = 1 AND wid = ?"
-                    		+ " AND co_block.time IN("
-                    			+ " SELECT MAX(co_block.time) FROM co_block"
-                    			+ " WHERE x = ? AND y = ? AND z = ? AND action = 1 AND wid = ?"
-                    		+ ")"
-                    		);
-                    // Don't look here
-                    updateCreativeID.setInt(1, location.getBlockX());
-                    updateCreativeID.setInt(2, location.getBlockY());
-                    updateCreativeID.setInt(3, location.getBlockZ());
-                    updateCreativeID.setInt(4, worldID);
-                    // This does not exist
-                    updateCreativeID.setInt(5, location.getBlockX());
-                    updateCreativeID.setInt(6, location.getBlockY());
-                    updateCreativeID.setInt(7, location.getBlockZ());
-                    updateCreativeID.setInt(8, worldID);
-                    // Don't take shrooms
-                    
-                    
-                    
-                    updateCreativeID.execute();
-                    
-                } catch (SQLException ex) {
-                	plugin.getLogger().log(SEVERE, ex.getMessage(), ex.getCause());
-                }
+            	List<String[]> actiondataMsg = coreprotect.blockLookup(block,0);
+            	
+            	String player = "";
+            	int time = 0;
+            	
+            	for(String[] actionMsg : actiondataMsg) {
+            		ParseResult action = coreprotect.parseResult(actionMsg);
+            		if (action.getActionId() != 1) continue; //has to be block place action : actionId == 1
+            		
+            		
+            		player = action.getPlayer();
+            		time = action.getTime();
+            		break;//The returned data from parsResult seems to be ordered highest time to lowest, this should return the most recent block place action
+            	}
+            	
+            	try {
+                Connection connection = ParamnesticCure.getInstance().getConnection();
+            	PreparedStatement addToDatabase = connection.prepareStatement(
+            			"INSERT INTO blockAction (time,user,world,x,y,z,is_creative)"
+            			+ " VALUES (?,?,?,?,?,?,?)"
+            			);
+            	
+            	addToDatabase.setInt( 1, time);
+            	addToDatabase.setString( 2, player);
+            	addToDatabase.setString( 3, block.getWorld().getName());
+            	addToDatabase.setInt( 4, block.getX());
+            	addToDatabase.setInt( 5, block.getY());
+            	addToDatabase.setInt( 6, block.getZ());
+            	addToDatabase.setInt( 7,  isCreative ? 1 : 0  );
+            	
+            	addToDatabase.execute();
+
+            	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
             }
         });
     }
     
-    
+    public static boolean isInDatabase(Block block) {
+
+    	try {
+    	Connection connection = ParamnesticCure.getInstance().getConnection();
+        PreparedStatement getCreativeStatus = connection.prepareStatement(
+        		"SELECT time FROM blockAction"
+        		+ " WHERE world = ? AND x = ? AND y = ? AND z = ?"
+        		);
+        getCreativeStatus.setString(  1, block.getWorld().getName()  );
+        getCreativeStatus.setInt(  2, block.getX()  );
+        getCreativeStatus.setInt(  3, block.getY()  );
+        getCreativeStatus.setInt(  4, block.getZ()  );
+        
+        ResultSet set = getCreativeStatus.executeQuery();
+        
+        if (set.next()) return true;
+    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+    	return false;
+    }
 }

@@ -26,7 +26,8 @@ import org.bukkit.event.server.ServerCommandEvent;
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 
 /**
- * @author Frostalf, Thorin
+ * @author Frostalf
+ * @author Thorin
  */
 
 /*
@@ -52,7 +53,7 @@ public class ParamnesticCureListener implements Listener {
     }
 
     /**
-     * Checks ζ block status of manually broken blocks (currently using NBT) sets them as Φ
+     * Blockbreak actions are currently deemed as critical actions, some needs to get stored
      * @param event BlockBreakEvent
      */
     @EventHandler
@@ -63,13 +64,11 @@ public class ParamnesticCureListener implements Listener {
         plugin.getLogger().info("[Manual Debug] You broke a block hasMetadata('GMC')= " + RestrictedCreativeAPI.isCreative(event.getBlock()));
         
         //check if creative
-        if(RestrictedCreativeAPI.isCreative(event.getBlock())) {
-            TrackedBlocks.updateCreativeIDInDB(block.getLocation());
-        }
+        TrackedBlocks.updateCreativeIDInDB(event.getBlock());
 
     }
     /**
-     * Checks removes Φ status of any manually placed blocks
+     * Currently not in use
      * @param event BlockBreakEvent
      */
     @EventHandler
@@ -79,7 +78,7 @@ public class ParamnesticCureListener implements Listener {
         plugin.getLogger().info("[Manual Debug] You placed a block in creative");
     }
     /**
-     * Detects if someone is attempting a rollback operation... and runs a tree of logic to ensure it doesn't mess with creative data.
+     * Checks for critical rollback commands
      * @param event Command being processed
      */
     @EventHandler
@@ -115,8 +114,7 @@ public class ParamnesticCureListener implements Listener {
     	}
     }
     /**
-     * If someone tries a rollback command from console, tell them not to.
-     * Console-based rollbacks add another layer of complexity that we would prefer to avoid at present.
+     * Console based commands currently not implemented
      * @param event Command being processed
      */
     @EventHandler
@@ -125,9 +123,8 @@ public class ParamnesticCureListener implements Listener {
     	String command = event.getCommand().toLowerCase();
     	String[] commandListed = command.split(" ");
     	
-    	if(!configSektion.getStringList("blockLoggerCommands.alias").contains(commandListed[0])) {
-            return;
-    	}
+    	if(!configSektion.getStringList("blockLoggerCommands.alias").contains(commandListed[0])||commandListed.length<3) return;
+    	
     	log.warning("Console rollbacks are not yet supported by Paramnestic.");
         event.setCancelled(true);
     }

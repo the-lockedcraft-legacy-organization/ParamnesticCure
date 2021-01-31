@@ -7,6 +7,8 @@ package com.mcsmp;
 
 import java.io.File;
 import static java.lang.Byte.valueOf;
+import static java.util.logging.Level.SEVERE;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -22,6 +24,7 @@ import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 /**
  * @author Frostalf
+ * @author Thorin
  */
 
 /*
@@ -33,6 +36,7 @@ public class ParamnesticCure extends JavaPlugin {
     private static ParamnesticCure instance;
     private Logger log = Bukkit.getLogger();
     private CacheData dataCache;
+    private Connection connection;
     //Variable to ensure databases are connected properly.
     private boolean everythingOK = true;
 
@@ -74,12 +78,20 @@ public class ParamnesticCure extends JavaPlugin {
         //sets instance.
         instance = this;
         dataCache = new CacheData();
+        
+        try {
+        	this.connection = getCacheData().getDatabaseMap().get("paramnestic").getDatabase().getConnection();
+        }
+        catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+        
         createDB();
     }
 
     @Override
     public void onDisable() {
-        // No data? no data!
+    	try {
+        connection.close();
+    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     }
 
     /*
@@ -106,18 +118,14 @@ public class ParamnesticCure extends JavaPlugin {
     }
 
     private void createDB() {
-    	
-        //Adds another column called creative to the co_block table
-        try {
-        	Connection connection = getCacheData().getDatabaseMap().get("coreprotect").getDatabase().getConnection();
-        	PreparedStatement statement = connection.prepareStatement(
-        				"ALTER TABLE co_block "
-        				+ "ADD creative INTEGER;"
-        				);
-        	statement.execute();
-        //should always throw SQL exception except on first run (there might be some way to not initialise this exception all the time)
-        }catch (SQLException ex) {}
-        
+    	try {
+    		Connection connection = getConnection();
+    		PreparedStatement statement = connection.prepareStatement(
+    				"CREATE TABLE IF NOT EXISTS blockAction"
+    				+ " (time INTEGER,user VARCHAR(255),world VARCHAR(255),x INTEGER, y INTEGER, z INTEGER, is_creative INTEGER)"
+    				);
+    		statement.execute();
+    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     }
 
     public CoreProtectAPI getCoreProtect() {
@@ -140,5 +148,8 @@ public class ParamnesticCure extends JavaPlugin {
         }
 
         return CoreProtect;
-}
+    }
+    public Connection getConnection() {
+    	return connection;
+    }
 }

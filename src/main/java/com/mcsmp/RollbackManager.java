@@ -25,12 +25,11 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 
 /**
- * @author InteriorCamping, Thorin
- */
-
-/**
- * Does a series of logical operations to minimize opportunities for rollblacks to mess with creative data.
+ * Does a series of logical operations to minimise opportunities for rollblacks to mess with creative block data.
  * Note that this does not include rollback interference with inventories!
+ * 
+ * @author InteriorCamping
+ * @author Thorin
  */
 public class RollbackManager {
 
@@ -202,84 +201,75 @@ public class RollbackManager {
 		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf( (endTime-startTime) / Math.pow(10, 9)) + " Seconds");
 		    	
 		    	try {
-			    	Connection connection = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("coreprotect").getDatabase().getConnection();
+		    		
+			    	int time; int x; int y; int z; int worldID; int playerID; int creative;
+			    	String worldname; String playername; 
 			    	
-			    	int time;
-			    	int x;
-			    	int y;
-			    	int z;
-			    	String worldname;
-			    	String playername;
-			    	Integer worldID;
-			    	Integer playerID;
-			    	Integer creative;
+			    	
+			    	
+			    	
+			    	
+			    	
+			    	
+			    	
 			    	for(String[] affectedBlockMsg : affectedBlocksMsg) {
-			    		ParseResult affectedBlock = RBmanager.coreprotect.parseResult(affectedBlockMsg);
+			    		String msg = "";
+			    		
+			    		for(String temp : affectedBlockMsg) msg = msg + ":" + temp;//debug
+			    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] MSG:" + msg);
+			    		
+			    		ParseResult affectedBlock = coreprotect.parseResult(affectedBlockMsg);
+			    		if(affectedBlock.isRolledBack()) return;
+			    		
+			    		
 			    		
 			    		
 			    		worldname = affectedBlock.worldName();
-			    		
-			    		List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
-			    		World world = null;
-			    		
-			    		for (World worldTest : worldlist)
-			    			if(worldTest.toString() == worldname) world = worldTest;
-			    		
-			    		
+			    		playername = affectedBlock.getPlayer();
+			    		time = affectedBlock.getTime();
 			    		x = affectedBlock.getX();
 			    		y = affectedBlock.getY();
 			    		z = affectedBlock.getZ();
-			    		Block block = world.getBlockAt(x, y, z);
-			    		
-			    		//if the block is creative, there would be problems when you undo rollbacks. This check prevents that
-			    		if(RestrictedCreativeAPI.isCreative(block))  TrackedBlocks.updateCreativeIDInDB(block.getLocation());
-			            
-			    		//TODO Might be unnecessary to do this on every block
-			    		PreparedStatement getWorldID = connection.prepareStatement(
-	                    		"SELECT id FROM co_world"
-	                            + " WHERE world = ?"
-	                            );
-	                    getWorldID.setString(1,worldname);
-	                    
-	                    ResultSet set = getWorldID.executeQuery();
-	                    set.next();
-	                    worldID = set.getInt(1);
 
-	                    
-	                    
-	                    playername = affectedBlock.getPlayer();
-			    		PreparedStatement getPlayerID = connection.prepareStatement(
-	                    		"SELECT id FROM co_user"
-	                            + " WHERE user = ?"
-	                            );
-			    		getPlayerID.setString(1,playername);
-	                    
-	                    set = getPlayerID.executeQuery();
-	                    set.next();
-	                    playerID = set.getInt(1);
-	                    
-	                    
-			    		time = affectedBlock.getTime();
-	                    
-	                    
-	                    ParamnesticCure.getInstance().getLogger().info("[Manual Debug] worldID: " + String.valueOf(worldID));
-	                    
+			        	Connection connection = ParamnesticCure.getInstance().getConnection();
 	                    PreparedStatement getCreativeStatus = connection.prepareStatement(
-	                    		"SELECT creative FROM co_block"
-	                    		+ " WHERE wid = ? AND x = ? AND y = ? AND z = ? AND time = ? AND user = ? AND action = 1"
-	                    		);
-	                    getCreativeStatus.setInt(1, worldID);
-	                    getCreativeStatus.setInt(2, x);
-	                    getCreativeStatus.setInt(3, y);
-	                    getCreativeStatus.setInt(4, z);
-	                    getCreativeStatus.setInt(5, time);
-	                    getCreativeStatus.setInt(6, playerID);
+	                    		"SELECT is_creative FROM blockAction"
+	                    		+ " WHERE time = ? AND user = ? AND world = ? AND x = ? AND y = ? AND z = ?"
+	                    		+ " ORDER BY time DESC"
+	                    		); // Should return a list ordered by the most recent action that happened before the rollback
+	                    getCreativeStatus.setInt(1, time);
+	                    getCreativeStatus.setString(2, playername);
+	                    getCreativeStatus.setString(3, worldname);
+	                    getCreativeStatus.setInt(4, x);
+	                    getCreativeStatus.setInt(5, y);
+	                    getCreativeStatus.setInt(6, z);
 	                    
-	                    set = getCreativeStatus.executeQuery();
-	                    set.next();
-	                    creative = set.getInt(1);
+	                    ResultSet set = getCreativeStatus.executeQuery();
 	                    
-	                    if(creative == 1) RestrictedCreativeAPI.add(block);
+	                    List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
+			    		World world = null;
+			    		
+			    		for (World worldTest : worldlist) {
+			    			if(worldTest.getName().equals(worldname)) { world = worldTest; break; }
+			    		}
+			    		
+			    		
+			    		
+			    		Block block = world.getBlockAt(x, y, z);
+
+			    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] block:" + block.toString() +", time:" + time);
+	                    
+	                    if (set.next()) if(set.getInt(1) == 1) {
+		                    	RestrictedCreativeAPI.add(block);
+		                    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block rollbacked to creative");
+	                    	}
+	                    else {
+	                    	RestrictedCreativeAPI.remove(block);
+	                    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block rollbacked to survival");
+	                    	}
+	                    
+			    		//if the block is creative, there would be problems when you undo rollbacks. This check prevents that
+	                    TrackedBlocks.updateCreativeIDInDB(block);
 			    	}
 		    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
 			}
