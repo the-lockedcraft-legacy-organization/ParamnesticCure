@@ -5,9 +5,13 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-
 import net.coreprotect.CoreProtectAPI;
 
+
+/**
+ * An abstract class with methods that are shared between all loggerManagers
+ * @author Thorin
+ */
 public abstract class loggerManager {
 	
 	
@@ -22,6 +26,13 @@ public abstract class loggerManager {
 	protected int radius;
 	protected Location radius_location;
 	
+	
+	
+	/**
+	 * Interprets the argument, and assigns values to the proper blocks
+	 * @param arguments : The arguments of the command
+	 * @param radius_location : location where command was thrown
+	 */
 	protected void interpretArguments(String[] arguments, Location radius_location) {
 		String argument;
     	

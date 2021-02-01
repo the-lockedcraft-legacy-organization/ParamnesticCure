@@ -26,13 +26,11 @@ import org.bukkit.block.Block;
  * @author Thorin
  */
 public class RollbackManager extends loggerManager{
-
-	private static RollbackManager instance;
 	
 	/**
      * Constructor for RollbackManager
-     * @param arguments ; The arguments of the command
-     * @param radius_location ; location where command was thrown
+     * @param arguments : The arguments of the command
+     * @param radius_location : location where command was thrown
      */
     public RollbackManager(String[] arguments, Location radius_location) {
     	
@@ -52,6 +50,7 @@ public class RollbackManager extends loggerManager{
      * Also does the same logic as in a block break event to see if this current block needs to be stored in 
      * the paramnestic database
      */
+    @Override
     public void executeTask() {
     	
     	ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
