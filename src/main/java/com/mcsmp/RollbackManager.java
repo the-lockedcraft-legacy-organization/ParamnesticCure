@@ -11,14 +11,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
-import net.coreprotect.CoreProtectAPI;
 import net.coreprotect.CoreProtectAPI.ParseResult;
-
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -59,52 +54,15 @@ public class RollbackManager extends loggerManager{
      */
     public void executeTask() {
     	
-    	
-    	//For debug
-    	String exclude_users = "";
-    	if (this.exclude_users == null) exclude_users = "null";
-    	else for(String user : this.exclude_users) exclude_users = exclude_users + "," + user;
-    	
-    	String restrict_users = "";
-    	if (this.restrict_users == null) restrict_users = "null";
-    	else for(String user : this.restrict_users) restrict_users = restrict_users + "," + user;
-    	
-    	String restrict_blocks = "";
-    	if (this.restrict_blocks == null) restrict_blocks = "null";
-    	else for(Object block : this.restrict_blocks) restrict_blocks = restrict_blocks + "," + block.toString();
-    	
-    	String exclude_blocks = "";
-    	if (this.exclude_blocks == null) exclude_blocks = "null";
-    	else for(Object block : this.restrict_blocks) exclude_blocks = exclude_blocks + "," + block.toString();
-    	
-    	String action_list = "";
-    	if (this.action_list == null) action_list = "null";
-    	else for(Integer number : this.action_list) action_list = action_list + "," + String.valueOf(number);
-    	
-    	String radius = String.valueOf(this.radius);
-    	
-    	String radius_location;
-    	if (this.radius_location == null) radius_location = "null";
-    	else radius_location = this.radius_location.toString();
-    	
-    	ParamnesticCure.getInstance().getLogger().info(
-    			"[Manual Debug RollbackManager] Inputs: " + String.valueOf(this.time) + ":" + restrict_users + ":" + exclude_users + ":" +
-    			restrict_blocks + ":" + exclude_blocks + ":" + action_list + ":" + radius + ":" + radius_location
-    	);
-    	//No longer debug
-    	
-    	instance = this;
-    	
     	ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
 				
-				RollbackManager RBmanager = RollbackManager.getInstance();
 				long startTime = System.nanoTime();
 				
-				List<String[]> affectedBlocksMsg = RBmanager.coreprotect.performRollback(
-						RBmanager.time, RBmanager.restrict_users, RBmanager.exclude_users, RBmanager.restrict_blocks, RBmanager.exclude_blocks,RBmanager.action_list, RBmanager.radius, RBmanager.radius_location
+				List<String[]> affectedBlocksMsg = coreprotect.performRollback(
+						time,restrict_users, exclude_users, restrict_blocks, exclude_blocks,action_list, radius, radius_location
 		    			);
 		    	
 		    	long endTime = System.nanoTime();
@@ -188,9 +146,5 @@ public class RollbackManager extends loggerManager{
 			}
     		
     	},60L);
-    }
-    
-    public static RollbackManager getInstance() {
-    	return instance;
     }
 }
