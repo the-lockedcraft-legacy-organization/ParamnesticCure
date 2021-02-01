@@ -48,10 +48,11 @@ public class TrackedBlocks {
             		ParseResult action = coreprotect.parseResult(actionMsg);
             		if (action.getActionId() != 1) continue; //has to be block place action : actionId == 1
             		
-            		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Looking at a block in TrackedBlocks" );
+            		plugin.getLogger().info("[Manual Debug] Tracked blocks: Looking at block: x=" + action.getX() + ", y=" + action.getY() + ", z=" + action.getZ()+ ", time = " + action.getTime());
+            		
             		player = action.getPlayer();
             		time = action.getTime();
-            		break;//The returned data from parsResult seems to be ordered highest time to lowest, this should return the most recent block place action
+            		break;//The returned data from parsResult seems to be ordered highest time to lowest, this should therefore return the most recent block place action
             	}
             	// Any block that has had an creative action is deemed as a critical block; all actions needs to be logged
             	if(!isCreative && (isInDatabase(block,time) != 1)) return;
