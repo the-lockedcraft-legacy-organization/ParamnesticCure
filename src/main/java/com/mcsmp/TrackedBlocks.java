@@ -100,12 +100,14 @@ public class TrackedBlocks {
 	        ResultSet set = getCreativeStatus.executeQuery();
 	        
 	        
-	        
-	        while ( set.next() ) {
-	        	if( set.getInt(1) == time )
-	        		return 2;
-	        	return 1;
-        	}
+	        if(set.next()) {
+		        do{
+		        	if( set.getInt(1) == time )
+		        		return 2;
+	        	}while ( set.next() );
+		        
+		        return 1;
+	        }
     	}
     	catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     	return 0;
