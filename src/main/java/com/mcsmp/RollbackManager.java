@@ -220,11 +220,15 @@ public class RollbackManager {
 			    	
 			    	
 			    	for(String[] affectedBlockMsg : affectedBlocksMsg) {
+			    		
 			    		String msg = "";
 			    		
 			    		for(String temp : affectedBlockMsg) msg = msg + ":" + temp;//debug
 			    		
 			    		ParseResult affectedBlock = coreprotect.parseResult(affectedBlockMsg);
+			    		
+			    		if(affectedBlock.isRolledBack()) continue;
+			    		
 			    		
 			    		worldname = affectedBlock.worldName();
 			    		playername = affectedBlock.getPlayer();
