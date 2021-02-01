@@ -10,7 +10,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
 import static java.util.logging.Level.SEVERE;
+
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
@@ -26,17 +30,18 @@ public class TrackedBlocks {
 
     private static ParamnesticCure plugin = ParamnesticCure.getInstance();
     private static CoreProtectAPI coreprotect = plugin.getCoreProtect();
+    
     /**
      * Adds a critical block action into coreprotects database, 
      *
-     * @param block the block that is going to inspected
+     * @param block the block that is going to be inspected
      */
     public static void updateCreativeIDInDB(Block block) {
     	boolean isCreative = RestrictedCreativeAPI.isCreative(block);
 
     	
 
-        plugin.getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
+    	plugin.getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
             @Override
             public void run() {
             	List<String[]> actiondataMsg = coreprotect.blockLookup(block,0);
@@ -46,16 +51,16 @@ public class TrackedBlocks {
             	
             	for(String[] actionMsg : actiondataMsg) {
             		ParseResult action = coreprotect.parseResult(actionMsg);
+            		plugin.getLogger().info("[Manual Debug] Tracked blocks: Looking at block: x=" + action.getX() + ", y=" + action.getY() + ", z=" + action.getZ()+ ", time = " + action.getTime());
             		if (action.getActionId() != 1) continue; //has to be block place action : actionId == 1
             		
-            		plugin.getLogger().info("[Manual Debug] Tracked blocks: Looking at block: x=" + action.getX() + ", y=" + action.getY() + ", z=" + action.getZ()+ ", time = " + action.getTime());
             		
             		player = action.getPlayer();
             		time = action.getTime();
             		break;//The returned data from parsResult seems to be ordered highest time to lowest, this should therefore return the most recent block place action
             	}
             	// Any block that has had an creative action is deemed as a critical block; all actions needs to be logged
-            	if(!isCreative && (isInDatabase(block,time) != 1)) return;
+            	if(( !isCreative && (isInDatabase(block,time) != 1) ) || time == 0) return;
             	
             	try {
                 Connection connection = ParamnesticCure.getInstance().getConnection();
@@ -73,7 +78,7 @@ public class TrackedBlocks {
             	addToDatabase.setInt( 7,  isCreative ? 1 : 0  );
             	
             	addToDatabase.execute();
-
+            	plugin.getLogger().info("[Manual Debug] Added the block action into the database");
             	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
             }
         });
