@@ -1,5 +1,7 @@
 package com.mcsmp;
 
+import java.util.List;
+
 import org.bukkit.Location;
 /**
  * Does a series of logical operations to minimise opportunities for restores to mess with creative block data.
@@ -21,8 +23,25 @@ public class RestoreManager extends loggerManager {
 	
 	@Override
 	public void executeTask() {
-		// TODO Auto-generated method stub
-		
+		ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
+
+				@Override
+				public void run() {
+					long startTime = System.nanoTime();
+					
+					List<String[]> affectedBlocksMsg = coreprotect.performRestore(
+							time,restrict_users, exclude_users, restrict_blocks, exclude_blocks,action_list, radius, radius_location
+			    			);
+			    	
+			    	long endTime = System.nanoTime();
+			    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(  endTime-startTime  ) + " ns");
+			    	
+			    	
+			    	
+			    	
+				}
+			
+		},60L);
 	}
 
 }

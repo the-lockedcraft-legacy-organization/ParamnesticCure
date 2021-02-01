@@ -103,6 +103,9 @@ public class ParamnesticCureListener implements Listener {
     	if(restoreAlias.contains(commandListed[1])) {
     		 //innitiate restoremanager (not created yet)
     		plugin.getLogger().info("[Manual Debug] Triggered as a restore");
+    		
+    		RestoreManager restore = new RestoreManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   event.getPlayer().getLocation()  );
+    		restore.executeTask();
     	}
     }
     /**

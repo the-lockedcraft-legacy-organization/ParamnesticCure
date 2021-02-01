@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import net.coreprotect.CoreProtectAPI.ParseResult;
@@ -72,8 +73,6 @@ public class RollbackManager extends loggerManager{
 		    		
 			    	int time; int x; int y; int z;
 			    	String worldname; String playername; 
-			    	
-			    	
 			    	
 			    	
 			    	

@@ -115,7 +115,6 @@ public class ParamnesticCure extends JavaPlugin {
     		statement.execute();
     	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     }
-
     /**
      * 
      * @return returns a CoreProtectAPI instance, otherwise if any problems arise returns null
