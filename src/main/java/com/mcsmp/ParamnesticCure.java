@@ -10,10 +10,8 @@ import static java.lang.Byte.valueOf;
 import static java.util.logging.Level.SEVERE;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import static org.bukkit.Bukkit.getPluginManager;
@@ -32,18 +30,13 @@ import net.coreprotect.CoreProtectAPI;
  */
 public class ParamnesticCure extends JavaPlugin {
 
-    //Initializes the main class, TrackedBlocks, and implements the Logger.
     private static ParamnesticCure instance;
     private Logger log = Bukkit.getLogger();
     private CacheData dataCache;
     private Connection connection;
-    //Variable to ensure databases are connected properly.
-    private boolean everythingOK = true;
 
 
-    /*
-     * Codeblock that executes when plugin is enabled.
-     */
+    
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
@@ -64,7 +57,6 @@ public class ParamnesticCure extends JavaPlugin {
             this.saveDefaultConfig();
             log.warning("[Startup] Invalid config! This is either your first time running PC, or, the config has updated since you last used it.");
             log.severe("[Startup] Providing you with a new config; please fill it out before running PC.");
-            setOK(false);
             getPluginManager().disablePlugin(this);
         } else {
             log.info("[Startup] Loaded Config");
@@ -82,7 +74,11 @@ public class ParamnesticCure extends JavaPlugin {
         try {
         	this.connection = getCacheData().getDatabaseMap().get("paramnestic").getDatabase().getConnection();
         }
-        catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+        catch(SQLException ex) 
+        {
+        	ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());
+            getPluginManager().disablePlugin(this);
+        }
         
         createDB();
     }
@@ -94,27 +90,19 @@ public class ParamnesticCure extends JavaPlugin {
     	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     }
 
-    /*
+    /**
      * Gets this plugin's instance.
      * @return Returns plugin's instance.
      */
     public static ParamnesticCure getInstance() {
         return instance;
     }
-    /*
+    /**
      * Gets cached data
      * @return Returns dataCache
      */
     public CacheData getCacheData() {
         return this.dataCache;
-    }
-
-    /*
-     * Sets default value of db status.
-     * @return if startup can proceed.
-     */
-    public void setOK(boolean ok) {
-        this.everythingOK = ok;
     }
 
     private void createDB() {
@@ -128,6 +116,10 @@ public class ParamnesticCure extends JavaPlugin {
     	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     }
 
+    /**
+     * 
+     * @return returns a CoreProtectAPI instance, otherwise if any problems arise returns null
+     */
     public CoreProtectAPI getCoreProtect() {
         Plugin plugin = getServer().getPluginManager().getPlugin("CoreProtect");
      
@@ -149,6 +141,10 @@ public class ParamnesticCure extends JavaPlugin {
 
         return CoreProtect;
     }
+    /**
+     * 
+     * @return Return's this plugin's shared connection
+     */
     public Connection getConnection() {
     	return connection;
     }

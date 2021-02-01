@@ -11,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import static java.util.logging.Level.SEVERE;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
@@ -49,7 +48,7 @@ public class TrackedBlocks {
             		ParseResult action = coreprotect.parseResult(actionMsg);
             		if (action.getActionId() != 1) continue; //has to be block place action : actionId == 1
             		
-            		
+            		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Looking at a block in TrackedBlocks" );
             		player = action.getPlayer();
             		time = action.getTime();
             		break;//The returned data from parsResult seems to be ordered highest time to lowest, this should return the most recent block place action
@@ -81,8 +80,12 @@ public class TrackedBlocks {
     /**
      * 
      * @param block
-     * @param time
-     * @return 0 => No, 1 => yes, but not this action, 2 => yes, the action is already stored
+     * @param time the time of an action
+     * 
+     * @return Is this block in the database?
+     *  0 => No.   
+     *  1 => yes, but not this action.   
+     *  2 => yes, this action is already stored.
      */
     public static int isInDatabase(Block block, int time) {
 
@@ -102,11 +105,11 @@ public class TrackedBlocks {
 	        
 	        if(set.next()) {
 		        do{
-		        	if( set.getInt(1) == time )
+		        	if( set.getInt(1) == time ) // An action at the same timeperiod exist
 		        		return 2;
 	        	}while ( set.next() );
 		        
-		        return 1;
+		        return 1; // No replica action was found
 	        }
     	}
     	catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}

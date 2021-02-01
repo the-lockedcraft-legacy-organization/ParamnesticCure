@@ -6,7 +6,6 @@
 package com.mcsmp;
 
 import com.mcsmp.database.DataBases;
-import static java.lang.Byte.valueOf;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -16,7 +15,6 @@ public class CacheData {
 
     private ConcurrentHashMap<String, DataBases> databaseMap = new ConcurrentHashMap<>();
     private final ParamnesticCure plugin = ParamnesticCure.getInstance();
-    private final byte givenVersion = valueOf(ParamnesticCure.getInstance().getConfig().getString("configVersion"));
     private String address = plugin.getConfig().getString("defaultconnection.address");
     private int port = plugin.getConfig().getInt("defaultconnection.port");
     private String user = plugin.getConfig().getString("user");
