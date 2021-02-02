@@ -42,7 +42,8 @@ public class TrackedBlocks {
     	String player = "";
     	int time = 0;
     	List<String[]> actiondataMsg = coreprotect.blockLookup(block,0);
-        	
+        
+    	
         for(String[] actionMsg : actiondataMsg) {
         	ParseResult action = coreprotect.parseResult(actionMsg);
         	plugin.getLogger().info("[Manual Debug] Tracked blocks: Looking at block: x=" + action.getX() + ", y=" + action.getY() + ", z=" + action.getZ()+ ", time = " + action.getTime() + ", Id = " + action.getActionString());
@@ -52,31 +53,30 @@ public class TrackedBlocks {
         	player = action.getPlayer();
         	time = action.getTime();
         	
-        	if(time == 0) {
-        		plugin.getLogger().warning(
-        			"Critical action sequence has been detected at world = " + action.worldName() + ", x = " + action.getX() + ", y=" + action.getY() + ", z=" + action.getZ()
-        			+ " There's a chance this block doesn't get stored properly"
-        			);
-        		
-        		time = Math.round(System.currentTimeMillis() / 1000); //Seconds
-        		}
-        	
         	break;//The returned data from parsResult seems to be ordered highest time to lowest, this should therefore return the most recent block place action
         }
-    	
+        
+        
     	updateCreativeID(time,player,block,isCreative);
     }
     
     public static void updateCreativeID(int time, String player, Block block, boolean isCreative) 
     {
+    	/**
+    	 * Avoids duplicate entries, but also irrelevant blocks
+    	 */
     	if( (  !isCreative && (isInDatabase(block,time) == 0)  ) || isInDatabase(block,time) == 2) return;
+    	
+    	if(time == 0) {
+    		try {Thread.sleep(500L);}catch(InterruptedException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+    		
+    		updateCreativeID(block);
+    		return;
+    	}
     	
     	plugin.getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
             @Override
             public void run() {
-            	/**
-            	 * Avoids duplicate entries, but also irrelevant blocks
-            	 */
             	
             	
             	
@@ -139,5 +139,6 @@ public class TrackedBlocks {
     	catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     	return 0;
     }
+    
     
 }

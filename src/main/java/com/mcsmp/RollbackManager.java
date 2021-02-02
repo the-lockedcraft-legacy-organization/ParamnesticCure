@@ -59,90 +59,116 @@ public class RollbackManager extends loggerManager{
 			@Override
 			public void run() {
 				
-				long startTime = System.nanoTime();
+				long startTime = System.nanoTime(); //nano Seconds
 				
-				List<String[]> affectedBlocksMsg = coreprotect.performRollback(
+				List<String[]> blockActionListMSG = coreprotect.performRollback(
 						time,restrict_users, exclude_users, restrict_blocks, exclude_blocks,action_list, radius, radius_location
 		    			);
 		    	
-		    	long endTime = System.nanoTime();
+		    	long endTime = System.nanoTime(); //nano Seconds
 		    	
-		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(  endTime-startTime  ) + " ns");
+		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(  (endTime-startTime)*Math.pow(10, -9)  ) + " s");
 		    	
-		    	try {
 		    		
-			    	int time; int x; int y; int z;
-			    	String worldname; String playername; 
+		    		
+			    ParseResult blockAction = coreprotect.parseResult(blockActionListMSG.get(0));
+			    String worldname = blockAction.worldName();
+			    String playername = blockAction.getPlayer();
+			    int oldestTime = blockAction.getTime();
 			    	
+			    int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
+			    int newestTime = oldestTime;
+			    
+			    
+			    for(int i = 0; i<blockActionListMSG.size(); i++){
 			    	
-			    	
-			    	
-			    	
-			    	
-			    	for(String[] affectedBlockMsg : affectedBlocksMsg) {
+			    	blockAction = coreprotect.parseResult(blockActionListMSG.get(i));
 			    		
-			    		String msg = "";
+			    	if(blockAction.isRolledBack()) { continue; }
 			    		
-			    		for(String temp : affectedBlockMsg) msg = msg + ":" + temp;//debug
-			    		
-			    		ParseResult affectedBlock = coreprotect.parseResult(affectedBlockMsg);
-			    		
-			    		if(affectedBlock.isRolledBack()) continue;
-			    		
-			    		
-			    		worldname = affectedBlock.worldName();
-			    		playername = affectedBlock.getPlayer();
-			    		time = affectedBlock.getTime();
-			    		x = affectedBlock.getX();
-			    		y = affectedBlock.getY();
-			    		z = affectedBlock.getZ();
-
-			        	Connection connection = ParamnesticCure.getInstance().getConnection();
-	                    PreparedStatement getCreativeStatus = connection.prepareStatement(
-	                    		"SELECT is_creative FROM blockAction"
-	                    		+ " WHERE time < ? AND world = ? AND x = ? AND y = ? AND z = ?"
-	                    		+ " ORDER BY time DESC"
-	                    		); // Should return a list ordered by the most recent action that happened before the rollback
-	                    getCreativeStatus.setInt(1, time);
-	                    getCreativeStatus.setString(2, worldname);
-	                    getCreativeStatus.setInt(3, x);
-	                    getCreativeStatus.setInt(4, y);
-	                    getCreativeStatus.setInt(5, z);
-	                    
-	                    ResultSet set = getCreativeStatus.executeQuery();
-	                    
-	                    List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
-			    		World world = null;
-			    		
-			    		for (World worldTest : worldlist) {
-			    			if(worldTest.getName().equals(worldname)) { world = worldTest; break; }
+			    	if(i<blockActionListMSG.size()) {
+				    	ParseResult nextBlockAction = coreprotect.parseResult(blockActionListMSG.get(i+1));
+				    		
+				    	// Scroll through database on the same location until the oldest action that is being rollbacked is the only one left
+				    	if(	nextBlockAction.getX() == blockAction.getX()	 && 	nextBlockAction.getY() == blockAction.getY()	 && 	nextBlockAction.getZ() == blockAction.getZ()
+				    			&& 		nextBlockAction.worldName() == blockAction.worldName()   &&    nextBlockAction.getTime() <= blockAction.getTime() 
+				    			) { 
+				    		
+				    		if(newestTime < coreprotect.parseResult(blockActionListMSG.get(i)).getTime()) { newestTime = coreprotect.parseResult(blockActionListMSG.get(i)).getTime(); }
+				    		continue;
 			    		}
-			    		
-			    		
-			    		
-			    		Block block = world.getBlockAt(x, y, z);
-
-			    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] block:" + block.toString() +", time:" + time);
-
-			    		//if the block is creative, there would be problems when you undo rollbacks. This check prevents that
-	                    TrackedBlocks.updateCreativeID(block);
-	                    
-	                    boolean hasNext = set.next();
-	                    ParamnesticCure.getInstance().getLogger().info("[Manual Debug] hasNext: " + hasNext);
-	                    
-	                    if (hasNext && set.getInt(1) == 1) {
-		                    RestrictedCreativeAPI.add(block);
-		                    ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block rollbacked to creative");
-	                    }
-	                    else {
-	                    	RestrictedCreativeAPI.remove(block);
-	                    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block rollbacked to survival");
-	                    }
-	                    
 			    	}
-		    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+			    	
+			    	worldname = blockAction.worldName();
+			    	playername = blockAction.getPlayer();
+			    	oldestTime = blockAction.getTime(); newestTime = oldestTime;
+			    		
+			    	x = blockAction.getX(); 	y = blockAction.getY(); 	z = blockAction.getZ();
+			    	
+			    	int DBCreativeStatus = fetchDBIsCreative(oldestTime,worldname,x,y,z);
+
+			        	
+	                    
+	                List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
+			    	World world = null;
+			    		
+			    	for (World worldTest : worldlist) {
+			    		if(worldTest.getName().equals(worldname)) { world = worldTest; break; }
+			    	}
+			    		
+			    		
+			    		
+			    	Block block = world.getBlockAt(x, y, z);
+			    		
+			    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] block:" + block.toString() +", time:" + oldestTime);
+
+			    	//if the block is creative, there would be problems when you undo rollbacks. This check prevents that
+			    	boolean iscreative = RestrictedCreativeAPI.isCreative(block);
+			    	if(iscreative)
+			    		TrackedBlocks.updateCreativeID(newestTime,playername,block,iscreative);
+	                    
+	                ParamnesticCure.getInstance().getLogger().info("[Manual Debug] hasNext: " + DBCreativeStatus);
+	                    
+	                if (DBCreativeStatus == 1) {
+		                RestrictedCreativeAPI.add(block);
+		                ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block rollbacked to creative");
+	                }
+	                else {
+	                   	RestrictedCreativeAPI.remove(block);
+	                   	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block rollbacked to survival");
+	                }
+			    }
 			}
     		
     	},60L);
+    }
+    /**
+     * Returns the creative status on the action before the specified action
+     * @param time
+     * @param worldName
+     * @param x
+     * @param y
+     * @param z
+     * @return boolean: [0 1] | not in database: -1
+     */
+    private int fetchDBIsCreative(int time, String worldName, int x, int y, int z) {
+    	try {
+    	Connection connection = ParamnesticCure.getInstance().getConnection();
+        PreparedStatement getCreativeStatus = connection.prepareStatement(
+        		"SELECT is_creative FROM blockAction"
+        		+ " WHERE time < ? AND world = ? AND x = ? AND y = ? AND z = ?"
+        		+ " ORDER BY time DESC"
+        		);
+        getCreativeStatus.setInt(1, time);
+        getCreativeStatus.setString(2, worldName);
+        getCreativeStatus.setInt(3, x);
+        getCreativeStatus.setInt(4, y);
+        getCreativeStatus.setInt(5, z);
+        
+        ResultSet set = getCreativeStatus.executeQuery();
+        if(set.next()) return set.getInt(1);
+    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+    	
+    	return -1;
     }
 }
