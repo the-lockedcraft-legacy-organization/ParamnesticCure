@@ -101,7 +101,6 @@ public abstract class loggerManager {
 	    			//convert to seconds
 	    			//TODO make this work for 1d2w and 1d,2w
 	    			for(String part : splitedArgument) {
-	    				ParamnesticCure.getInstance().getLogger().info("[Manual Debug] part: " + part);
 		    			if(part.contains("w")){ 
 		    				time += 604800 * Integer.parseInt(part.substring( 0 , part.indexOf('w') ));
 		    			}
