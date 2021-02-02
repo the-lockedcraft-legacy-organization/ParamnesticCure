@@ -103,9 +103,7 @@ public class RollbackManager extends loggerManager{
 			    		if(worldTest.getName().equals(worldname)) { world = worldTest; break; }
 			    	}
 			    	Block block = world.getBlockAt(x, y, z);
-			    		
 			    	
-			    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] block:" + block.toString() +", time:" + oldestTime);
 
 			    	//if the block is creative, there would be problems when you undo rollbacks. This check prevents that
 			    	boolean iscreative = RestrictedCreativeAPI.isCreative(block);
@@ -114,8 +112,6 @@ public class RollbackManager extends loggerManager{
 	                    
 			    	if(i+1<blockActionListMSG.size())
 			    		newestTime = coreprotect.parseResult(blockActionListMSG.get(i+1)).getTime();
-			    	
-	                ParamnesticCure.getInstance().getLogger().info("[Manual Debug] hasNext: " + DBCreativeStatus);
 	                    
 	                if (DBCreativeStatus == 1) {
 		                RestrictedCreativeAPI.add(block);

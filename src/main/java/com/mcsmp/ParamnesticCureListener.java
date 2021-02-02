@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import static org.bukkit.Bukkit.getLogger;
-
-import org.bukkit.GameMode;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -54,9 +52,7 @@ public class ParamnesticCureListener implements Listener {
      */
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-
-        plugin.getLogger().info("[Manual Debug] You broke a block hasMetadata('GMC')= " + RestrictedCreativeAPI.isCreative(event.getBlock()));
-        
+    	
         //Tracked block checks if the block is creative/critical
         TrackedBlocks.updateCreativeID(event.getBlock());
 
@@ -93,7 +89,7 @@ public class ParamnesticCureListener implements Listener {
     	
     	List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
     	if(rollbackAlias.contains(commandListed[1])) { 
-
+    		
     		RollbackManager rollback = new RollbackManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   event.getPlayer().getLocation()  );
     		rollback.executeTask();
     		event.setCancelled(true);

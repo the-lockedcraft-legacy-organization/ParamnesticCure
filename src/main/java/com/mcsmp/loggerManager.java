@@ -2,6 +2,7 @@ package com.mcsmp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -80,29 +81,25 @@ public abstract class loggerManager {
     			argument.replace(",", "");
     			
     			
-    			
-    			
-    			
-    			
-    			
-    			String[] splitedArgument = argument.split(",");
+    			String[] splitedArgument = argument.split("(?<=[w*d*h*m*s])");
     			
     			//convert to seconds
-    			//TODO make this to work for 1d2w and 1d,2w
+    			//TODO make this work for 1d2w and 1d,2w
     			for(String part : splitedArgument) {
-	    			if(argument.contains("w")){ 
+    				ParamnesticCure.getInstance().getLogger().info("[Manual Debug] part: " + part);
+	    			if(part.contains("w")){ 
 	    				time += 604800 * Integer.parseInt(part.substring( 0 , part.indexOf('w') ));
 	    			}
-	    			if(argument.contains("d")){ 
+	    			if(part.contains("d")){ 
 	    				time += 86400 * Integer.parseInt(part.substring( 0 , part.indexOf('d') ));
 	    			}
-	    			if(argument.contains("h")){ 
+	    			if(part.contains("h")){ 
 	    				time += 3600 * Integer.parseInt(part.substring( 0 , part.indexOf('h') ));
 	    			}
-	    			if(argument.contains("m")){ 
+	    			if(part.contains("m")){ 
 	    				time += 60 * Integer.parseInt(part.substring( 0 , part.indexOf('m') ));
 	    			}
-	    			if(argument.contains("s")){ 
+	    			if(part.contains("s")){ 
 	    				time += Integer.parseInt(part.substring( 0 , part.indexOf('s') ));
 	    			}
     			}
