@@ -125,7 +125,7 @@ public class RollbackManager extends loggerManager{
 			    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] block:" + block.toString() +", time:" + time);
 
 			    		//if the block is creative, there would be problems when you undo rollbacks. This check prevents that
-	                    TrackedBlocks.updateCreativeIDInDB(block);
+	                    TrackedBlocks.updateCreativeID(block);
 	                    
 	                    boolean hasNext = set.next();
 	                    ParamnesticCure.getInstance().getLogger().info("[Manual Debug] hasNext: " + hasNext);

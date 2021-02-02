@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import static org.bukkit.Bukkit.getLogger;
+
+import org.bukkit.GameMode;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -56,7 +58,7 @@ public class ParamnesticCureListener implements Listener {
         plugin.getLogger().info("[Manual Debug] You broke a block hasMetadata('GMC')= " + RestrictedCreativeAPI.isCreative(event.getBlock()));
         
         //Tracked block checks if the block is creative/critical
-        TrackedBlocks.updateCreativeIDInDB(event.getBlock());
+        TrackedBlocks.updateCreativeID(event.getBlock());
 
     }
     /**
@@ -65,9 +67,7 @@ public class ParamnesticCureListener implements Listener {
      */
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        //block is block <= yes that seems about right
-    	if(!RestrictedCreativeAPI.isCreative(event.getBlock())) return;
-        plugin.getLogger().info("[Manual Debug] You placed a block in creative");
+    	
     }
     /**
      * Checks for critical rollback commands
