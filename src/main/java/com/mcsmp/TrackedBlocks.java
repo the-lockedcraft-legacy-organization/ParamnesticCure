@@ -36,49 +36,67 @@ public class TrackedBlocks {
      *
      * @param block the block that is going to be inspected
      */
-    public static void updateCreativeIDInDB(Block block) {
+    public static void updateCreativeID(Block block) {
     	boolean isCreative = RestrictedCreativeAPI.isCreative(block);
-
     	
-
+    	String player = "";
+    	int time = 0;
+    	List<String[]> actiondataMsg = coreprotect.blockLookup(block,0);
+        	
+        for(String[] actionMsg : actiondataMsg) {
+        	ParseResult action = coreprotect.parseResult(actionMsg);
+        	plugin.getLogger().info("[Manual Debug] Tracked blocks: Looking at block: x=" + action.getX() + ", y=" + action.getY() + ", z=" + action.getZ()+ ", time = " + action.getTime() + ", Id = " + action.getActionString());
+        	if (action.getActionId() != 1) continue; //has to be block place action : actionId == 1
+        		
+        		
+        	player = action.getPlayer();
+        	time = action.getTime();
+        	
+        	if(time == 0) {
+        		plugin.getLogger().warning(
+        			"Critical action sequence has been detected at world = " + action.worldName() + ", x = " + action.getX() + ", y=" + action.getY() + ", z=" + action.getZ()
+        			+ " There's a chance this block doesn't get stored properly"
+        			);
+        		
+        		time = Math.round(System.currentTimeMillis() / 1000); //Seconds
+        		}
+        	
+        	break;//The returned data from parsResult seems to be ordered highest time to lowest, this should therefore return the most recent block place action
+        }
+    	
+    	updateCreativeID(time,player,block,isCreative);
+    }
+    
+    public static void updateCreativeID(int time, String player, Block block, boolean isCreative) 
+    {
+    	if( (  !isCreative && (isInDatabase(block,time) == 0)  ) || isInDatabase(block,time) == 2) return;
+    	
     	plugin.getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
             @Override
             public void run() {
-            	List<String[]> actiondataMsg = coreprotect.blockLookup(block,0);
+            	/**
+            	 * Avoids duplicate entries, but also irrelevant blocks
+            	 */
             	
-            	String player = "";
-            	int time = 0;
             	
-            	for(String[] actionMsg : actiondataMsg) {
-            		ParseResult action = coreprotect.parseResult(actionMsg);
-            		plugin.getLogger().info("[Manual Debug] Tracked blocks: Looking at block: x=" + action.getX() + ", y=" + action.getY() + ", z=" + action.getZ()+ ", time = " + action.getTime());
-            		if (action.getActionId() != 1) continue; //has to be block place action : actionId == 1
-            		
-            		
-            		player = action.getPlayer();
-            		time = action.getTime();
-            		break;//The returned data from parsResult seems to be ordered highest time to lowest, this should therefore return the most recent block place action
-            	}
-            	// Any block that has had an creative action is deemed as a critical block; all actions needs to be logged
-            	if(( !isCreative && (isInDatabase(block,time) != 1) ) || time == 0) return;
             	
             	try {
-                Connection connection = ParamnesticCure.getInstance().getConnection();
-            	PreparedStatement addToDatabase = connection.prepareStatement(
-            			"INSERT INTO blockAction (time,user,world,x,y,z,is_creative)"
-            			+ " VALUES (?,?,?,?,?,?,?)"
-            			);
-            	
-            	addToDatabase.setInt( 1, time);
-            	addToDatabase.setString( 2, player);
-            	addToDatabase.setString( 3, block.getWorld().getName());
-            	addToDatabase.setInt( 4, block.getX());
-            	addToDatabase.setInt( 5, block.getY());
-            	addToDatabase.setInt( 6, block.getZ());
-            	addToDatabase.setInt( 7,  isCreative ? 1 : 0  );
-            	
-            	addToDatabase.execute();
-            	plugin.getLogger().info("[Manual Debug] Added the block action into the database");
+	                Connection connection = ParamnesticCure.getInstance().getConnection();
+	            	PreparedStatement addToDatabase = connection.prepareStatement(
+	            			"INSERT INTO blockAction (time,user,world,x,y,z,is_creative)"
+	            			+ " VALUES (?,?,?,?,?,?,?)"
+	            			);
+	            	
+	            	addToDatabase.setInt( 1, time);
+	            	addToDatabase.setString( 2, player);
+	            	addToDatabase.setString( 3, block.getWorld().getName());
+	            	addToDatabase.setInt( 4, block.getX());
+	            	addToDatabase.setInt( 5, block.getY());
+	            	addToDatabase.setInt( 6, block.getZ());
+	            	addToDatabase.setInt( 7,  isCreative ? 1 : 0  );
+	            	
+	            	addToDatabase.execute();
+	            	plugin.getLogger().info("[Manual Debug] Added the block action into the database");
             	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
             }
         });
@@ -121,4 +139,5 @@ public class TrackedBlocks {
     	catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     	return 0;
     }
+    
 }
