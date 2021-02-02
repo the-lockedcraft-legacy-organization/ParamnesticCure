@@ -6,6 +6,12 @@
 package com.mcsmp;
 
 
+import static java.util.logging.Level.SEVERE;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import net.coreprotect.CoreProtectAPI.ParseResult;
@@ -70,7 +76,7 @@ public class RollbackManager extends loggerManager{
 			    	
 			    	if(blockAction.isRolledBack()) { continue; }
 			    		
-			    	if(i<blockActionListMSG.size()) {
+			    	if(i+1<blockActionListMSG.size()) {
 				    	ParseResult nextBlockAction = coreprotect.parseResult(blockActionListMSG.get(i+1));
 				    		
 				    	// Scroll through database on the same location until the oldest action that is being rollbacked is the only one left
@@ -83,13 +89,10 @@ public class RollbackManager extends loggerManager{
 			    		}
 			    	}
 			    	
-			    	String worldname = blockAction.worldName();
-			    	String playername = blockAction.getPlayer();
+			    	String worldname = blockAction.worldName();		String playername = blockAction.getPlayer();
+			    	
 			    	int oldestTime = blockAction.getTime();
-			    		
 			    	int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
-			    	
-			    	
 			    	int DBCreativeStatus = fetchDBIsCreative(oldestTime,worldname,x,y,z);
 
 			        	
@@ -109,6 +112,9 @@ public class RollbackManager extends loggerManager{
 			    	if(iscreative)
 			    		TrackedBlocks.updateCreativeID(newestTime,playername,block,iscreative);
 	                    
+			    	if(i+1<blockActionListMSG.size())
+			    		newestTime = coreprotect.parseResult(blockActionListMSG.get(i+1)).getTime();
+			    	
 	                ParamnesticCure.getInstance().getLogger().info("[Manual Debug] hasNext: " + DBCreativeStatus);
 	                    
 	                if (DBCreativeStatus == 1) {
@@ -123,5 +129,34 @@ public class RollbackManager extends loggerManager{
 			}
     		
     	},60L);
+    }
+    /**
+     * Returns the creative status on the action before the specified action
+     * @param time
+     * @param worldName
+     * @param x
+     * @param y
+     * @param z
+     * @return boolean: [0 1] | not in database: -1
+     */
+	private int fetchDBIsCreative(int time, String worldName, int x, int y, int z) {
+    	try {
+    	Connection connection = ParamnesticCure.getInstance().getConnection();
+        PreparedStatement getCreativeStatus = connection.prepareStatement(
+        		"SELECT is_creative FROM blockAction"
+        		+ " WHERE time < ? AND world = ? AND x = ? AND y = ? AND z = ?"
+        		+ " ORDER BY time DESC"
+        		);
+        getCreativeStatus.setInt(1, time);
+        getCreativeStatus.setString(2, worldName);
+        getCreativeStatus.setInt(3, x);
+        getCreativeStatus.setInt(4, y);
+        getCreativeStatus.setInt(5, z);
+        
+        ResultSet set = getCreativeStatus.executeQuery();
+        if(set.next()) return set.getInt(1);
+    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+    	
+    	return -1;
     }
 }
