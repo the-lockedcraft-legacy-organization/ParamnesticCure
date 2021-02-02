@@ -93,19 +93,17 @@ public class ParamnesticCureListener implements Listener {
     	
     	List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
     	if(rollbackAlias.contains(commandListed[1])) { 
-    		plugin.getLogger().info("[Manual Debug] Triggered as a rollback");
-    		//innitiate rollbackmanager
+
     		RollbackManager rollback = new RollbackManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   event.getPlayer().getLocation()  );
     		rollback.executeTask();
     		event.setCancelled(true);
     	}
     	List<String> restoreAlias = configSektion.getStringList("blockLoggerCommands.restore");
     	if(restoreAlias.contains(commandListed[1])) {
-    		 //innitiate restoremanager (not created yet)
-    		plugin.getLogger().info("[Manual Debug] Triggered as a restore");
     		
     		RestoreManager restore = new RestoreManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   event.getPlayer().getLocation()  );
     		restore.executeTask();
+    		event.setCancelled(true);
     	}
     }
     /**

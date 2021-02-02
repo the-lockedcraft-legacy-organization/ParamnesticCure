@@ -5,13 +5,7 @@
  */
 package com.mcsmp;
 
-import static java.util.logging.Level.SEVERE;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import net.coreprotect.CoreProtectAPI.ParseResult;
@@ -69,21 +63,11 @@ public class RollbackManager extends loggerManager{
 		    	
 		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(  (endTime-startTime)*Math.pow(10, -9)  ) + " s");
 		    	
-		    		
-		    		
-			    ParseResult blockAction = coreprotect.parseResult(blockActionListMSG.get(0));
-			    String worldname = blockAction.worldName();
-			    String playername = blockAction.getPlayer();
-			    int oldestTime = blockAction.getTime();
-			    	
-			    int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
-			    int newestTime = oldestTime;
-			    
-			    
+			    int newestTime = coreprotect.parseResult(blockActionListMSG.get(0)).getTime();
 			    for(int i = 0; i<blockActionListMSG.size(); i++){
 			    	
-			    	blockAction = coreprotect.parseResult(blockActionListMSG.get(i));
-			    		
+			    	ParseResult blockAction = coreprotect.parseResult(blockActionListMSG.get(i));
+			    	
 			    	if(blockAction.isRolledBack()) { continue; }
 			    		
 			    	if(i<blockActionListMSG.size()) {
@@ -99,11 +83,12 @@ public class RollbackManager extends loggerManager{
 			    		}
 			    	}
 			    	
-			    	worldname = blockAction.worldName();
-			    	playername = blockAction.getPlayer();
-			    	oldestTime = blockAction.getTime(); newestTime = oldestTime;
+			    	String worldname = blockAction.worldName();
+			    	String playername = blockAction.getPlayer();
+			    	int oldestTime = blockAction.getTime();
 			    		
-			    	x = blockAction.getX(); 	y = blockAction.getY(); 	z = blockAction.getZ();
+			    	int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
+			    	
 			    	
 			    	int DBCreativeStatus = fetchDBIsCreative(oldestTime,worldname,x,y,z);
 
@@ -111,15 +96,12 @@ public class RollbackManager extends loggerManager{
 	                    
 	                List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
 			    	World world = null;
-			    		
 			    	for (World worldTest : worldlist) {
 			    		if(worldTest.getName().equals(worldname)) { world = worldTest; break; }
 			    	}
-			    		
-			    		
-			    		
 			    	Block block = world.getBlockAt(x, y, z);
 			    		
+			    	
 			    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] block:" + block.toString() +", time:" + oldestTime);
 
 			    	//if the block is creative, there would be problems when you undo rollbacks. This check prevents that
@@ -141,34 +123,5 @@ public class RollbackManager extends loggerManager{
 			}
     		
     	},60L);
-    }
-    /**
-     * Returns the creative status on the action before the specified action
-     * @param time
-     * @param worldName
-     * @param x
-     * @param y
-     * @param z
-     * @return boolean: [0 1] | not in database: -1
-     */
-    private int fetchDBIsCreative(int time, String worldName, int x, int y, int z) {
-    	try {
-    	Connection connection = ParamnesticCure.getInstance().getConnection();
-        PreparedStatement getCreativeStatus = connection.prepareStatement(
-        		"SELECT is_creative FROM blockAction"
-        		+ " WHERE time < ? AND world = ? AND x = ? AND y = ? AND z = ?"
-        		+ " ORDER BY time DESC"
-        		);
-        getCreativeStatus.setInt(1, time);
-        getCreativeStatus.setString(2, worldName);
-        getCreativeStatus.setInt(3, x);
-        getCreativeStatus.setInt(4, y);
-        getCreativeStatus.setInt(5, z);
-        
-        ResultSet set = getCreativeStatus.executeQuery();
-        if(set.next()) return set.getInt(1);
-    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
-    	
-    	return -1;
     }
 }

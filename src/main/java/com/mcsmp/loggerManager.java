@@ -1,5 +1,11 @@
 package com.mcsmp;
 
+import static java.util.logging.Level.SEVERE;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,6 +130,35 @@ public abstract class loggerManager {
     		
     	}
 	}
+	/**
+     * Returns the creative status on the action before the specified action
+     * @param time
+     * @param worldName
+     * @param x
+     * @param y
+     * @param z
+     * @return boolean: [0 1] | not in database: -1
+     */
+	protected int fetchDBIsCreative(int time, String worldName, int x, int y, int z) {
+    	try {
+    	Connection connection = ParamnesticCure.getInstance().getConnection();
+        PreparedStatement getCreativeStatus = connection.prepareStatement(
+        		"SELECT is_creative FROM blockAction"
+        		+ " WHERE time < ? AND world = ? AND x = ? AND y = ? AND z = ?"
+        		+ " ORDER BY time DESC"
+        		);
+        getCreativeStatus.setInt(1, time);
+        getCreativeStatus.setString(2, worldName);
+        getCreativeStatus.setInt(3, x);
+        getCreativeStatus.setInt(4, y);
+        getCreativeStatus.setInt(5, z);
+        
+        ResultSet set = getCreativeStatus.executeQuery();
+        if(set.next()) return set.getInt(1);
+    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+    	
+    	return -1;
+    }
 	
 	abstract void executeTask();
 }
