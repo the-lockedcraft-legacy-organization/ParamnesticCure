@@ -74,6 +74,7 @@ public class ParamnesticCureListener implements Listener {
     	String command = event.getMessage().toLowerCase();
     	String[] commandListed = command.split(" "); //All hail the father of List
     	
+    	
     	List<String> commandAlias = configSektion.getStringList("blockLoggerCommands.alias");
     	
     	int i = 0;
@@ -89,14 +90,14 @@ public class ParamnesticCureListener implements Listener {
     	
     	List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
     	if(rollbackAlias.contains(commandListed[1])) { 
-    		
+    		//TODO Permissions
     		RollbackManager rollback = new RollbackManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   event.getPlayer().getLocation()  );
     		rollback.executeTask();
     		event.setCancelled(true);
     	}
     	List<String> restoreAlias = configSektion.getStringList("blockLoggerCommands.restore");
     	if(restoreAlias.contains(commandListed[1])) {
-    		
+    		//TODO Permissions
     		RestoreManager restore = new RestoreManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   event.getPlayer().getLocation()  );
     		restore.executeTask();
     		event.setCancelled(true);
