@@ -54,6 +54,22 @@ public class RollbackManager extends loggerManager{
     @Override
     public void executeTask() {
     	
+    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Time: " + time);
+    	ParamnesticCure.getInstance().getLogger().info("Restrict users:");
+    	if(restrict_users != null)
+	    	for(String debug: restrict_users)
+	    		ParamnesticCure.getInstance().getLogger().info(debug);
+    	ParamnesticCure.getInstance().getLogger().info("Exclude users:");
+    	if(exclude_users != null)
+	    	for(String debug: exclude_users)
+	    		ParamnesticCure.getInstance().getLogger().info(debug);
+    	ParamnesticCure.getInstance().getLogger().info("Action list:");
+    	if(action_list != null)
+	    	for(Integer debug: action_list)
+	    		ParamnesticCure.getInstance().getLogger().info(debug.toString());
+    	if(radius_location != null)
+    		ParamnesticCure.getInstance().getLogger().info("Radius: " + radius + " ,Radius Location:" + radius_location.toString());
+    	
     	ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 
 			@Override
@@ -69,12 +85,15 @@ public class RollbackManager extends loggerManager{
 		    	
 		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(  (endTime-startTime)*Math.pow(10, -9)  ) + " s");
 		    	
+		    	if(blockActionListMSG.size() == 0) {
+		    		ParamnesticCure.getInstance().getLogger().warning("No actions were found");
+		    		return;
+		    	}
+		    	
 			    int newestTime = coreprotect.parseResult(blockActionListMSG.get(0)).getTime();
 			    for(int i = 0; i<blockActionListMSG.size(); i++){
 			    	
 			    	ParseResult blockAction = coreprotect.parseResult(blockActionListMSG.get(i));
-			    	
-			    	if(blockAction.isRolledBack()) { continue; }
 			    		
 			    	if(i+1<blockActionListMSG.size()) {
 				    	ParseResult nextBlockAction = coreprotect.parseResult(blockActionListMSG.get(i+1));

@@ -72,7 +72,9 @@ public class ParamnesticCureListener implements Listener {
     @EventHandler
     public void commandRollBack(PlayerCommandPreprocessEvent event) {
     	String command = event.getMessage().toLowerCase();
-    	String[] commandListed = command.split(" "); //All hail the father of List
+    	
+    	command = command.replaceAll(": ", ":");
+    	String[] commandListed = command.split(" "); 
     	
     	
     	List<String> commandAlias = configSektion.getStringList("blockLoggerCommands.alias");
