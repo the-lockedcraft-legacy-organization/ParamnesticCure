@@ -85,7 +85,7 @@ public class RollbackManager extends loggerManager{
 		    	
 		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(  (endTime-startTime)*Math.pow(10, -9)  ) + " s");
 		    	
-		    	if(blockActionListMSG.size() == 0) {
+		    	if(blockActionListMSG == null || blockActionListMSG.size() == 0) {
 		    		ParamnesticCure.getInstance().getLogger().warning("No actions were found");
 		    		return;
 		    	}
