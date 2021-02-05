@@ -31,33 +31,40 @@ public class TrackedBlocks {
     private static ParamnesticCure plugin = ParamnesticCure.getInstance();
     private static CoreProtectAPI coreprotect = plugin.getCoreProtect();
     
+    private static long waitPeriod = 500L;
     /**
      * Adds a critical block action into coreprotects database, 
      *
      * @param block the block that is going to be inspected
      */
     public static void updateCreativeID(Block block) {
-    	boolean isCreative = RestrictedCreativeAPI.isCreative(block);
     	
-    	String player = "";
-    	int time = 0;
-    	List<String[]> actiondataMsg = coreprotect.blockLookup(block,0);
-        
     	
-        for(String[] actionMsg : actiondataMsg) {
-        	ParseResult action = coreprotect.parseResult(actionMsg);
-        	plugin.getLogger().info("[Manual Debug] Tracked blocks: Looking at block: x=" + action.getX() + ", y=" + action.getY() + ", z=" + action.getZ()+ ", time = " + action.getTime() + ", Id = " + action.getActionString());
-        	if (action.getActionId() != 1) continue; //has to be block place action : actionId == 1
-        		
-        		
-        	player = action.getPlayer();
-        	time = action.getTime();
-        	
-        	break;//The returned data from parsResult seems to be ordered highest time to lowest, this should therefore return the most recent block place action
-        }
-        
-        
-    	updateCreativeID(time,player,block,isCreative);
+    	
+			
+			
+			boolean isCreative = RestrictedCreativeAPI.isCreative(block);
+	    	
+	    	String player = "";
+	    	int time = 0;
+	    	List<String[]> actiondataMsg = coreprotect.blockLookup(block,0);
+	        
+	    	
+	        for(String[] actionMsg : actiondataMsg) {
+	        	ParseResult action = coreprotect.parseResult(actionMsg);
+	        	plugin.getLogger().info("[Manual Debug] Tracked blocks: Looking at block: x=" + action.getX() + ", y=" + action.getY() + ", z=" + action.getZ()+ ", time = " + action.getTime() + ", Id = " + action.getActionString());
+	        	if (action.getActionId() != 1) continue; //has to be block place action : actionId == 1
+	        		
+	        		
+	        	player = action.getPlayer();
+	        	time = action.getTime();
+	        	
+	        	break;//The returned data from parseResult seems to be ordered highest time to lowest, this should therefore return the most recent block place action
+	        }
+	        
+	        
+	    	updateCreativeID(time,player,block,isCreative);
+			
     }
     
     public static void updateCreativeID(int time, String player, Block block, boolean isCreative) 
@@ -67,10 +74,10 @@ public class TrackedBlocks {
     	 */
     	if( (  !isCreative && (isInDatabase(block,time) == 0)  ) || isInDatabase(block,time) == 2) return;
     	
-    	if(time == 0) {
-    		try {Thread.sleep(500L);}catch(InterruptedException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
-    		
-    		updateCreativeID(block);
+    	if(time == 0) { //this should never trigger, but as a safety precaution
+    		//ParamnesticCure relies on the loggers for block information, as it takes time for these to process, the thread will have to wait
+			try {Thread.sleep(waitPeriod);}catch(InterruptedException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+			updateCreativeID(block);
     		return;
     	}
     	
