@@ -113,11 +113,27 @@ public class ParamnesticCureListener implements Listener {
     public void serverCommandRollBack(ServerCommandEvent event) {
         //if someone types that alias cancel it.
     	String command = event.getCommand().toLowerCase();
+    	command = command.replaceAll(": ", ":");
     	String[] commandListed = command.split(" ");
     	
-    	if(!configSektion.getStringList("blockLoggerCommands.alias").contains(commandListed[0])||commandListed.length<3) return;
+    	List<String> commandAlias = configSektion.getStringList("blockLoggerCommands.alias");
     	
-    	log.warning("Console rollbacks are not yet supported by Paramnestic.");
-        event.setCancelled(true);
+    	if(!commandAlias.contains(commandListed[0])||commandListed.length < 3) return;
+    	
+    	
+    	List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
+    	if(rollbackAlias.contains(commandListed[1])) { 
+    		//TODO Permissions
+    		RollbackManager rollback = new RollbackManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   null  );
+    		rollback.executeTask();
+    		event.setCancelled(true);
+    	}
+    	List<String> restoreAlias = configSektion.getStringList("blockLoggerCommands.restore");
+    	if(restoreAlias.contains(commandListed[1])) {
+    		//TODO Permissions
+    		RestoreManager restore = new RestoreManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   null  );
+    		restore.executeTask();
+    		event.setCancelled(true);
+    	}
     }
 }
