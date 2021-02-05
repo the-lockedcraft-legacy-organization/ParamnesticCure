@@ -1,10 +1,12 @@
 package com.mcsmp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 
 import net.coreprotect.CoreProtectAPI;
 
@@ -60,6 +62,22 @@ public abstract class loggerManager {
     	}
 	}
 
+	static public void createLoggerManager(String[] arguments, Location location) {
+		ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
+		List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
+    	if(rollbackAlias.contains(arguments[1])) { 
+    		//TODO Permissions
+    		RollbackManager rollback = new RollbackManager(  Arrays.copyOfRange(arguments, 2, arguments.length), location  );
+    		rollback.executeTask();
+    	}
+    	List<String> restoreAlias = configSektion.getStringList("blockLoggerCommands.restore");
+    	if(restoreAlias.contains(arguments[1])) {
+    		//TODO Permissions
+    		RestoreManager restore = new RestoreManager(  Arrays.copyOfRange(arguments, 2, arguments.length), location  );
+    		restore.executeTask();
+    	}
+	}
+	
 	
 	private boolean timeInterpreter(String argument) {
 		String[] timeAlias = {"t:","time:"};

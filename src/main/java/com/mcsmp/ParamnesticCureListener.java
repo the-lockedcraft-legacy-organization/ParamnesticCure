@@ -89,24 +89,10 @@ public class ParamnesticCureListener implements Listener {
     	//if not containing alias or length is too low
     	if(!commandAlias.contains(commandListed[0])||commandListed.length < 3) return;
     	
-    	
-    	List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
-    	if(rollbackAlias.contains(commandListed[1])) { 
-    		//TODO Permissions
-    		RollbackManager rollback = new RollbackManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   event.getPlayer().getLocation()  );
-    		rollback.executeTask();
-    		event.setCancelled(true);
-    	}
-    	List<String> restoreAlias = configSektion.getStringList("blockLoggerCommands.restore");
-    	if(restoreAlias.contains(commandListed[1])) {
-    		//TODO Permissions
-    		RestoreManager restore = new RestoreManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   event.getPlayer().getLocation()  );
-    		restore.executeTask();
-    		event.setCancelled(true);
-    	}
+    	loggerManager.createLoggerManager(commandListed, event.getPlayer().getLocation());
     }
     /**
-     * Console based commands currently not implemented
+     * Checks for critical rollback commands
      * @param event Command being processed
      */
     @EventHandler
@@ -121,19 +107,6 @@ public class ParamnesticCureListener implements Listener {
     	if(!commandAlias.contains(commandListed[0])||commandListed.length < 3) return;
     	
     	
-    	List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
-    	if(rollbackAlias.contains(commandListed[1])) { 
-    		//TODO Permissions
-    		RollbackManager rollback = new RollbackManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   null  );
-    		rollback.executeTask();
-    		event.setCancelled(true);
-    	}
-    	List<String> restoreAlias = configSektion.getStringList("blockLoggerCommands.restore");
-    	if(restoreAlias.contains(commandListed[1])) {
-    		//TODO Permissions
-    		RestoreManager restore = new RestoreManager(  Arrays.copyOfRange(commandListed, 2, commandListed.length),   null  );
-    		restore.executeTask();
-    		event.setCancelled(true);
-    	}
+    	loggerManager.createLoggerManager(commandListed, null);
     }
 }
