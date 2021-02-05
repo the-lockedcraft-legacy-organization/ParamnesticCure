@@ -97,7 +97,7 @@ public abstract class loggerManager {
 	}
 	
 	private boolean userInterpreter(String argument) {
-		String[] userAlias = {"u:","user:"};
+		String[] userAlias = {"u:","user:","player:"};
 		
 		for(String alias : userAlias)
     		if(argument.contains(alias)) {
