@@ -31,7 +31,7 @@ public class TrackedBlocks {
     private static ParamnesticCure plugin = ParamnesticCure.getInstance();
     private static CoreProtectAPI coreprotect = plugin.getCoreProtect();
     
-    public static long waitPeriod = 100L;
+    public static long waitPeriod = 50L;
     /**
      * Adds a critical block action into coreprotects database, 
      *

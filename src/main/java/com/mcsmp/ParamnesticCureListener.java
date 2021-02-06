@@ -29,11 +29,7 @@ import me.prunt.restrictedcreative.RestrictedCreativeAPI;
  */
 public class ParamnesticCureListener implements Listener {
 
-    //Establishes plugin's instance
-    private ParamnesticCure plugin = ParamnesticCure.getInstance();
-    //Establishes logger
-    private Logger log = getLogger();
-    //Makes an empty list for the logger's rollback aliases.
+	
     private ConfigurationSection configSektion;
 
     /*
@@ -41,7 +37,6 @@ public class ParamnesticCureListener implements Listener {
      * @param plugin Instance of the plugin.
      */
     public ParamnesticCureListener(ParamnesticCure plugin) {
-        this.plugin = plugin;
         //
         configSektion = plugin.getConfig().getConfigurationSection("");
     }
@@ -57,7 +52,7 @@ public class ParamnesticCureListener implements Listener {
 
 		boolean isCreative = RestrictedCreativeAPI.isCreative(event.getBlock());
     	
-    	ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
+		ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
@@ -99,8 +94,8 @@ public class ParamnesticCureListener implements Listener {
     	//if not containing alias or length is too low
     	if(!commandAlias.contains(commandListed[0])||commandListed.length < 2) return;
     	
-    	loggerManager.createLoggerManager(commandListed, event.getPlayer().getLocation());
-    	event.setCancelled(true);
+    	if(loggerManager.createLoggerManager(commandListed, event.getPlayer().getLocation()))
+    		event.setCancelled(true);
     }
     /**
      * Checks for critical rollback commands
@@ -118,7 +113,7 @@ public class ParamnesticCureListener implements Listener {
     	if(!commandAlias.contains(commandListed[0])||commandListed.length < 2) return;
     	
     	
-    	loggerManager.createLoggerManager(commandListed, null);
-    	event.setCancelled(true);
+    	if(loggerManager.createLoggerManager(commandListed, null));
+    		event.setCancelled(true);
     }
 }

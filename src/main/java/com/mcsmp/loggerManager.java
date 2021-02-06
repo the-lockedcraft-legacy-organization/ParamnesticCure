@@ -65,7 +65,7 @@ public abstract class loggerManager {
     	}
 	}
 
-	static public void createLoggerManager(String[] arguments, Location location) {
+	static public boolean createLoggerManager(String[] arguments, Location location) {
 		
 
 		//TODO Permissions
@@ -75,23 +75,23 @@ public abstract class loggerManager {
     	if(rollbackAlias.contains(arguments[1])) { 
     		RollbackManager rollback = new RollbackManager(  Arrays.copyOfRange(arguments, 2, arguments.length), location  );
     		rollback.executeTask();
-    		return;
+    		return true;
     	}
     	List<String> restoreAlias = configSektion.getStringList("blockLoggerCommands.restore");
     	if(restoreAlias.contains(arguments[1])) {
     		RestoreManager restore = new RestoreManager(  Arrays.copyOfRange(arguments, 2, arguments.length), location  );
     		restore.executeTask();
-    		return;
+    		return true;
     	}
     	if(arguments[1] == "undo") {
     		//TODO put code in here
-    		return;
+    		return true;
     	}
     	if(arguments[1] == "purge") {
     		//TODO put code in here
-    		return;
+    		return true;
     	}
-    	
+    	return false;
 	}
 	
 	private boolean timeInterpreter(String argument) {
