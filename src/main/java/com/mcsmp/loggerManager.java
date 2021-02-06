@@ -1,7 +1,14 @@
 package com.mcsmp;
 
+import static java.util.logging.Level.SEVERE;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +38,7 @@ public abstract class loggerManager {
 	protected List<Integer> action_list;
 	protected int radius;
 	protected Location radius_location;
+	private static HashMap<String,String[]> storedCommands = new HashMap<String,String[]>();
 	
 	
 	/**
@@ -65,33 +73,101 @@ public abstract class loggerManager {
     	}
 	}
 
-	static public boolean createLoggerManager(String[] arguments, Location location) {
+	/**
+	 * 
+	 * @param command The arguments after the logger alias
+	 * @param location Location of the player (can be null)
+	 * @param operator the player who initiated the command
+	 * @return true if command event should be cancelled
+	 */
+	static public boolean createLoggerManager(String[] command, Location location, String operator) {
 		
 
 		//TODO Permissions
 		
 		ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
 		List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
-    	if(rollbackAlias.contains(arguments[1])) { 
-    		RollbackManager rollback = new RollbackManager(  Arrays.copyOfRange(arguments, 2, arguments.length), location  );
+		String[] arguments = Arrays.copyOfRange(command, 2, command.length);
+		
+    	if(rollbackAlias.contains(command[1])) { 
+    		
+    		RollbackManager rollback = new RollbackManager( arguments , location  );
     		rollback.executeTask();
+    		storeCommand(operator,command);
     		return true;
     	}
     	List<String> restoreAlias = configSektion.getStringList("blockLoggerCommands.restore");
-    	if(restoreAlias.contains(arguments[1])) {
-    		RestoreManager restore = new RestoreManager(  Arrays.copyOfRange(arguments, 2, arguments.length), location  );
+    	if(restoreAlias.contains(command[1])) {
+    		
+    		
+    		
+    		RestoreManager restore = new RestoreManager(  arguments, location  );
     		restore.executeTask();
+    		storeCommand(operator,command);
     		return true;
     	}
-    	if(arguments[1] == "undo") {
-    		//TODO put code in here
-    		return true;
+    	if(command[1].equals("undo")) {
+    		//TODO make better undo's, that store location and takes time into consideration
+    		String player = operator;
+    		if(command.length == 3)
+    			player = command[2];
+    		else if(command.length > 3) {
+    			ParamnesticCure.getInstance().getLogger().warning("Unkown amount of arguments");
+    			return false;
+    		}
+    		if (undoCommand(player, operator, location))
+    			return true;
     	}
-    	if(arguments[1] == "purge") {
-    		//TODO put code in here
-    		return true;
+    	if(command[1] == "purge") {
+    		String world = null;
+    		if(command.length == 4) 
+    			world = command[3];
+    		else if(command.length > 4) 
+    			ParamnesticCure.getInstance().getLogger().warning("Unkown amount of arguments");
+    		TrackedBlocks.purgeDatabase(Integer.parseInt(command[2]),world);
     	}
     	return false;
+	}
+	/**
+	 * @param operator the player who initiated the command
+	 * @param command the type of logger command that was used
+	 * @param arguments the arguments of that command
+	 */
+	static private void storeCommand(String operator, String[] commandListed) {
+		String command = "";
+		for(String argument:commandListed) command = command+" " + argument;
+		storedCommands.put(operator, commandListed);
+	}
+	
+	/**
+	 * 
+	 * @param player the player which command should be undone
+	 * @param operator the player that initiated the command
+	 * @return true if successful
+	 */
+	static private boolean undoCommand(String player,String operator,Location location) {
+		ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
+		if(storedCommands.containsKey(player)) {
+	       	String[] commandListed = storedCommands.get(player);
+	       	
+	       	List<String> rbAlias = configSektion.getStringList("blockLoggerCommands.rollback");
+	       	List<String> reAlias = configSektion.getStringList("blockLoggerCommands.restore");
+	       	if(rbAlias.contains(commandListed[1]))
+	       		commandListed[1] = reAlias.get(0);
+	       	else
+	       		commandListed[1] = rbAlias.get(0);
+	       	
+	       	String command = "";
+			for(String argument:commandListed) command = command+" " + argument;
+			
+	       	createLoggerManager(commandListed, location, player);
+	       	storeCommand(operator,commandListed);
+	       	return true;
+	    }else {
+	       	ParamnesticCure.getInstance().getLogger().warning("No command from this user was found");
+	    }
+	        
+		return false;
 	}
 	
 	private boolean timeInterpreter(String argument) {
@@ -210,7 +286,9 @@ public abstract class loggerManager {
 	}
 	
 	/**
-	 * 
+	 * @param argument
+	 * @param aliases
+	 * @return The argument without alias, or "" if there was no match
 	 */
 	private String checkAndTrimArgument(String argument, String[] aliases) {
 		Matcher matcher;
@@ -225,5 +303,9 @@ public abstract class loggerManager {
 		return "";
 	}
 	
+	
+	
 	abstract void executeTask();
+	
+	
 }

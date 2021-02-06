@@ -10,14 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
 import static java.util.logging.Level.SEVERE;
-
-import org.bukkit.Location;
 import org.bukkit.block.Block;
-
-import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import net.coreprotect.CoreProtectAPI;
 import net.coreprotect.CoreProtectAPI.ParseResult;
 
@@ -140,5 +134,7 @@ public class TrackedBlocks {
     	return 0;
     }
     
-    
+    public static void purgeDatabase(int time, String world) {
+    	
+    }
 }

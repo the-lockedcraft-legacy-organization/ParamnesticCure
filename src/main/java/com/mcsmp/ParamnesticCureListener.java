@@ -5,10 +5,8 @@
  */
 package com.mcsmp;
 
-import java.util.Arrays;
+
 import java.util.List;
-import java.util.logging.Logger;
-import static org.bukkit.Bukkit.getLogger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -94,7 +92,7 @@ public class ParamnesticCureListener implements Listener {
     	//if not containing alias or length is too low
     	if(!commandAlias.contains(commandListed[0])||commandListed.length < 2) return;
     	
-    	if(loggerManager.createLoggerManager(commandListed, event.getPlayer().getLocation()))
+    	if(loggerManager.createLoggerManager(commandListed, event.getPlayer().getLocation(),event.getPlayer().getName()))
     		event.setCancelled(true);
     }
     /**
@@ -113,7 +111,7 @@ public class ParamnesticCureListener implements Listener {
     	if(!commandAlias.contains(commandListed[0])||commandListed.length < 2) return;
     	
     	
-    	if(loggerManager.createLoggerManager(commandListed, null));
+    	if(loggerManager.createLoggerManager(commandListed, null, null));
     		event.setCancelled(true);
     }
 }
