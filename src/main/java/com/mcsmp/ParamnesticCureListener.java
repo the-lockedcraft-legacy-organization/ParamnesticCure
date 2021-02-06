@@ -90,6 +90,7 @@ public class ParamnesticCureListener implements Listener {
     	if(!commandAlias.contains(commandListed[0])||commandListed.length < 3) return;
     	
     	loggerManager.createLoggerManager(commandListed, event.getPlayer().getLocation());
+    	event.setCancelled(true);
     }
     /**
      * Checks for critical rollback commands
@@ -108,5 +109,6 @@ public class ParamnesticCureListener implements Listener {
     	
     	
     	loggerManager.createLoggerManager(commandListed, null);
+    	event.setCancelled(true);
     }
 }

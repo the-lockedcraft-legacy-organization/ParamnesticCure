@@ -3,6 +3,9 @@ package com.mcsmp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -156,7 +159,8 @@ public abstract class loggerManager {
 		String[] radiusAlias = {"r:","radius:", "area:"};
 		argument = checkAndTrimArgument(argument,radiusAlias);
     	if(argument != "") {
-    			
+    		if(radius_location == null)
+    			ParamnesticCure.getInstance().getLogger().warning(" You can't use the radius argument from the console");
     		this.radius = Integer.parseInt(argument); 
     		this.radius_location = radius_location;
     		return true;
@@ -209,9 +213,15 @@ public abstract class loggerManager {
 	 * 
 	 */
 	private String checkAndTrimArgument(String argument, String[] aliases) {
+		Matcher matcher;
+		Pattern pattern = null;
+		
 		for(String alias : aliases)
-    		if(argument.contains("^" + alias))
-    			return argument.replaceAll(alias,"");
+			pattern = Pattern.compile("^" + alias);
+			matcher = pattern.matcher(argument);
+    		if(matcher.find()) {
+    			return matcher.replaceAll("");
+    		}
 		return "";
 	}
 	

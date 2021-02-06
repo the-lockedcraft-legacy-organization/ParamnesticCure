@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import net.coreprotect.CoreProtectAPI.ParseResult;
@@ -76,8 +77,9 @@ public class RollbackManager extends loggerManager{
 			public void run() {
 				
 				long startTime = System.nanoTime(); //nano Seconds
+				List<String[]> blockActionListMSG = new ArrayList<String[]>();
 				
-				List<String[]> blockActionListMSG = coreprotect.performRollback(
+				blockActionListMSG = coreprotect.performRollback(
 						time,restrict_users, exclude_users, restrict_blocks, exclude_blocks,action_list, radius, radius_location
 		    			);
 		    	
@@ -85,7 +87,7 @@ public class RollbackManager extends loggerManager{
 		    	
 		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(  (endTime-startTime)*Math.pow(10, -9)  ) + " s");
 		    	
-		    	if(blockActionListMSG == null || blockActionListMSG.size() == 0) {
+		    	if(blockActionListMSG.size() == 0) {
 		    		ParamnesticCure.getInstance().getLogger().warning("No actions were found");
 		    		return;
 		    	}
