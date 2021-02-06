@@ -1,11 +1,5 @@
 package com.mcsmp;
 
-import static java.util.logging.Level.SEVERE;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,11 +16,11 @@ import net.coreprotect.CoreProtectAPI;
 
 
 /**
- * An abstract class with methods that are shared between all loggerManagers
+ * An abstract class with methods that are shared between all loggerManagers, It also consist of some 
+ * methods that are used to create those loggerManagers
  * @author Thorin
  */
 public abstract class loggerManager {
-	
 	
 	
 	protected CoreProtectAPI coreprotect;
@@ -74,7 +68,7 @@ public abstract class loggerManager {
 	}
 
 	/**
-	 * 
+	 * Interprets a part of the command to see if a rollback,restore,undo, or purge should be created
 	 * @param command The arguments after the logger alias
 	 * @param location Location of the player (can be null)
 	 * @param operator the player who initiated the command
@@ -140,7 +134,8 @@ public abstract class loggerManager {
 	}
 	
 	/**
-	 * 
+	 * This is the main logic done to convert a command to it's opposite, to then call the createLoggerManager with the newly created command.
+	 * This approximately undoes the previous command. 
 	 * @param player the player which command should be undone
 	 * @param operator the player that initiated the command
 	 * @return true if successful
@@ -265,24 +260,32 @@ public abstract class loggerManager {
 		argument = checkAndTrimArgument(argument,actionAlias);
     	if(argument != "") {
     		
-    		//interpret action argument into a list
-    		//TODO convert string identifiers to the right integer
     		this.action_list = new ArrayList<Integer>();
     		String[] argumentSplited = argument.split(",");
-    		for(String action : argumentSplited) {  
-    			this.action_list.add(actionToInt(action));
+    		for(String actionArgument : argumentSplited) {
+    			for(Integer action:actionToInt(actionArgument))
+    				action_list.add(action);
     		}
     		return true;
     	}
 		return false;
 	}
 	
-	private int actionToInt(String action) {
-		//This is tedious...
-		int a = 0;
+	private List<Integer> actionToInt(String action) {
+		List<Integer> output = null;
 		if(action.contains("block"))
-		{}
-		return a;
+		{
+			output = new ArrayList<Integer>();
+			if(!action.contains("-"))
+				output.add(1);//place action
+			if(!action.contains("+"))
+				output.add(0);//remove action
+		}
+		else {
+			output = new ArrayList<Integer>();
+			output.add(2);
+		}
+		return output;
 	}
 	
 	/**
