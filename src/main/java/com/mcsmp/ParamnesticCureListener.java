@@ -54,7 +54,17 @@ public class ParamnesticCureListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
     	
         //Tracked block checks if the block is creative/critical
-        TrackedBlocks.updateCreativeID(event.getBlock());
+
+		boolean isCreative = RestrictedCreativeAPI.isCreative(event.getBlock());
+    	
+    	ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+    		TrackedBlocks.updateCreativeID(event.getBlock(),isCreative);
+			}
+    	},TrackedBlocks.waitPeriod);
+       
 
     }
     /**
@@ -87,7 +97,7 @@ public class ParamnesticCureListener implements Listener {
     	}
     	
     	//if not containing alias or length is too low
-    	if(!commandAlias.contains(commandListed[0])||commandListed.length < 3) return;
+    	if(!commandAlias.contains(commandListed[0])||commandListed.length < 2) return;
     	
     	loggerManager.createLoggerManager(commandListed, event.getPlayer().getLocation());
     	event.setCancelled(true);
@@ -105,7 +115,7 @@ public class ParamnesticCureListener implements Listener {
     	
     	List<String> commandAlias = configSektion.getStringList("blockLoggerCommands.alias");
     	
-    	if(!commandAlias.contains(commandListed[0])||commandListed.length < 3) return;
+    	if(!commandAlias.contains(commandListed[0])||commandListed.length < 2) return;
     	
     	
     	loggerManager.createLoggerManager(commandListed, null);
