@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -47,42 +48,39 @@ public class RestoreManager extends loggerManager {
 			    	long endTime = System.nanoTime();
 			    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(  endTime-startTime  ) + " ns");
 			    	
+			    	
+			    	if(blockActionListMSG.size() == 0) {
+			    		ParamnesticCure.getInstance().getLogger().warning("No actions were found");
+			    		return;
+			    	}
+			    	
 			    	ParseResult blockAction = coreprotect.parseResult(blockActionListMSG.get(0));
 			    	
 			    	String worldname = blockAction.worldName();
 			    	int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
 			    	int newestTime = blockAction.getTime();
 			    	
+			    	
+			    	HashMap<String,Integer> blocks_to_be_changed = new HashMap<String,Integer>();
+			    	
 			    	for(int i = 0; i < blockActionListMSG.size(); i++) {
 			    		blockAction = coreprotect.parseResult(blockActionListMSG.get(i));
-			    		
-			    		if(!blockAction.isRolledBack())continue;
-			    		
 			    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] x=" + blockAction.getX() + ", y=" + blockAction.getY() + " ,z=" + blockAction.getZ() + " ,time=" + blockAction.getTime() + " ,rollback=" + blockAction.isRolledBack());
-			    		if(x == blockAction.getX() && y == blockAction.getY() && z == blockAction.getZ() && worldname == blockAction.worldName() && newestTime < blockAction.getTime()) continue;
+			    		
+			    		if(!blockAction.isRolledBack())	continue;
+			    		
+				    	
+				    	String compareKey = String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(z) + worldname;
+			    		if(blocks_to_be_changed.containsKey(compareKey))
+			    			if(blocks_to_be_changed.get(compareKey) > blockAction.getTime())
+			    				continue;
+			    		blocks_to_be_changed.put( compareKey , newestTime );
+			    		
 			    		
 			    		x = blockAction.getX(); 	y = blockAction.getY(); 	z = blockAction.getZ();
 				    	newestTime = blockAction.getTime(); worldname = blockAction.worldName();
 			    		
-			    		int DBCreativeStatus = fetchDBIsCreative( newestTime,  worldname,  x,  y,  z);
-			    		
-			    		
-			    		List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
-				    	World world = null;
-				    	for (World worldTest : worldlist) {
-				    		if(worldTest.getName().equals(worldname)) { world = worldTest; break; }
-				    	}
-				    	Block block = world.getBlockAt(x, y, z);
-			    		
-				    	
-			    		if(DBCreativeStatus == 1) {
-			    			RestrictedCreativeAPI.add(block);
-			    			ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block restored to creative");
-			    		}
-			    		else {
-			    			RestrictedCreativeAPI.remove(block);
-			    			ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block restored to survival");
-			    		}
+				    	changeCreativeStatus(x,y,z,worldname,newestTime);
 			    	}
 			    	
 				}
@@ -98,12 +96,14 @@ public class RestoreManager extends loggerManager {
      * @param z
      * @return boolean: [0 1] | not in database: -1
      */
-	private int fetchDBIsCreative(int time, String worldName, int x, int y, int z) {
+	protected int fetchDBIsCreative(int time, String worldName, int x, int y, int z) {
+		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] time = " + String.valueOf(time) + " ,worldName" + worldName + " ,x = " + String.valueOf(x) + " ,y = " + String.valueOf(y) + " ,z=" + String.valueOf(z));
+		
     	try {
     	Connection connection = ParamnesticCure.getInstance().getConnection();
         PreparedStatement getCreativeStatus = connection.prepareStatement(
         		"SELECT is_creative FROM blockAction"
-        		+ " WHERE time < ? AND world = ? AND x = ? AND y = ? AND z = ?"
+        		+ " WHERE time = ? AND world = ? AND x = ? AND y = ? AND z = ?"
         		+ " ORDER BY time DESC"
         		);
         getCreativeStatus.setInt(1, time);
@@ -112,10 +112,13 @@ public class RestoreManager extends loggerManager {
         getCreativeStatus.setInt(4, y);
         getCreativeStatus.setInt(5, z);
         
+        
+        
         ResultSet set = getCreativeStatus.executeQuery();
         if(set.next()) return set.getInt(1);
     	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     	
     	return -1;
     }
+
 }
