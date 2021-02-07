@@ -8,12 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
-
 import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-
-import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import net.coreprotect.CoreProtectAPI.ParseResult;
 /**
  * Does a series of logical operations to minimise opportunities for restores to mess with creative block data.

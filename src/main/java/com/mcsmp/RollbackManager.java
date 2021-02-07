@@ -14,11 +14,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import net.coreprotect.CoreProtectAPI.ParseResult;
 import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 
 /**
  * Does a series of logical operations to minimise opportunities for rollblacks to mess with creative block data.
@@ -92,9 +89,6 @@ public class RollbackManager extends loggerManager{
 		    		return;
 		    	}
 		    	
-
-		    	World world = null;
-		        List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
 		        
 			    for(int i = 0; i<blockActionListMSG.size(); i++){
 			    	

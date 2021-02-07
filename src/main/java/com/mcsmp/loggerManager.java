@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import net.coreprotect.CoreProtectAPI;
@@ -106,17 +107,16 @@ public abstract class loggerManager {
 	 * @param operator the player who initiated the command
 	 * @return true if command event should be cancelled
 	 */
-	static public boolean createLoggerManager(String[] command, Location location, String operator) {
+	static public boolean createLoggerManager(String[] command, Location location, Player playerOperator) {
 		
-
-		//TODO Permissions
+		String operator = playerOperator.getName();
 		
 		ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
 		List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
 		String[] arguments = Arrays.copyOfRange(command, 2, command.length);
 		
     	if(rollbackAlias.contains(command[1])) { 
-    		
+    		if(!PermissionManager.hasRollback(playerOperator)) return false;
     		RollbackManager rollback = new RollbackManager( arguments , location  );
     		rollback.executeTask();
     		storeCommand(operator,command);
@@ -125,7 +125,7 @@ public abstract class loggerManager {
     	List<String> restoreAlias = configSektion.getStringList("blockLoggerCommands.restore");
     	if(restoreAlias.contains(command[1])) {
     		
-    		
+    		if(!PermissionManager.hasRestore(playerOperator)) return false;
     		
     		RestoreManager restore = new RestoreManager(  arguments, location  );
     		restore.executeTask();
@@ -133,6 +133,7 @@ public abstract class loggerManager {
     		return true;
     	}
     	if(command[1].equals("undo")) {
+    		if(!(PermissionManager.hasRollback(playerOperator)&&PermissionManager.hasRestore(playerOperator))) return false;
     		//TODO make better undo's, that store location and takes time into consideration
     		String player = operator;
     		if(command.length == 3)
@@ -144,10 +145,22 @@ public abstract class loggerManager {
     		if (undoCommand(player, operator, location))
     			return true;
     	}
-    	if(command[1] == "purge") {
-    		if(command.length > 3) 
+    	if(command[1].equals("purge")) {
+    		if(!PermissionManager.hasPurge(playerOperator)) return false;
+    		
+    		if(command.length > 3) {
     			ParamnesticCure.getInstance().getLogger().warning("Unkown amount of arguments");
-    		TrackedBlocks.purgeDatabase(Integer.parseInt(command[2]));
+    			return false;
+    		}
+    		
+    		//don't look here, this is stupid
+    		String[] temp = {command[2]};
+    		int time = (new RollbackManager(temp,null)).time;
+    		TrackedBlocks.purgeDatabase(time);
+    	}
+    	if(command[1].equals("help") ) {
+    		if(!PermissionManager.hasPurge(playerOperator)) return false;
+	    	
     	}
     	return false;
 	}
@@ -184,7 +197,9 @@ public abstract class loggerManager {
 	       	String command = "";
 			for(String argument:commandListed) command = command+" " + argument;
 			
-	       	createLoggerManager(commandListed, location, player);
+			Player playerPlayer = Bukkit.getServer().getPlayer(player);
+			
+	       	createLoggerManager(commandListed, location, playerPlayer);
 	       	storeCommand(operator,commandListed);
 	       	return true;
 	    }else {

@@ -92,7 +92,7 @@ public class ParamnesticCureListener implements Listener {
     	//if not containing alias or length is too low
     	if(!commandAlias.contains(commandListed[0])||commandListed.length < 2) return;
     	
-    	if(loggerManager.createLoggerManager(commandListed, event.getPlayer().getLocation(),event.getPlayer().getName()))
+    	if(loggerManager.createLoggerManager(commandListed, event.getPlayer().getLocation(),event.getPlayer()))
     		event.setCancelled(true);
     }
     /**
