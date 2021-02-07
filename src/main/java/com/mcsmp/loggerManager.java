@@ -10,8 +10,11 @@ import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 
+import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import net.coreprotect.CoreProtectAPI;
 
 
@@ -67,8 +70,37 @@ public abstract class loggerManager {
     	}
 	}
 
+	protected void changeCreativeStatus(int x, int y, int z, String worldname,int time) {
+		
+		
+		int DBCreativeStatus = fetchDBIsCreative( time,  worldname,  x,  y,  z);
+		
+		
+		List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
+    	World world = null;
+    	for (World worldTest : worldlist) {
+    		if(worldTest.getName().equals(worldname)) { world = worldTest; break; }
+    	}
+    	Block block = world.getBlockAt(x, y, z);
+    	
+    	//to prevent issues on restores
+    	if(RestrictedCreativeAPI.isCreative(block)) {
+    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] stored a block as creative");
+    		TrackedBlocks.updateCreativeID(block, true);
+    	}
+    	
+		if(DBCreativeStatus == 1) {
+			RestrictedCreativeAPI.add(block);
+			ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block restored to creative");
+		}
+		else {
+			RestrictedCreativeAPI.remove(block);
+			ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block restored to survival");
+		}
+	} 
 	/**
 	 * Interprets a part of the command to see if a rollback,restore,undo, or purge should be created
+	 * Whether this method fits better in the listener class is unclear
 	 * @param command The arguments after the logger alias
 	 * @param location Location of the player (can be null)
 	 * @param operator the player who initiated the command
@@ -113,12 +145,9 @@ public abstract class loggerManager {
     			return true;
     	}
     	if(command[1] == "purge") {
-    		String world = null;
-    		if(command.length == 4) 
-    			world = command[3];
-    		else if(command.length > 4) 
+    		if(command.length > 3) 
     			ParamnesticCure.getInstance().getLogger().warning("Unkown amount of arguments");
-    		TrackedBlocks.purgeDatabase(Integer.parseInt(command[2]),world);
+    		TrackedBlocks.purgeDatabase(Integer.parseInt(command[2]));
     	}
     	return false;
 	}
@@ -271,6 +300,13 @@ public abstract class loggerManager {
 		return false;
 	}
 	
+	/**
+	 * As of now, the only known action integers are block remove, block place and block interaction (0,1,2). 
+	 * This just looks if its a block action, and with some hefty logic (if I say so myself) assigns the corresponding integers:
+	 * block (0,1), +block(1), -block(0). Default value is 2
+	 * @param action
+	 * @return
+	 */
 	private List<Integer> actionToInt(String action) {
 		List<Integer> output = null;
 		if(action.contains("block"))
@@ -306,7 +342,7 @@ public abstract class loggerManager {
 		return "";
 	}
 	
-	
+	abstract int fetchDBIsCreative(int time, String worldName, int x, int y, int z);
 	
 	abstract void executeTask();
 	

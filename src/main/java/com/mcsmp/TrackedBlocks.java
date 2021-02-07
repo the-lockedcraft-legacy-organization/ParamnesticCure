@@ -134,7 +134,23 @@ public class TrackedBlocks {
     	return 0;
     }
     
-    public static void purgeDatabase(int time, String world) {
+    public static void purgeDatabase(int time) {
     	
+    	int oldestDataPoint = Math.round(System.currentTimeMillis()/1000) - time;//seconds
+    	try {
+    		Connection connection = ParamnesticCure.getInstance().getConnection();
+ 	    	PreparedStatement addToDatabase = connection.prepareStatement(
+ 	      			"DELETE FROM blockAction"
+ 	      			+ " WHERE time < ?"
+ 	      			);
+ 	            	
+ 	    	addToDatabase.setInt( 1, oldestDataPoint);
+ 	       	
+ 	    	addToDatabase.execute();
+ 	       	
+ 	       	
+ 	       plugin.getLogger().info("[Manual Debug] Purged the ParamnesticCure database");
+        }catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+             
     }
 }

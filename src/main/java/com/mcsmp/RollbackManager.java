@@ -55,7 +55,6 @@ public class RollbackManager extends loggerManager{
     @Override
     public void executeTask() {
     	
-    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Time: " + time);
     	ParamnesticCure.getInstance().getLogger().info("Restrict users:");
     	if(restrict_users != null)
 	    	for(String debug: restrict_users)
@@ -70,7 +69,8 @@ public class RollbackManager extends loggerManager{
 	    		ParamnesticCure.getInstance().getLogger().info(debug.toString());
     	if(radius_location != null)
     		ParamnesticCure.getInstance().getLogger().info("Radius: " + radius + " ,Radius Location:" + radius_location.toString());
-    	
+
+        
     	ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 
 			@Override
@@ -92,56 +92,39 @@ public class RollbackManager extends loggerManager{
 		    		return;
 		    	}
 		    	
-			    int newestTime = coreprotect.parseResult(blockActionListMSG.get(0)).getTime();
+
+		    	World world = null;
+		        List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
+		        
 			    for(int i = 0; i<blockActionListMSG.size(); i++){
 			    	
 			    	ParseResult blockAction = coreprotect.parseResult(blockActionListMSG.get(i));
-			    		
+			    	
+			    	if(blockAction.getActionId() != 1)
+			    		continue;
+			    	
 			    	if(i+1<blockActionListMSG.size()) {
 				    	ParseResult nextBlockAction = coreprotect.parseResult(blockActionListMSG.get(i+1));
 				    		
 				    	// Scroll through database on the same location until the oldest action that is being rollbacked is the only one left
 				    	if(	nextBlockAction.getX() == blockAction.getX()	 && 	nextBlockAction.getY() == blockAction.getY()	 && 	nextBlockAction.getZ() == blockAction.getZ()
 				    			&& 		nextBlockAction.worldName() == blockAction.worldName()   &&    nextBlockAction.getTime() <= blockAction.getTime() 
-				    			) { 
-				    		
-				    		if(newestTime < coreprotect.parseResult(blockActionListMSG.get(i)).getTime()) { newestTime = coreprotect.parseResult(blockActionListMSG.get(i)).getTime(); }
+				    			) {
 				    		continue;
 			    		}
 			    	}
 			    	
-			    	String worldname = blockAction.worldName();		String playername = blockAction.getPlayer();
+			    	String worldname = blockAction.worldName();
 			    	
 			    	int oldestTime = blockAction.getTime();
 			    	int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
-			    	int DBCreativeStatus = fetchDBIsCreative(oldestTime,worldname,x,y,z);
-
-			        	
-	                    
-	                List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
-			    	World world = null;
-			    	for (World worldTest : worldlist) {
-			    		if(worldTest.getName().equals(worldname)) { world = worldTest; break; }
-			    	}
-			    	Block block = world.getBlockAt(x, y, z);
 			    	
-
-			    	//if the block is creative, there would be problems when you undo rollbacks. This check prevents that
-			    	boolean iscreative = RestrictedCreativeAPI.isCreative(block);
-			    	if(iscreative)
-			    		TrackedBlocks.updateCreativeID(newestTime,playername,block,iscreative);
-	                    
-			    	if(i+1<blockActionListMSG.size())
-			    		newestTime = coreprotect.parseResult(blockActionListMSG.get(i+1)).getTime();
-	                    
-	                if (DBCreativeStatus == 1) {
-		                RestrictedCreativeAPI.add(block);
-		                ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block rollbacked to creative");
-	                }
-	                else {
-	                   	RestrictedCreativeAPI.remove(block);
-	                   	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block rollbacked to survival");
-	                }
+			    	
+			    	
+			    	
+			    	
+			    	
+			    	changeCreativeStatus(x,y,z,worldname,oldestTime);
 			    }
 			}
     		
@@ -156,7 +139,7 @@ public class RollbackManager extends loggerManager{
      * @param z
      * @return boolean: [0 1] | not in database: -1
      */
-	private int fetchDBIsCreative(int time, String worldName, int x, int y, int z) {
+    protected int fetchDBIsCreative(int time, String worldName, int x, int y, int z) {
     	try {
     	Connection connection = ParamnesticCure.getInstance().getConnection();
         PreparedStatement getCreativeStatus = connection.prepareStatement(
