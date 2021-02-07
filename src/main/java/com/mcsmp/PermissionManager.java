@@ -1,28 +1,42 @@
 package com.mcsmp;
 
 import org.bukkit.entity.Player;
-
+/**
+ * We all know what this does
+ * @author Thorin
+ */
 public class PermissionManager {
 	
-	
+	/**
+	 * 
+	 * @param player
+	 * @return
+	 */
 	static public boolean hasRollback(Player player) {
-		if(player.hasPermission("coreprotect.rollback"))
-			return true;
-		return false;
+		return player.hasPermission("coreprotect.rollback");
 	}
+	/**
+	 * 
+	 * @param player
+	 * @return
+	 */
 	static public boolean hasPurge(Player player) {
-		if(player.hasPermission("coreprotect.purge"))
-			return true;
-		return false;
+		return player.hasPermission("coreprotect.purge");
 	}
+	/**
+	 * 
+	 * @param player
+	 * @return
+	 */
 	static public boolean hasRestore(Player player) {
-		if(player.hasPermission("coreprotect.restore"))
-			return true;
-		return false;
+		return player.hasPermission("coreprotect.restore");
 	}
+	/**
+	 * 
+	 * @param player
+	 * @return
+	 */
 	static public boolean hasHelp(Player player) {
-		if(player.hasPermission("coreprotect.help"))
-			return true;
-		return false;
+		return player.hasPermission("coreprotect.help");
 	}
 }

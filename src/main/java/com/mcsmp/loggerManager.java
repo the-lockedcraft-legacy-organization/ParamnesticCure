@@ -104,7 +104,7 @@ public abstract class loggerManager {
 	 * Whether this method fits better in the listener class is unclear
 	 * @param command The arguments after the logger alias
 	 * @param location Location of the player (can be null)
-	 * @param operator the player who initiated the command
+	 * @param playerOperator the player who initiated the command
 	 * @return true if command event should be cancelled
 	 */
 	static public boolean createLoggerManager(String[] command, Location location, Player playerOperator) {
