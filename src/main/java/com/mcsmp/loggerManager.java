@@ -381,9 +381,7 @@ public abstract class loggerManager {
     		}
 		return "";
 	}
-	
-	
-	
+
 	
 	abstract int fetchDBIsCreative(int time, String worldName, int x, int y, int z);
 	
