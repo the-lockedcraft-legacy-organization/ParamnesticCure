@@ -14,7 +14,7 @@ public class PermissionManager {
 	 * @return
 	 */
 	static public boolean hasRollback(Player player) {
-		return player.hasPermission(configSektion.getString("blockLoggerPermissions.rollback"));
+		return hasPermission(player,configSektion.getString("blockLoggerPermissions.rollback"));
 	}
 	/**
 	 * 
@@ -22,7 +22,7 @@ public class PermissionManager {
 	 * @return
 	 */
 	static public boolean hasPurge(Player player) {
-		return player.hasPermission(configSektion.getString("blockLoggerPermissions.purge"));
+		return hasPermission(player,configSektion.getString("blockLoggerPermissions.purge"));
 	}
 	/**
 	 * 
@@ -30,7 +30,7 @@ public class PermissionManager {
 	 * @return
 	 */
 	static public boolean hasRestore(Player player) {
-		return player.hasPermission(configSektion.getString("blockLoggerPermissions.restore"));
+		return hasPermission(player,configSektion.getString("blockLoggerPermissions.restore"));
 	}
 	/**
 	 * 
@@ -38,6 +38,17 @@ public class PermissionManager {
 	 * @return
 	 */
 	static public boolean hasHelp(Player player) {
-		return player.hasPermission(configSektion.getString("blockLoggerPermissions.help"));
+		return hasPermission(player,configSektion.getString("blockLoggerPermissions.help"));
+	}
+	
+	static private boolean hasPermission(Player player, String permission) {
+		//null => console (i hope)
+		if(player == null) {
+			ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Registered as a console command");
+			return true;
+		}
+		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Registered as a player command");
+		
+		return player.hasPermission(permission);
 	}
 }

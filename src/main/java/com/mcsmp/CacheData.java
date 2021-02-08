@@ -26,7 +26,7 @@ public class CacheData {
      * Method to cache database connections.
      */
     public CacheData() {
-
+    	//TODO simplify this
         for (String databases : plugin.getConfig().getConfigurationSection("Database_Names").getKeys(false)) {
             if (  !(plugin.getConfig().getString("Database_Names." + databases + ".address").chars().allMatch(Character::isWhitespace))) {
                 address = plugin.getConfig().getString("Database_Names." + databases + ".address");

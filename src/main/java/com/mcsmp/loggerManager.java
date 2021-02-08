@@ -47,6 +47,10 @@ public abstract class loggerManager {
 	 */
 	protected void interpretArguments(String[] arguments, Location radius_location) {
 		
+		
+		boolean checkForWeirdUserInput = false;
+		
+		
     	for(String argument :arguments) {
     		
     		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] " + argument);
@@ -65,6 +69,12 @@ public abstract class loggerManager {
     		if(actionInterpreter(argument))
     			continue;
     		if(argument != ""){
+    			if(checkForWeirdUserInput) {
+    	    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Weird user input detected");
+    				return;
+    			}
+    			
+    			checkForWeirdUserInput = true;
     			this.restrict_users = new ArrayList<String>();
     			this.restrict_users.add(argument);
     		}
@@ -123,7 +133,8 @@ public abstract class loggerManager {
 	 */
 	static public boolean createLoggerManager(String[] command, Location location, Player playerOperator) {
 		
-		String operator = playerOperator.getName();
+		String operator = (playerOperator == null) ? null : playerOperator.getName();
+		
 		
 		List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
 		String[] arguments = Arrays.copyOfRange(command, 2, command.length);
@@ -236,7 +247,7 @@ public abstract class loggerManager {
 	 */
 	
 	private boolean timeInterpreter(String argument) {
-		List<String> timeAlias = configSektion.getStringList("blockLoggerCommands.rollback");
+		List<String> timeAlias = configSektion.getStringList("blockLoggerCommands.arguments.time");
 		argument = checkAndTrimArgument(argument,timeAlias);
     	if(argument != "") {
     		long time = 0;//s
@@ -263,6 +274,7 @@ public abstract class loggerManager {
 	    		}
     		}
     		this.time = Math.round(time);
+    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] time = " + String.valueOf(this.time));
     		return true;
 		}
 		return false;
@@ -284,7 +296,7 @@ public abstract class loggerManager {
 	}
 	
 	private boolean excludeInterpreter(String argument) {
-		List<String> excludeAlias = configSektion.getStringList("blockLoggerCommands.rollback");
+		List<String> excludeAlias = configSektion.getStringList("blockLoggerCommands.arguments.exclude");
 		argument = checkAndTrimArgument(argument,excludeAlias);
     	if(argument != "") {
     			
@@ -297,7 +309,7 @@ public abstract class loggerManager {
 	}
 	
 	private boolean radiusInterpreter(String argument,Location radius_location) {
-		List<String> radiusAlias = configSektion.getStringList("blockLoggerCommands.rollback");
+		List<String> radiusAlias = configSektion.getStringList("blockLoggerCommands.arguments.radius");
 		argument = checkAndTrimArgument(argument,radiusAlias);
     	if(argument != "") {
     		if(radius_location == null)
@@ -310,7 +322,7 @@ public abstract class loggerManager {
 	}
 	
 	private boolean blockInterpreter(String argument) {
-		List<String> blockAlias = configSektion.getStringList("blockLoggerCommands.rollback");
+		List<String> blockAlias = configSektion.getStringList("blockLoggerCommands.arguments.block");
 		argument = checkAndTrimArgument(argument,blockAlias);
     	if(argument != "") {
     			
@@ -326,7 +338,7 @@ public abstract class loggerManager {
 	}
 	
 	private boolean actionInterpreter(String argument) {
-		List<String> actionAlias = configSektion.getStringList("blockLoggerCommands.rollback");
+		List<String> actionAlias = configSektion.getStringList("blockLoggerCommands.arguments.action");
 		argument = checkAndTrimArgument(argument,actionAlias);
     	if(argument != "") {
     		
@@ -375,12 +387,16 @@ public abstract class loggerManager {
 		Matcher matcher;
 		Pattern pattern = null;
 		
-		for(String alias : aliases)
+		for(String alias : aliases) {
+
+    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] checking Alias: " + alias);
 			pattern = Pattern.compile("^" + alias + ":");
 			matcher = pattern.matcher(argument);
     		if(matcher.find()) {
+    			ParamnesticCure.getInstance().getLogger().info("[Manual Debug] There was a match");
     			return matcher.replaceAll("");
     		}
+		}
 		return "";
 	}
 
