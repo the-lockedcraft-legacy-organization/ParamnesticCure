@@ -49,7 +49,6 @@ public class RestoreManager extends loggerManager {
 			    		return;
 			    	}
 			    	
-			    	;
 			    	
 			    	String worldname;
 			    	int x; 	int y; 	int z;
@@ -70,7 +69,7 @@ public class RestoreManager extends loggerManager {
 				    	
 				    	String compareKey = String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(z) + worldname;
 			    		if(blocks_to_be_changed.containsKey(compareKey))
-			    			if(blocks_to_be_changed.get(compareKey) > blockAction.getTime())
+			    			if(blocks_to_be_changed.get(compareKey) > newestTime)
 			    				continue;
 			    		blocks_to_be_changed.put( compareKey , newestTime );
 			    		

@@ -364,6 +364,7 @@ public abstract class loggerManager {
 	}
 	
 	/**
+	 * A function used in command processing
 	 * @param argument
 	 * @param aliases
 	 * @return The argument without alias, or "" if there was no match
