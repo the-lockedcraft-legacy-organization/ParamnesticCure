@@ -16,19 +16,54 @@ creativeManager: 'restrictedCreative'
 #Please ensure that any such features are disabled in your blocklogger.
 blockLogger: 'coreProtect'
 blockLoggerCommands:
-  alias:
-      - co
-      - core
-      - coreprotect
-      - coreprotect:co
-      - coreprotect:core
-      - coreprotect:coreprotect
-  rollback:
-      - rollback
-      - rb
-  restore:
-      - restore
-      - rs
+   alias:
+       - co
+       - core
+       - coreprotect
+       - coreprotect:co
+       - coreprotect:core
+       - coreprotect:coreprotect
+   rollback:
+       - rollback
+       - rb
+   restore:
+       - restore
+       - rs
+   undo:
+       - undo
+   purge:
+       - purge
+   help:
+       - help
+   arguments:
+      time:
+          - t
+          - time
+      radius:
+          - r
+          - radius
+          - area
+      user:
+          - u
+          - user
+          - player
+      action:
+          - a
+          - action
+      exclude:
+          - e
+          - exclude
+      block:
+          - b
+          - block
+blockLoggerPermissions:
+   rollback: coreprotect.rollback
+   
+   purge: coreprotect.purge
+   
+   restore: coreprotect.restore
+   
+   help: coreprotect.help
 # Default information used when a value in Database_Names is blank ("")
 # Please ensure that all three of the databases you intend to use have already been configured by your logger and creative manager.
 defaultconnection:

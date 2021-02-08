@@ -37,6 +37,7 @@ public abstract class loggerManager {
 	protected int radius;
 	protected Location radius_location;
 	private static HashMap<String,String[]> storedCommands = new HashMap<String,String[]>();
+	private static ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
 	
 	
 	/**
@@ -124,7 +125,6 @@ public abstract class loggerManager {
 		
 		String operator = playerOperator.getName();
 		
-		ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
 		List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
 		String[] arguments = Arrays.copyOfRange(command, 2, command.length);
 		
@@ -148,20 +148,21 @@ public abstract class loggerManager {
     		storeCommand(operator,command);
     		return true;
     	}
-    	if(command[1].equals("undo")) {
+    	List<String> undoAlias = configSektion.getStringList("blockLoggerCommands.undo");
+    	if(undoAlias.contains(command[1])) {
     		if(!(PermissionManager.hasRollback(playerOperator)&&PermissionManager.hasRestore(playerOperator))) return false;
     		//TODO make better undo's, that store location and takes time into consideration
     		String player = operator;
     		if(command.length == 3)
     			player = command[2];
     		else if(command.length > 3) {
-    			ParamnesticCure.getInstance().getLogger().warning("Unkown amount of arguments");
     			return false;
     		}
     		if (undoCommand(player, operator, location))
     			return true;
     	}
-    	if(command[1].equals("purge")) {
+    	List<String> purgeAlias = configSektion.getStringList("blockLoggerCommands.purge");
+    	if(purgeAlias.contains(command[1])) {
     		if(!PermissionManager.hasPurge(playerOperator)) return false;
     		
     		if(command.length > 3) {
@@ -174,7 +175,8 @@ public abstract class loggerManager {
     		int time = (new RollbackManager(temp,null)).time;
     		TrackedBlocks.purgeDatabase(time);
     	}
-    	if(command[1].equals("help") ) {
+    	List<String> helpAlias = configSektion.getStringList("blockLoggerCommands.help");
+    	if(helpAlias.contains(command[1])) {
     		if(!PermissionManager.hasHelp(playerOperator)) return false;
 	    	
     		
@@ -234,7 +236,7 @@ public abstract class loggerManager {
 	 */
 	
 	private boolean timeInterpreter(String argument) {
-		String[] timeAlias = {"t:","time:"};
+		List<String> timeAlias = configSektion.getStringList("blockLoggerCommands.rollback");
 		argument = checkAndTrimArgument(argument,timeAlias);
     	if(argument != "") {
     		long time = 0;//s
@@ -267,7 +269,7 @@ public abstract class loggerManager {
 	}
 	
 	private boolean userInterpreter(String argument) {
-		String[] userAlias = {"u:","user:","player:"};
+		List<String> userAlias = configSektion.getStringList("blockLoggerCommands.arguments.user");
 		
 		argument = checkAndTrimArgument(argument,userAlias);
     	if(argument != "") {
@@ -282,7 +284,7 @@ public abstract class loggerManager {
 	}
 	
 	private boolean excludeInterpreter(String argument) {
-		String[] excludeAlias = {"exclude:","e:"};
+		List<String> excludeAlias = configSektion.getStringList("blockLoggerCommands.rollback");
 		argument = checkAndTrimArgument(argument,excludeAlias);
     	if(argument != "") {
     			
@@ -295,7 +297,7 @@ public abstract class loggerManager {
 	}
 	
 	private boolean radiusInterpreter(String argument,Location radius_location) {
-		String[] radiusAlias = {"r:","radius:", "area:"};
+		List<String> radiusAlias = configSektion.getStringList("blockLoggerCommands.rollback");
 		argument = checkAndTrimArgument(argument,radiusAlias);
     	if(argument != "") {
     		if(radius_location == null)
@@ -308,7 +310,7 @@ public abstract class loggerManager {
 	}
 	
 	private boolean blockInterpreter(String argument) {
-		String[] blockAlias = {"b:","block:"};
+		List<String> blockAlias = configSektion.getStringList("blockLoggerCommands.rollback");
 		argument = checkAndTrimArgument(argument,blockAlias);
     	if(argument != "") {
     			
@@ -324,7 +326,7 @@ public abstract class loggerManager {
 	}
 	
 	private boolean actionInterpreter(String argument) {
-		String[] actionAlias = {"a:","action:"};
+		List<String> actionAlias = configSektion.getStringList("blockLoggerCommands.rollback");
 		argument = checkAndTrimArgument(argument,actionAlias);
     	if(argument != "") {
     		
@@ -369,12 +371,12 @@ public abstract class loggerManager {
 	 * @param aliases
 	 * @return The argument without alias, or "" if there was no match
 	 */
-	private String checkAndTrimArgument(String argument, String[] aliases) {
+	private String checkAndTrimArgument(String argument,List<String> aliases) {
 		Matcher matcher;
 		Pattern pattern = null;
 		
 		for(String alias : aliases)
-			pattern = Pattern.compile("^" + alias);
+			pattern = Pattern.compile("^" + alias + ":");
 			matcher = pattern.matcher(argument);
     		if(matcher.find()) {
     			return matcher.replaceAll("");

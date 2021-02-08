@@ -1,19 +1,20 @@
 package com.mcsmp;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 /**
  * We all know what this does
  * @author Thorin
  */
 public class PermissionManager {
-	
+	private static ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
 	/**
 	 * 
 	 * @param player
 	 * @return
 	 */
 	static public boolean hasRollback(Player player) {
-		return player.hasPermission("coreprotect.rollback");
+		return player.hasPermission(configSektion.getString("blockLoggerPermissions.rollback"));
 	}
 	/**
 	 * 
@@ -21,7 +22,7 @@ public class PermissionManager {
 	 * @return
 	 */
 	static public boolean hasPurge(Player player) {
-		return player.hasPermission("coreprotect.purge");
+		return player.hasPermission(configSektion.getString("blockLoggerPermissions.purge"));
 	}
 	/**
 	 * 
@@ -29,7 +30,7 @@ public class PermissionManager {
 	 * @return
 	 */
 	static public boolean hasRestore(Player player) {
-		return player.hasPermission("coreprotect.restore");
+		return player.hasPermission(configSektion.getString("blockLoggerPermissions.restore"));
 	}
 	/**
 	 * 
@@ -37,6 +38,6 @@ public class PermissionManager {
 	 * @return
 	 */
 	static public boolean hasHelp(Player player) {
-		return player.hasPermission("coreprotect.help");
+		return player.hasPermission(configSektion.getString("blockLoggerPermissions.help"));
 	}
 }
