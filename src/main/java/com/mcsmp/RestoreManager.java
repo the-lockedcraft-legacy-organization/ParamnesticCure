@@ -49,21 +49,24 @@ public class RestoreManager extends loggerManager {
 			    		return;
 			    	}
 			    	
-			    	ParseResult blockAction = coreprotect.parseResult(blockActionListMSG.get(0));
+			    	;
 			    	
-			    	String worldname = blockAction.worldName();
-			    	int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
-			    	int newestTime = blockAction.getTime();
-			    	
+			    	String worldname;
+			    	int x; 	int y; 	int z;
+			    	int newestTime;
+			    	ParseResult blockAction;
 			    	
 			    	HashMap<String,Integer> blocks_to_be_changed = new HashMap<String,Integer>();
 			    	
-			    	for(int i = 0; i < blockActionListMSG.size(); i++) {
-			    		blockAction = coreprotect.parseResult(blockActionListMSG.get(i));
+			    	for(String[] parseMSG : blockActionListMSG) {
+			    		blockAction = coreprotect.parseResult(parseMSG);
+			    		
 			    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] x=" + blockAction.getX() + ", y=" + blockAction.getY() + " ,z=" + blockAction.getZ() + " ,time=" + blockAction.getTime() + " ,rollback=" + blockAction.isRolledBack());
 			    		
 			    		if(!blockAction.isRolledBack())	continue;
-			    		
+
+			    		x = blockAction.getX(); 	y = blockAction.getY(); 	z = blockAction.getZ();
+				    	newestTime = blockAction.getTime(); worldname = blockAction.worldName();
 				    	
 				    	String compareKey = String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(z) + worldname;
 			    		if(blocks_to_be_changed.containsKey(compareKey))
@@ -72,8 +75,7 @@ public class RestoreManager extends loggerManager {
 			    		blocks_to_be_changed.put( compareKey , newestTime );
 			    		
 			    		
-			    		x = blockAction.getX(); 	y = blockAction.getY(); 	z = blockAction.getZ();
-				    	newestTime = blockAction.getTime(); worldname = blockAction.worldName();
+			    		
 			    		
 				    	changeCreativeStatus(x,y,z,worldname,newestTime);
 			    	}

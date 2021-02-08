@@ -70,7 +70,20 @@ public abstract class loggerManager {
     		
     	}
 	}
-
+	
+	/**
+	 * Takes an action as input, then calls a function which adds the block into the
+	 *  database (an important function if you want restores to work properly).
+	 * 
+	 * It also checks the creative status from paramnestic database of the specified
+	 * action, to then set the creative status of that block accordingly.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param worldname
+	 * @param time
+	 */
 	protected void changeCreativeStatus(int x, int y, int z, String worldname,int time) {
 		
 		
@@ -117,6 +130,8 @@ public abstract class loggerManager {
 		
     	if(rollbackAlias.contains(command[1])) { 
     		if(!PermissionManager.hasRollback(playerOperator)) return false;
+    		
+    		
     		RollbackManager rollback = new RollbackManager( arguments , location  );
     		rollback.executeTask();
     		storeCommand(operator,command);
@@ -126,6 +141,7 @@ public abstract class loggerManager {
     	if(restoreAlias.contains(command[1])) {
     		
     		if(!PermissionManager.hasRestore(playerOperator)) return false;
+    		
     		
     		RestoreManager restore = new RestoreManager(  arguments, location  );
     		restore.executeTask();
@@ -159,12 +175,14 @@ public abstract class loggerManager {
     		TrackedBlocks.purgeDatabase(time);
     	}
     	if(command[1].equals("help") ) {
-    		if(!PermissionManager.hasPurge(playerOperator)) return false;
+    		if(!PermissionManager.hasHelp(playerOperator)) return false;
 	    	
+    		
     	}
     	return false;
 	}
 	/**
+	 * This stores commands for the undo command
 	 * @param operator the player who initiated the command
 	 * @param command the type of logger command that was used
 	 * @param arguments the arguments of that command
@@ -176,7 +194,9 @@ public abstract class loggerManager {
 	}
 	
 	/**
-	 * This is the main logic done to convert a command to it's opposite, to then call the createLoggerManager with the newly created command.
+	 * This is the main logic done to convert a command to it's opposite, to then call the
+	 * createLoggerManager with the newly created command. 
+	 * 
 	 * This approximately undoes the previous command. 
 	 * @param player the player which command should be undone
 	 * @param operator the player that initiated the command
@@ -208,6 +228,10 @@ public abstract class loggerManager {
 	        
 		return false;
 	}
+	
+	/*
+	 * Argument interpreters:
+	 */
 	
 	private boolean timeInterpreter(String argument) {
 		String[] timeAlias = {"t:","time:"};
@@ -356,6 +380,9 @@ public abstract class loggerManager {
     		}
 		return "";
 	}
+	
+	
+	
 	
 	abstract int fetchDBIsCreative(int time, String worldName, int x, int y, int z);
 	
