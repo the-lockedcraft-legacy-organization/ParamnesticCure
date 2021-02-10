@@ -85,10 +85,10 @@ public class RollbackManager extends loggerManager{
 		    	
 		    	long endTime = System.nanoTime(); 
 		    	
-		    	msgManager.operationaltime( (endTime-startTime)*Math.pow(10, -9) );
+		    	msgManager.sendMessage( "Operationall time:" + String.valueOf( (endTime-startTime)*Math.pow(10, -9) ) , false);
 		    	
 		    	if(blockActionListMSG.size() == 0) {
-		    		msgManager.no_actions_found();
+		    		msgManager.sendMessage("No actions were found",true);
 		    		return;
 		    	}
 		    	

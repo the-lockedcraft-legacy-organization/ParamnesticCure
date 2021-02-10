@@ -54,8 +54,6 @@ public abstract class loggerManager {
 		
 		
     	for(String argument :arguments) {
-    		
-    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] " + argument);
 			argument.replace(" ", "");
 			
     		if(timeInterpreter(argument))
@@ -72,7 +70,7 @@ public abstract class loggerManager {
     			continue;
     		if(argument != ""){
     			if(checkForWeirdUserInput) {
-    	    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Weird user input detected");
+    	    		msgManager.sendMessage("Invalid argument " + argument,true);
     				return;
     			}
     			
@@ -175,8 +173,8 @@ public abstract class loggerManager {
     		if(!PermissionManager.hasPurge(playerOperator)) return false;
     		
     		if(command.length > 3) {
-    			new MessageManager(playerOperator).incorrect_input();
-    			return false;
+    			new MessageManager(playerOperator).sendMessage("Invalid argument " + command[1], true);
+    			return true;
     		}
     		
     		//don't look here, this is stupid
@@ -234,7 +232,7 @@ public abstract class loggerManager {
 	    }
 		Player playerOperator = (operator == null)? null : Bukkit.getServer().getPlayer(operator);
 		
-		new MessageManager(playerOperator).player_not_found(player);
+		new MessageManager(playerOperator).sendMessage("Could not find the user " + player,true);
 	    
 		return false;
 	}
@@ -286,7 +284,10 @@ public abstract class loggerManager {
     		this.restrict_users = new ArrayList<String>();
     		
     		String[] argumentSplited = argument.split(",");
-    		for(String part : argumentSplited) {  this.restrict_users.add(part);  }
+    		for(String part : argumentSplited) { 
+    			this.restrict_users.add(part); 
+    			msgManager.sendMessage("Checking blockdata on player " + part, false);
+    		}
     		return true;
     		}
 		return false;
