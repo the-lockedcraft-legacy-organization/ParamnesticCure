@@ -235,8 +235,7 @@ public abstract class loggerManager {
 	       	storeCommand(operator,commandListed);
 	       	return true;
 	    }
-		
-		Player playerOperator = Bukkit.getServer().getPlayer(operator);
+		Player playerOperator = (operator == null)? null : Bukkit.getServer().getPlayer(operator);
 		MessageManager msg_manager = new MessageManager(playerOperator, "faulty");
 	    msg_manager.player_not_found(player);
 	    
