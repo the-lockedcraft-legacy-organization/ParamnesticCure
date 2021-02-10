@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
 import net.coreprotect.CoreProtectAPI.ParseResult;
 /**
  * Does a series of logical operations to minimise opportunities for restores to mess with creative block data.
@@ -22,7 +24,9 @@ public class RestoreManager extends loggerManager {
      * @param arguments : The arguments of the command
      * @param radius_location : location where command was thrown
      */
-	public RestoreManager(String[] arguments, Location radius_location) {
+	public RestoreManager(String[] arguments, Location radius_location,Player player) {
+		
+		this.msgManager = new MessageManager(player,"Restore");
 		this.coreprotect = ParamnesticCure.getInstance().getCoreProtect();
     	
     	interpretArguments(arguments,radius_location);
@@ -41,11 +45,12 @@ public class RestoreManager extends loggerManager {
 			    			);
 			    	
 			    	long endTime = System.nanoTime();
-			    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(  endTime-startTime  ) + " ns");
+			    	
+			    	msgManager.operationaltime( (endTime-startTime)*Math.pow(10, -9) );
 			    	
 			    	
 			    	if(blockActionListMSG.size() == 0) {
-			    		ParamnesticCure.getInstance().getLogger().warning("No actions were found");
+			    		msgManager.no_actions_found();
 			    		return;
 			    	}
 			    	
@@ -79,8 +84,11 @@ public class RestoreManager extends loggerManager {
 				    	changeCreativeStatus(x,y,z,worldname,newestTime);
 			    	}
 			    	
+			    	msgManager.actionsBlocks_affected(blockActionListMSG.size(),blocks_to_be_changed.size());
 				}
 			
+				
+				
 		},60L);
 	}
 	/**

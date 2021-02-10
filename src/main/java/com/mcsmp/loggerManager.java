@@ -36,6 +36,8 @@ public abstract class loggerManager {
 	protected List<Integer> action_list;
 	protected int radius;
 	protected Location radius_location;
+	protected MessageManager msgManager;
+	
 	private static HashMap<String,String[]> storedCommands = new HashMap<String,String[]>();
 	private static ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
 	
@@ -142,8 +144,7 @@ public abstract class loggerManager {
     	if(rollbackAlias.contains(command[1])) { 
     		if(!PermissionManager.hasRollback(playerOperator)) return false;
     		
-    		
-    		RollbackManager rollback = new RollbackManager( arguments , location  );
+    		RollbackManager rollback = new RollbackManager( arguments , location , playerOperator);
     		rollback.executeTask();
     		storeCommand(operator,command);
     		return true;
@@ -154,7 +155,7 @@ public abstract class loggerManager {
     		if(!PermissionManager.hasRestore(playerOperator)) return false;
     		
     		
-    		RestoreManager restore = new RestoreManager(  arguments, location  );
+    		RestoreManager restore = new RestoreManager(  arguments, location , playerOperator );
     		restore.executeTask();
     		storeCommand(operator,command);
     		return true;
@@ -183,14 +184,12 @@ public abstract class loggerManager {
     		
     		//don't look here, this is stupid
     		String[] temp = {command[2]};
-    		int time = (new RollbackManager(temp,null)).time;
+    		int time = (new RollbackManager(temp,null,null)).time;
     		TrackedBlocks.purgeDatabase(time);
     	}
     	List<String> helpAlias = configSektion.getStringList("blockLoggerCommands.help");
-    	if(helpAlias.contains(command[1])) {
-    		if(!PermissionManager.hasHelp(playerOperator)) return false;
-	    	
-    		
+    	if(helpAlias.contains(command[1]) && PermissionManager.hasHelp(playerOperator)) {
+    		//don't know if this is necessary 
     	}
     	return false;
 	}
@@ -235,10 +234,12 @@ public abstract class loggerManager {
 	       	createLoggerManager(commandListed, location, playerPlayer);
 	       	storeCommand(operator,commandListed);
 	       	return true;
-	    }else {
-	       	ParamnesticCure.getInstance().getLogger().warning("No command from this user was found");
 	    }
-	        
+		
+		Player playerOperator = Bukkit.getServer().getPlayer(operator);
+		MessageManager msg_manager = new MessageManager(playerOperator, "faulty");
+	    msg_manager.player_not_found(player);
+	    
 		return false;
 	}
 	

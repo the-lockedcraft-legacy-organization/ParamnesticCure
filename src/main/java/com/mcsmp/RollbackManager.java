@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.coreprotect.CoreProtectAPI.ParseResult;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 /**
  * Does a series of logical operations to minimise opportunities for rollblacks to mess with creative block data.
@@ -31,7 +32,9 @@ public class RollbackManager extends loggerManager{
      * @param arguments : The arguments of the command
      * @param radius_location : location where command was thrown
      */
-    public RollbackManager(String[] arguments, Location radius_location) {
+    public RollbackManager(String[] arguments, Location radius_location, Player player) {
+    	
+    	this.msgManager = new MessageManager(player,"Rollback");
     	
     	this.coreprotect = ParamnesticCure.getInstance().getCoreProtect();
     	
@@ -80,12 +83,12 @@ public class RollbackManager extends loggerManager{
 						time,restrict_users, exclude_users, restrict_blocks, exclude_blocks,action_list, radius, radius_location
 		    			);
 		    	
-		    	long endTime = System.nanoTime(); //nano Seconds
+		    	long endTime = System.nanoTime(); 
 		    	
-		    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Operationall time: " + String.valueOf(  (endTime-startTime)*Math.pow(10, -9)  ) + " s");
+		    	msgManager.operationaltime( (endTime-startTime)*Math.pow(10, -9) );
 		    	
 		    	if(blockActionListMSG.size() == 0) {
-		    		ParamnesticCure.getInstance().getLogger().warning("No actions were found");
+		    		msgManager.no_actions_found();
 		    		return;
 		    	}
 		    	
