@@ -95,7 +95,7 @@ public abstract class loggerManager {
 	 * @param worldname
 	 * @param time
 	 */
-	protected void changeCreativeStatus(int x, int y, int z, String worldname,int time) {
+	protected void changeCreativeStatus(Integer x, Integer y, Integer z, String worldname,int time) {
 		
 		
 		int DBCreativeStatus = fetchDBIsCreative( time,  worldname,  x,  y,  z);
@@ -114,9 +114,11 @@ public abstract class loggerManager {
     	}
     	
 		if(DBCreativeStatus == 1) {
+			msgManager.sendMessage("Block x=" + x.toString() + " ,y=" + y.toString() + " ,z=" + z.toString() + "was set to creative", false);
 			RestrictedCreativeAPI.add(block);
 		}
 		else {
+			msgManager.sendMessage("Block x=" + x.toString() + " ,y=" + y.toString() + " ,z=" + z.toString() + "was set to survival", false);
 			RestrictedCreativeAPI.remove(block);
 		}
 	} 

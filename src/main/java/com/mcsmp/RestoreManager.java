@@ -65,8 +65,6 @@ public class RestoreManager extends loggerManager {
 			    	for(String[] parseMSG : blockActionListMSG) {
 			    		blockAction = coreprotect.parseResult(parseMSG);
 			    		
-			    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] x=" + blockAction.getX() + ", y=" + blockAction.getY() + " ,z=" + blockAction.getZ() + " ,time=" + blockAction.getTime() + " ,rollback=" + blockAction.isRolledBack());
-			    		
 			    		if(!blockAction.isRolledBack())	continue;
 
 			    		x = blockAction.getX(); 	y = blockAction.getY(); 	z = blockAction.getZ();

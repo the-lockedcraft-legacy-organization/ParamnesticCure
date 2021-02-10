@@ -57,6 +57,9 @@ public class TrackedBlocks {
     
     public static void updateCreativeID(int time, String player, Block block, boolean isCreative) 
     {
+    	
+    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] block: " + block.toString() + " ,isCreative = " + String.valueOf(isCreative));
+    	
     	/**
     	 * Avoids duplicate entries, but also irrelevant blocks
     	 */

@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import net.coreprotect.CoreProtectAPI.ParseResult;
 import org.bukkit.Location;
@@ -92,24 +93,14 @@ public class RollbackManager extends loggerManager{
 		    		return;
 		    	}
 		    	
-		        
-			    for(int i = 0; i<blockActionListMSG.size(); i++){
+		    	HashMap<String,Integer> blocks_to_be_changed = new HashMap<String,Integer>();
+		    	int test = blockActionListMSG.size()-1;
+		    	
+		    	msgManager.sendMessage( String.valueOf( (test >= 0) ),false );
+		    	
+			    for(int i = blockActionListMSG.size()-1; i >= 0; i--){//cycles through the list backwards (should be slightly less costly)
 			    	
 			    	ParseResult blockAction = coreprotect.parseResult(blockActionListMSG.get(i));
-			    	
-			    	if(blockAction.getActionId() != 1)
-			    		continue;
-			    	
-			    	if(i+1<blockActionListMSG.size()) {
-				    	ParseResult nextBlockAction = coreprotect.parseResult(blockActionListMSG.get(i+1));
-				    		
-				    	// Scroll through database on the same location until the oldest action that is being rollbacked is the only one left
-				    	if(	nextBlockAction.getX() == blockAction.getX()	 && 	nextBlockAction.getY() == blockAction.getY()	 && 	nextBlockAction.getZ() == blockAction.getZ()
-				    			&& 		nextBlockAction.worldName() == blockAction.worldName()   &&    nextBlockAction.getTime() <= blockAction.getTime() 
-				    			) {
-				    		continue;
-			    		}
-			    	}
 			    	
 			    	String worldname = blockAction.worldName();
 			    	
@@ -118,11 +109,19 @@ public class RollbackManager extends loggerManager{
 			    	
 			    	
 			    	
+			    	String compareKey = String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(z) + worldname;
 			    	
 			    	
+			    	if(blocks_to_be_changed.containsKey(compareKey))
+		    			if(blocks_to_be_changed.get(compareKey) < oldestTime)
+		    				continue;
 			    	
+			    	
+		    		blocks_to_be_changed.put( compareKey , oldestTime );
+		    		
 			    	changeCreativeStatus(x,y,z,worldname,oldestTime);
 			    }
+			    msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block actions were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Blocks were altered", false);
 			}
     		
     	},60L);
