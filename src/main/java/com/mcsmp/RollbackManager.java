@@ -54,7 +54,7 @@ public class RollbackManager extends loggerManager{
      */
     @Override
     public void executeTask() {
-    	
+    	/*
     	ParamnesticCure.getInstance().getLogger().info("Restrict users:");
     	if(restrict_users != null)
 	    	for(String debug: restrict_users)
@@ -69,7 +69,7 @@ public class RollbackManager extends loggerManager{
 	    		ParamnesticCure.getInstance().getLogger().info(debug.toString());
     	if(radius_location != null)
     		ParamnesticCure.getInstance().getLogger().info("Radius: " + radius + " ,Radius Location:" + radius_location.toString());
-
+		*/
         
     	ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 

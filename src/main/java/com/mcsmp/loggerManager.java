@@ -112,17 +112,14 @@ public abstract class loggerManager {
     	
     	//to prevent issues on restores
     	if(RestrictedCreativeAPI.isCreative(block)) {
-    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] stored a block as creative");
     		TrackedBlocks.updateCreativeID(block, true);
     	}
     	
 		if(DBCreativeStatus == 1) {
 			RestrictedCreativeAPI.add(block);
-			ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block restored to creative");
 		}
 		else {
 			RestrictedCreativeAPI.remove(block);
-			ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Block restored to survival");
 		}
 	} 
 	/**
@@ -178,7 +175,7 @@ public abstract class loggerManager {
     		if(!PermissionManager.hasPurge(playerOperator)) return false;
     		
     		if(command.length > 3) {
-    			ParamnesticCure.getInstance().getLogger().warning("Unkown amount of arguments");
+    			new MessageManager(playerOperator).incorrect_input();
     			return false;
     		}
     		
@@ -236,8 +233,8 @@ public abstract class loggerManager {
 	       	return true;
 	    }
 		Player playerOperator = (operator == null)? null : Bukkit.getServer().getPlayer(operator);
-		MessageManager msg_manager = new MessageManager(playerOperator, "faulty");
-	    msg_manager.player_not_found(player);
+		
+		new MessageManager(playerOperator).player_not_found(player);
 	    
 		return false;
 	}
