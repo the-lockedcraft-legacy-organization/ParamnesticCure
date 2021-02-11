@@ -78,17 +78,16 @@ public class TrackedBlocks {
         try {
 	        Connection connection = ParamnesticCure.getInstance().getConnection();
 	      	PreparedStatement addToDatabase = connection.prepareStatement(
-	       			"INSERT INTO blockAction (time,user,world,x,y,z,is_creative)"
-	       			+ " VALUES (?,?,?,?,?,?,?)"
+	       			"INSERT INTO blockAction (time,world,x,y,z,is_creative)"
+	       			+ " VALUES (?,?,?,?,?,?)"
 	       			);
 	            	
 	       	addToDatabase.setInt( 1, time);
-	       	addToDatabase.setString( 2, player);
-	       	addToDatabase.setString( 3, block.getWorld().getName());
-	       	addToDatabase.setInt( 4, block.getX());
-	       	addToDatabase.setInt( 5, block.getY());
-	       	addToDatabase.setInt( 6, block.getZ());
-	       	addToDatabase.setInt( 7,  isCreative ? 1 : 0  );
+	       	addToDatabase.setString( 2, block.getWorld().getName());
+	       	addToDatabase.setInt( 3, block.getX());
+	       	addToDatabase.setInt( 4, block.getY());
+	       	addToDatabase.setInt( 5, block.getZ());
+	       	addToDatabase.setInt( 6,  isCreative ? 1 : 0  );
 
 	       	
 	       	addToDatabase.execute();
