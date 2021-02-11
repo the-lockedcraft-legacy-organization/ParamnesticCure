@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
  */
 public class MessageManager {
 	private Player target;
-	private String prefix = ChatColor.LIGHT_PURPLE + "[" +ChatColor.GRAY + "" + ChatColor.ITALIC + " Paramnestic " + ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "] ";
+	private String prefix = ChatColor.DARK_GRAY + "[" +ChatColor.GRAY + "" + ChatColor.ITALIC + " Paramnestic " + ChatColor.RESET + "" + ChatColor.DARK_GRAY + "] ";
 	private ChatColor errorColor = ChatColor.RED;
 	private ChatColor normalColor = ChatColor.WHITE;
 	

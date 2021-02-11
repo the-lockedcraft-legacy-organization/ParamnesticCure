@@ -86,7 +86,7 @@ public class RollbackManager extends loggerManager{
 		    	
 		    	long endTime = System.nanoTime(); 
 		    	
-		    	msgManager.sendMessage( "Operationall time:" + String.valueOf( (endTime-startTime)*Math.pow(10, -9) ) , false);
+		    	msgManager.sendMessage( "Operationall time: " + String.valueOf( (endTime-startTime)*Math.pow(10, -9) ) , false);
 		    	
 		    	if(blockActionListMSG.size() == 0) {
 		    		msgManager.sendMessage("No actions were found",true);
@@ -94,9 +94,6 @@ public class RollbackManager extends loggerManager{
 		    	}
 		    	
 		    	HashMap<String,Integer> blocks_to_be_changed = new HashMap<String,Integer>();
-		    	int test = blockActionListMSG.size()-1;
-		    	
-		    	msgManager.sendMessage( String.valueOf( (test >= 0) ),false );
 		    	
 			    for(int i = blockActionListMSG.size()-1; i >= 0; i--){//cycles through the list backwards (should be slightly less costly)
 			    	
@@ -121,7 +118,7 @@ public class RollbackManager extends loggerManager{
 		    		
 			    	changeCreativeStatus(x,y,z,worldname,oldestTime);
 			    }
-			    msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block actions were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Blocks were altered", false);
+			    msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block actions were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Blocks were set", false);
 			}
     		
     	},60L);

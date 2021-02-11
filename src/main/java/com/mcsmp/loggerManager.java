@@ -114,11 +114,9 @@ public abstract class loggerManager {
     	}
     	
 		if(DBCreativeStatus == 1) {
-			msgManager.sendMessage("Block x=" + x.toString() + " ,y=" + y.toString() + " ,z=" + z.toString() + "was set to creative", false);
 			RestrictedCreativeAPI.add(block);
 		}
 		else {
-			msgManager.sendMessage("Block x=" + x.toString() + " ,y=" + y.toString() + " ,z=" + z.toString() + "was set to survival", false);
 			RestrictedCreativeAPI.remove(block);
 		}
 	} 
@@ -288,7 +286,6 @@ public abstract class loggerManager {
     		String[] argumentSplited = argument.split(",");
     		for(String part : argumentSplited) { 
     			this.restrict_users.add(part); 
-    			msgManager.sendMessage("Checking blockdata on player " + part, false);
     		}
     		return true;
     		}
@@ -313,7 +310,7 @@ public abstract class loggerManager {
 		argument = checkAndTrimArgument(argument,radiusAlias);
     	if(argument != "") {
     		if(radius_location == null)
-    			ParamnesticCure.getInstance().getLogger().warning(" You can't use the radius argument from the console");
+    			msgManager.sendMessage(" You can't use the radius argument from the console",true);
     		this.radius = Integer.parseInt(argument); 
     		this.radius_location = radius_location;
     		return true;
@@ -361,6 +358,7 @@ public abstract class loggerManager {
 	 * @return
 	 */
 	private List<Integer> actionToInt(String action) {
+		//TODO add numbers for all the other alternatives
 		List<Integer> output = null;
 		if(action.contains("block"))
 		{
@@ -389,11 +387,9 @@ public abstract class loggerManager {
 		
 		for(String alias : aliases) {
 
-    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] checking Alias: " + alias);
 			pattern = Pattern.compile("^" + alias + ":");
 			matcher = pattern.matcher(argument);
     		if(matcher.find()) {
-    			ParamnesticCure.getInstance().getLogger().info("[Manual Debug] There was a match");
     			return matcher.replaceAll("");
     		}
 		}

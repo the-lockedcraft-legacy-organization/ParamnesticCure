@@ -46,7 +46,7 @@ public class RestoreManager extends loggerManager {
 			    	
 			    	long endTime = System.nanoTime();
 			    	
-			    	msgManager.sendMessage( "Operationall time:" + String.valueOf( (endTime-startTime)*Math.pow(10, -9) ) , false);
+			    	msgManager.sendMessage( "Operationall time: " + String.valueOf( (endTime-startTime)*Math.pow(10, -9) ) , false);
 			    	
 			    	
 			    	if(blockActionListMSG.size() == 0) {
@@ -82,7 +82,7 @@ public class RestoreManager extends loggerManager {
 				    	changeCreativeStatus(x,y,z,worldname,newestTime);
 			    	}
 			    	
-			    	msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block actions were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Blocks were altered", false);
+			    	msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block actions were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Blocks were set", false);
 				}
 			
 				
