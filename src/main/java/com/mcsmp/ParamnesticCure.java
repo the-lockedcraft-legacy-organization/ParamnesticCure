@@ -12,8 +12,12 @@ import static java.util.logging.Level.SEVERE;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
+
 import static org.bukkit.Bukkit.getPluginManager;
 
 import org.bukkit.plugin.Plugin;
@@ -79,7 +83,7 @@ public class ParamnesticCure extends JavaPlugin {
         	ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());
             getPluginManager().disablePlugin(this);
         }
-        
+
         createDB();
     }
 
@@ -104,16 +108,39 @@ public class ParamnesticCure extends JavaPlugin {
     public CacheData getCacheData() {
         return this.dataCache;
     }
-
+    
+    
+    /**
+     * Creates all the databases for this plugin, also adds all the worlds to the worlds database (if not done already)
+     */
+    
     private void createDB() {
     	try {
     		Connection connection = getConnection();
     		PreparedStatement statement = connection.prepareStatement(
     				"CREATE TABLE IF NOT EXISTS blockAction"
-    				+ " (time INTEGER,world VARCHAR(255),x INTEGER, y INTEGER, z INTEGER, is_creative INTEGER)"
+    				+ " (time INTEGER,world INTEGER,x INTEGER, y INTEGER, z INTEGER, is_creative INTEGER"
+    				+ "UNIQUE(time,world,x,y,z))"
     				);
     		statement.execute();
     	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+    	
+    	
+    	try {
+    		Connection connection = getConnection();
+    		PreparedStatement statement = connection.prepareStatement(
+    				"CREATE TABLE IF NOT EXISTS worlds ("
+    				+ "world_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+    				+ " world VARCHAR(255) UNIQUE)"
+    				);
+    		statement.execute();
+    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+    	
+    	List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
+    	
+    	for(World world : worldlist) {
+    		WorldManager.addWorldToDB(world);
+    	}
     }
     /**
      * 

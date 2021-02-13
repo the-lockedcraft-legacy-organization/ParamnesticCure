@@ -1,3 +1,8 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package com.mcsmp;
 
 import static java.util.logging.Level.SEVERE;
@@ -99,8 +104,6 @@ public class RestoreManager extends loggerManager {
      * @return boolean: [0 1] | not in database: -1
      */
 	protected int fetchDBIsCreative(int time, String worldName, int x, int y, int z) {
-		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] time = " + String.valueOf(time) + " ,worldName" + worldName + " ,x = " + String.valueOf(x) + " ,y = " + String.valueOf(y) + " ,z=" + String.valueOf(z));
-		
     	try {
     	Connection connection = ParamnesticCure.getInstance().getConnection();
         PreparedStatement getCreativeStatus = connection.prepareStatement(
@@ -109,7 +112,7 @@ public class RestoreManager extends loggerManager {
         		+ " ORDER BY time DESC"
         		);
         getCreativeStatus.setInt(1, time);
-        getCreativeStatus.setString(2, worldName);
+        getCreativeStatus.setInt(2, WorldManager.getWorldId( worldName ));
         getCreativeStatus.setInt(3, x);
         getCreativeStatus.setInt(4, y);
         getCreativeStatus.setInt(5, z);

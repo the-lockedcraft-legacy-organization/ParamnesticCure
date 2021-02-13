@@ -41,7 +41,6 @@ public class TrackedBlocks {
 	    	
 	        for(String[] actionMsg : actiondataMsg) {
 	        	ParseResult action = coreprotect.parseResult(actionMsg);
-	        	plugin.getLogger().info("[Manual Debug] Tracked blocks: Looking at block: x=" + action.getX() + ", y=" + action.getY() + ", z=" + action.getZ()+ ", time = " + action.getTime() + ", Id = " + action.getActionString());
 	        	if (action.getActionId() != 1) continue; //has to be block place action : actionId == 1
 	        		
 	        		
@@ -58,15 +57,13 @@ public class TrackedBlocks {
     public static void updateCreativeID(int time, String player, Block block, boolean isCreative) 
     {
     	
-    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] block: " + block.toString() + " ,isCreative = " + String.valueOf(isCreative));
-    	
     	/**
     	 * Avoids duplicate entries, but also irrelevant blocks
     	 */
     	if( (  !isCreative && (isInDatabase(block,time) == 0)  ) || isInDatabase(block,time) == 2) return;
     	
     	
-    	if(time == 0) { //this should never trigger, but as a safety precaution
+    	if(time == 0) { //this should never trigger, but exists as a safety precaution
     		//ParamnesticCure relies on the loggers for block information, as it takes time for these to process, the thread will have to wait
 			try {Thread.sleep(waitPeriod);}catch(InterruptedException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
 			waitPeriod *= 2;
@@ -79,11 +76,11 @@ public class TrackedBlocks {
 	        Connection connection = ParamnesticCure.getInstance().getConnection();
 	      	PreparedStatement addToDatabase = connection.prepareStatement(
 	       			"INSERT INTO blockAction (time,world,x,y,z,is_creative)"
-	       			+ " VALUES (?,?,?,?,?,?)"
+	       			+ " VALUES (?,?,?,?,?,?);"
 	       			);
 	            	
 	       	addToDatabase.setInt( 1, time);
-	       	addToDatabase.setString( 2, block.getWorld().getName());
+	       	addToDatabase.setInt( 2, WorldManager.getWorldId( block.getWorld().getName() ));
 	       	addToDatabase.setInt( 3, block.getX());
 	       	addToDatabase.setInt( 4, block.getY());
 	       	addToDatabase.setInt( 5, block.getZ());

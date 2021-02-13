@@ -6,6 +6,9 @@
 package com.mcsmp;
 
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
@@ -14,6 +17,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
+import org.bukkit.event.world.WorldInitEvent;
+import org.bukkit.event.world.WorldLoadEvent;
 
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 
@@ -113,5 +118,14 @@ public class ParamnesticCureListener implements Listener {
     	
     	if(loggerManager.createLoggerManager(commandListed, null, null));
     		event.setCancelled(true);
+    }
+
+    /**
+     * 
+     * @param event
+     */
+    @EventHandler
+    public void worldInit(WorldInitEvent event) {
+    	WorldManager.addWorldToDB(event.getWorld());
     }
 }

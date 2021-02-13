@@ -141,7 +141,7 @@ public class RollbackManager extends loggerManager{
         		+ " ORDER BY time DESC"
         		);
         getCreativeStatus.setInt(1, time);
-        getCreativeStatus.setString(2, worldName);
+        getCreativeStatus.setInt(2, WorldManager.getWorldId( worldName ));
         getCreativeStatus.setInt(3, x);
         getCreativeStatus.setInt(4, y);
         getCreativeStatus.setInt(5, z);
