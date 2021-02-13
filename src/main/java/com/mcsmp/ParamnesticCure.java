@@ -120,7 +120,7 @@ public class ParamnesticCure extends JavaPlugin {
     		PreparedStatement statement = connection.prepareStatement(
     				"CREATE TABLE IF NOT EXISTS blockAction"
     				+ " (time INTEGER,world INTEGER,x INTEGER, y INTEGER, z INTEGER, is_creative INTEGER"
-    				+ "UNIQUE(time,world,x,y,z))"
+    				+ " ,UNIQUE(time,world,x,y,z))"
     				);
     		statement.execute();
     	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
