@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.WorldCreator;
 
 import static org.bukkit.Bukkit.getPluginManager;
 

@@ -89,7 +89,7 @@ public class RollbackManager extends loggerManager{
 		    	}
 		    	
 		    	HashMap<String,Integer> blocks_to_be_changed = new HashMap<String,Integer>();
-		    	
+		    	Integer creativeBlockCounter = 0;
 			    for(int i = blockActionListMSG.size()-1; i >= 0; i--){//cycles through the list backwards (should be slightly less costly)
 			    	
 			    	ParseResult blockAction = coreprotect.parseResult(blockActionListMSG.get(i));
@@ -114,10 +114,13 @@ public class RollbackManager extends loggerManager{
 			    	
 			    	if (blockAction.getActionId() == 1)
 			    		isCreative = 0; //When a creative block place action is rollbacked, then it will get removed, which would change the status of the block to survival
-		    		
+			    	creativeBlockCounter += isCreative;
+			    	
 			    	changeCreativeStatus(x,y,z,worldname,isCreative);
 			    }
 			    msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block actions were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Blocks were set", false);
+			    if(creativeBlockCounter > 0)
+			    	msgManager.sendMessage(creativeBlockCounter.toString() + " blocks were set to creative", false);
 			}
     		
     	},60L);

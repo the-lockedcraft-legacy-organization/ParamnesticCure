@@ -48,7 +48,6 @@ public abstract class loggerManager {
 	protected int radius;
 	protected Location radius_location;
 	protected MessageManager msgManager;
-	
 	private static HashMap<String,String[]> storedCommands = new HashMap<String,String[]>();
 	private static ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
 	
@@ -81,7 +80,7 @@ public abstract class loggerManager {
     			continue;
     		if(argument != ""){
     			if(checkForWeirdUserInput) {
-    	    		msgManager.sendMessage("Invalid argument " + argument,true);
+    	    		msgManager.sendMessage("Invalid argument ''" + argument+"''",true);
     				return;
     			}
     			
@@ -279,7 +278,6 @@ public abstract class loggerManager {
 	    		}
     		}
     		this.time = Math.round(time);
-    		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] time = " + String.valueOf(this.time));
     		return true;
 		}
 		return false;
@@ -434,7 +432,7 @@ public abstract class loggerManager {
         if(set.next()) return set.getInt(1);
     	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     	
-    	return -1;
+    	return 0;
     }
 	
 	abstract void executeTask();

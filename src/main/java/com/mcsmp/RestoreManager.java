@@ -57,6 +57,7 @@ public class RestoreManager extends loggerManager {
 			    	
 			    	
 			    	HashMap<String,Integer> blocks_to_be_changed = new HashMap<String,Integer>();
+			    	Integer creativeBlockCounter = 0;
 			    	
 			    	for(String[] parseMSG : blockActionListMSG) {
 			    		ParseResult blockAction = coreprotect.parseResult(parseMSG);
@@ -80,10 +81,14 @@ public class RestoreManager extends loggerManager {
 			    		if(blockAction.getActionId() == 0) //Any blockbreak action will result in a survival block (air block)
 			    			isCreative = 0;
 			    		
+
+				    	creativeBlockCounter += isCreative;
 				    	changeCreativeStatus(x,y,z,worldname,isCreative);
 			    	}
 			    	
 			    	msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block actions were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Blocks were set", false);
+			    	if(creativeBlockCounter > 0)
+			    		msgManager.sendMessage(creativeBlockCounter.toString() + " blocks were set to creative", false);
 				}
 			
 				

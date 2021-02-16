@@ -49,10 +49,8 @@ public class PermissionManager {
 	static private boolean hasPermission(Player player, String permission) {
 		//null => console (i hope)
 		if(player == null) {
-			ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Registered as a console command");
 			return true;
 		}
-		ParamnesticCure.getInstance().getLogger().info("[Manual Debug] Registered as a player command");
 		
 		return player.hasPermission(permission);
 	}

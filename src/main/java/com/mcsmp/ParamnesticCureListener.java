@@ -6,9 +6,7 @@
 package com.mcsmp;
 
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+
 import java.util.List;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
@@ -18,7 +16,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.event.world.WorldInitEvent;
-import org.bukkit.event.world.WorldLoadEvent;
 
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 
@@ -59,7 +56,6 @@ public class ParamnesticCureListener implements Listener {
 
 			@Override
 			public void run() {
-			ParamnesticCure.getInstance().getLogger().info("[Manual debug] Registered as creative = " + String.valueOf(isCreative));
     		TrackedBlocks.updateCreativeID(event.getBlock(),isCreative);
 			}
     	},TrackedBlocks.waitPeriod);

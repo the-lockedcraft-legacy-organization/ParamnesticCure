@@ -38,7 +38,6 @@ public class TrackedBlocks {
 	    	int time = 0;
 	    	List<String[]> actiondataMsg = coreprotect.blockLookup(block,0);
 	        
-	    	plugin.getLogger().info("[Manual Debug] Length of coreprotect blocklookup: " + actiondataMsg.size());
 	        for(String[] actionMsg : actiondataMsg) {
 	        	ParseResult action = coreprotect.parseResult(actionMsg);
 	        	if (   action.getActionId() > 2   ) continue; //has to be block place/break action
@@ -59,7 +58,6 @@ public class TrackedBlocks {
     	/*
     	 * Avoids duplicate entries, but also irrelevant blocks
     	 */
-    	plugin.getLogger().info("[Manual Debug] isInDatabase = " + String.valueOf( isInDatabase(block,time) ));
     	if(   !isCreative && (isInDatabase(block,time) == 0)   ) return;
     	
     	
@@ -91,7 +89,7 @@ public class TrackedBlocks {
 	       	addToDatabase.execute();
 	       	
 	       	
-	       	plugin.getLogger().info("[Manual Debug] Added the block action into the database as " + (isCreative ? "creative" : "survival") );
+	       	//plugin.getLogger().info("[Manual Debug] Added the block action into the database as " + (isCreative ? "creative" : "survival") );
         }catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
             
     }
@@ -149,7 +147,7 @@ public class TrackedBlocks {
  	    	addToDatabase.execute();
  	       	
  	       	
- 	       plugin.getLogger().info("[Manual Debug] Purged the ParamnesticCure database");
+ 	       plugin.getLogger().info("[Purge] Purged the ParamnesticCure database");
         }catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
              
     }
