@@ -66,7 +66,12 @@ public class ParamnesticCureListener implements Listener {
 			public void run() {
 	    		TrackedBlocks.updateCreativeID(block,isCreative);
 	    		
-	    		if( blockState.getType().toString().contains("DOOR") ) { // fixes the door scenario
+	    		
+	    		/*
+	    		 * Fixes the door scenario. Checks if the broken block is upper or lower.
+	    		 * Then calls the update creative id function for the other part of the door
+	    		 */
+	    		if( blockState.getType().toString().contains("DOOR") ) {
 	    			Location loc = blockState.getLocation();
 	    			Bisected door = (Bisected) blockState.getBlockData();
 	    			if(door.getHalf() == Bisected.Half.BOTTOM)
