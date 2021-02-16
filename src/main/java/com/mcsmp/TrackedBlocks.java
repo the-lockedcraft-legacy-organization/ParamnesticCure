@@ -56,9 +56,10 @@ public class TrackedBlocks {
     	/*
     	 * Avoids duplicate entries, but also irrelevant blocks
     	 */
-    	Integer IsInDB = isInDatabase(block,time);
-    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] IsInDB = " + IsInDB.toString());
-    	if(   !isCreative && ( IsInDB == 0)   ) return;
+    	int IsInDB = isInDatabase(block,time);
+    	
+    	
+    	if(   !isCreative && ( IsInDB == 0)  || IsInDB == 2 ) return;
     	
     	
     	if(time == 0) { //this should never trigger, but exists as a safety precaution
@@ -90,7 +91,7 @@ public class TrackedBlocks {
 	       	
 	       	
 	       	//plugin.getLogger().info("[Manual Debug] Added the block action into the database as " + (isCreative ? "creative" : "survival") );
-        }catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+        }catch(SQLException ex) {}
             
     }
     /**
