@@ -34,7 +34,6 @@ public class TrackedBlocks {
     public static void updateCreativeID(Block block,boolean isCreative) {
 			
 	    	
-	    	String player = "";
 	    	int time = 0;
 	    	List<String[]> actiondataMsg = coreprotect.blockLookup(block,0);
 	        
@@ -42,23 +41,24 @@ public class TrackedBlocks {
 	        	ParseResult action = coreprotect.parseResult(actionMsg);
 	        	if (   action.getActionId() > 2   ) continue; //has to be block place/break action
 	        		
-	        	player = action.getPlayer();
 	        	time = action.getTime();
 	        	
 	        	break;//The returned data from parseResult seems to be ordered highest time to lowest, this should therefore return the most recent block action
 	        }
 	        
-	    	updateCreativeID(time,player,block,isCreative);
+	    	updateCreativeID(time,block,isCreative);
 			
     }
     
-    public static void updateCreativeID(int time, String player, Block block, boolean isCreative) 
+    public static void updateCreativeID(int time, Block block, boolean isCreative) 
     {
     	
     	/*
     	 * Avoids duplicate entries, but also irrelevant blocks
     	 */
-    	if(   !isCreative && (isInDatabase(block,time) == 0)   ) return;
+    	Integer IsInDB = isInDatabase(block,time);
+    	ParamnesticCure.getInstance().getLogger().info("[Manual Debug] IsInDB = " + IsInDB.toString());
+    	if(   !isCreative && ( IsInDB == 0)   ) return;
     	
     	
     	if(time == 0) { //this should never trigger, but exists as a safety precaution
@@ -111,7 +111,7 @@ public class TrackedBlocks {
 	        		"SELECT time FROM blockAction"
 	        		+ " WHERE world = ? AND x = ? AND y = ? AND z = ?"
 	        		);
-	        getCreativeStatus.setString(  1, block.getWorld().getName()  );
+	        getCreativeStatus.setInt(  1, WorldManager.getWorldId( block.getWorld().getName() ) );
 	        getCreativeStatus.setInt(  2, block.getX()  );
 	        getCreativeStatus.setInt(  3, block.getY()  );
 	        getCreativeStatus.setInt(  4, block.getZ()  );
