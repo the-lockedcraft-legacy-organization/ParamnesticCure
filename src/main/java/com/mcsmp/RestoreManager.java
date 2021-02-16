@@ -87,8 +87,7 @@ public class RestoreManager extends loggerManager {
 			    	}
 			    	
 			    	msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block actions were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Blocks were set", false);
-			    	if(creativeBlockCounter > 0)
-			    		msgManager.sendMessage(creativeBlockCounter.toString() + " blocks were set to creative", false);
+			    	msgManager.sendMessage(creativeBlockCounter.toString() + " blocks were set to creative", false);
 				}
 			
 				

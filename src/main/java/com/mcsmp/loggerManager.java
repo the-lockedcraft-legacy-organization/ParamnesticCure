@@ -121,12 +121,10 @@ public abstract class loggerManager {
     	}
     	
 		if(DBCreativeStatus == 0) {
-			msgManager.sendMessage("Block set to survival", false);
 			RestrictedCreativeAPI.remove(block);
 		}
 		else {
 			RestrictedCreativeAPI.add(block);
-			msgManager.sendMessage("Block set to creative", false);
 		}
 	} 
 	/**
