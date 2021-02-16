@@ -8,6 +8,11 @@ package com.mcsmp;
 
 
 import java.util.List;
+
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.data.Bisected;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -51,12 +56,26 @@ public class ParamnesticCureListener implements Listener {
         //Tracked block checks if the block is creative/critical
 
 		boolean isCreative = RestrictedCreativeAPI.isCreative(event.getBlock());
-    	
-		ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 
+		Block block = event.getBlock();
+		BlockState blockState = block.getState();
+		
+		
+		ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 			@Override
 			public void run() {
-    		TrackedBlocks.updateCreativeID(event.getBlock(),isCreative);
+	    		TrackedBlocks.updateCreativeID(block,isCreative);
+	    		
+	    		if( blockState.getType().toString().contains("DOOR") ) { // fixes the door scenario
+	    			Location loc = blockState.getLocation();
+	    			Bisected door = (Bisected) blockState.getBlockData();
+	    			if(door.getHalf() == Bisected.Half.BOTTOM)
+	    				loc = loc.add(0, 1, 0);
+	    			else
+	    				loc = loc.add(0,-1,0);
+	    			
+	    			TrackedBlocks.updateCreativeID(loc.getBlock(),isCreative);
+	    		}
 			}
     	},TrackedBlocks.waitPeriod);
        
