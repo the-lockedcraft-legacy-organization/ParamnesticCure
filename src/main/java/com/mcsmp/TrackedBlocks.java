@@ -38,16 +38,15 @@ public class TrackedBlocks {
 	    	int time = 0;
 	    	List<String[]> actiondataMsg = coreprotect.blockLookup(block,0);
 	        
-	    	
+	    	plugin.getLogger().info("[Manual Debug] Length of coreprotect blocklookup: " + actiondataMsg.size());
 	        for(String[] actionMsg : actiondataMsg) {
 	        	ParseResult action = coreprotect.parseResult(actionMsg);
-	        	if (action.getActionId() != 1) continue; //has to be block place action : actionId == 1
-	        		
+	        	if (   action.getActionId() > 2   ) continue; //has to be block place/break action
 	        		
 	        	player = action.getPlayer();
 	        	time = action.getTime();
 	        	
-	        	break;//The returned data from parseResult seems to be ordered highest time to lowest, this should therefore return the most recent block place action
+	        	break;//The returned data from parseResult seems to be ordered highest time to lowest, this should therefore return the most recent block action
 	        }
 	        
 	    	updateCreativeID(time,player,block,isCreative);
@@ -57,14 +56,16 @@ public class TrackedBlocks {
     public static void updateCreativeID(int time, String player, Block block, boolean isCreative) 
     {
     	
-    	/**
+    	/*
     	 * Avoids duplicate entries, but also irrelevant blocks
     	 */
-    	if( (  !isCreative && (isInDatabase(block,time) == 0)  ) || isInDatabase(block,time) == 2) return;
+    	plugin.getLogger().info("[Manual Debug] isInDatabase = " + String.valueOf( isInDatabase(block,time) ));
+    	if(   !isCreative && (isInDatabase(block,time) == 0)   ) return;
     	
     	
     	if(time == 0) { //this should never trigger, but exists as a safety precaution
     		//ParamnesticCure relies on the loggers for block information, as it takes time for these to process, the thread will have to wait
+    		ParamnesticCure.getInstance().getLogger().warning("A action didn't get tracked properly. Please contact plugin author");
 			try {Thread.sleep(waitPeriod);}catch(InterruptedException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
 			waitPeriod *= 2;
 			updateCreativeID(block,isCreative);
@@ -90,7 +91,7 @@ public class TrackedBlocks {
 	       	addToDatabase.execute();
 	       	
 	       	
-	       	plugin.getLogger().info("[Manual Debug] Added the block action into the database");
+	       	plugin.getLogger().info("[Manual Debug] Added the block action into the database as " + (isCreative ? "creative" : "survival") );
         }catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
             
     }

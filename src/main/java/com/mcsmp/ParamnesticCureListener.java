@@ -59,6 +59,7 @@ public class ParamnesticCureListener implements Listener {
 
 			@Override
 			public void run() {
+			ParamnesticCure.getInstance().getLogger().info("[Manual debug] Registered as creative = " + String.valueOf(isCreative));
     		TrackedBlocks.updateCreativeID(event.getBlock(),isCreative);
 			}
     	},TrackedBlocks.waitPeriod);
