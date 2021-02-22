@@ -167,7 +167,7 @@ public class ParamnesticCure extends JavaPlugin {
         return CoreProtect;
     }
     /**
-     * 
+     * Whether this is a good solution or not, i don't know. But it gives no errors
      * @return Return's this plugin's shared connection
      */
     public Connection getConnection() {

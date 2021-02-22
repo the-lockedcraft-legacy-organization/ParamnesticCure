@@ -16,7 +16,7 @@ import net.coreprotect.CoreProtectAPI;
 import net.coreprotect.CoreProtectAPI.ParseResult;
 
 /**
- * Manages Paramnestic's in-house tracking (Φ)
+ * Consist of all the functions that track the location, the time, and the creative status of critical block actions
  * @author Frostalf
  * @author Thorin
  */
@@ -27,9 +27,10 @@ public class TrackedBlocks {
     
     public static long waitPeriod = 50L;
     /**
-     * Adds a critical block action into coreprotects database, 
+     * Checks through the coreprotect database for the most recent block place / remove action. It then calls a function that stores it (if the block fulfils the right criteria)
      *
      * @param block the block that is going to be inspected
+     * @param isCreative whether the block was a creative block before the action occurred
      */
     public static void updateCreativeID(Block block,boolean isCreative) {
 			
@@ -49,7 +50,12 @@ public class TrackedBlocks {
 	    	updateCreativeID(time,block,isCreative);
 			
     }
-    
+    /**
+     * Stores the specified action if it was creative, or if there already has been a creative action already on it's location
+     * @param time The time the action occurred according to coreprotect.
+     * @param block
+     * @param isCreative Whether the action had anything to do with a creative block
+     */
     public static void updateCreativeID(int time, Block block, boolean isCreative) 
     {
     	
@@ -133,6 +139,10 @@ public class TrackedBlocks {
     	return 0;
     }
     
+    /**
+     * Purges all data from the database older than specified time
+     * @param time
+     */
     public static void purgeDatabase(int time) {
     	
     	int oldestDataPoint = Math.round(System.currentTimeMillis()/1000) - time;//seconds

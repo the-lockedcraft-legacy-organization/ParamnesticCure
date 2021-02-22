@@ -32,7 +32,7 @@ import net.coreprotect.CoreProtectAPI;
 
 /**
  * An abstract class with methods that are shared between all loggerManagers, It also consist of some 
- * methods that are used to create those loggerManagers
+ * methods that are used to create those loggerManagers.
  * @author Thorin
  */
 public abstract class loggerManager {
@@ -52,60 +52,51 @@ public abstract class loggerManager {
 	private static ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
 	
 	
+	
+	
 	/**
-	 * Interprets the argument, and assigns values to the proper blocks
-	 * @param arguments : The arguments of the command
-	 * @param radius_location : location where command was thrown
-	 */
-	protected void interpretArguments(String[] arguments, Location radius_location) {
-		
-		
-		boolean checkForWeirdUserInput = false;
-		
-		
-    	for(String argument :arguments) {
-			argument.replace(" ", "");
-			
-    		if(timeInterpreter(argument))
-    			continue;
-    		if(userInterpreter(argument))
-    			continue;
-    		if(excludeInterpreter(argument))
-    			continue;
-    		if(radiusInterpreter(argument,radius_location))
-    			continue;
-    		if(blockInterpreter(argument))
-    			continue;
-    		if(actionInterpreter(argument))
-    			continue;
-    		if(argument != ""){
-    			if(checkForWeirdUserInput) {
-    	    		msgManager.sendMessage("Invalid argument ''" + argument+"''",true);
-    				return;
-    			}
-    			
-    			checkForWeirdUserInput = true;
-    			this.restrict_users = new ArrayList<String>();
-    			this.restrict_users.add(argument);
-    		}
-    		
-    	}
-	}
+     * Checks the database if this action has been stored as creative
+     * @param time The time of action
+     * @param worldName
+     * @param x
+     * @param y
+     * @param z
+     * @return true if a creative action at this time and location was stored in the database
+     */
+    protected boolean fetchDBIsCreative(int time, String worldName, int x, int y, int z) {
+    	try {
+    	Connection connection = ParamnesticCure.getInstance().getConnection();
+        PreparedStatement getCreativeStatus = connection.prepareStatement(
+        		"SELECT is_creative FROM blockAction"
+        		+ " WHERE time = ? AND world = ? AND x = ? AND y = ? AND z = ?"
+        		+ " ORDER BY time DESC"
+        		);
+        getCreativeStatus.setInt(1, time);
+        getCreativeStatus.setInt(2, WorldManager.getWorldId( worldName ));
+        getCreativeStatus.setInt(3, x);
+        getCreativeStatus.setInt(4, y);
+        getCreativeStatus.setInt(5, z);
+        
+        ResultSet set = getCreativeStatus.executeQuery();
+        if(set.next()) return (set.getInt(1) == 1); // is_creative = 1 -> action was creative
+    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+    	
+    	return false;
+    }
 	
 	/**
 	 * Takes an action as input, then calls a function which adds the block into the
 	 *  database (an important function if you want restores to work properly).
 	 * 
-	 * It also checks the creative status from paramnestic database of the specified
-	 * action, to then set the creative status of that block accordingly.
+	 * It also updates the creative status on the location
 	 * 
 	 * @param x
 	 * @param y
 	 * @param z
 	 * @param worldname
-	 * @param DBCreativeStatus
+	 * @param DBCreativeStatus true if this location should be set to creative
 	 */
-	protected void changeCreativeStatus(Integer x, Integer y, Integer z, String worldname, int DBCreativeStatus) {
+	protected void changeCreativeStatus(Integer x, Integer y, Integer z, String worldname, boolean DBCreativeStatus) {
 		
 		
 		List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
@@ -115,16 +106,17 @@ public abstract class loggerManager {
     	}
     	Block block = world.getBlockAt(x, y, z);
     	
-    	//to prevent issues on restores
+    	//to prevent issues on restores as some actions would not have been tracked otherways
     	if(RestrictedCreativeAPI.isCreative(block)) {
     		TrackedBlocks.updateCreativeID(block, true);
     	}
     	
-		if(DBCreativeStatus == 0) {
-			RestrictedCreativeAPI.remove(block);
+		if(DBCreativeStatus) {
+			RestrictedCreativeAPI.add(block);
+			
 		}
 		else {
-			RestrictedCreativeAPI.add(block);
+			RestrictedCreativeAPI.remove(block);
 		}
 	} 
 	/**
@@ -244,10 +236,52 @@ public abstract class loggerManager {
 		return false;
 	}
 	
-	/*
-	 * Argument interpreters:
+	/**
+	 * Interprets the argument, and assigns values to the proper blocks
+	 * @param arguments : The arguments of the command
+	 * @param radius_location : location where command was thrown
 	 */
+	protected void interpretArguments(String[] arguments, Location radius_location) {
+		
+		
+		boolean checkForWeirdUserInput = false;
+		
+		
+    	for(String argument :arguments) {
+			argument.replace(" ", "");
+			
+    		if(timeInterpreter(argument))
+    			continue;
+    		if(userInterpreter(argument))
+    			continue;
+    		if(excludeInterpreter(argument))
+    			continue;
+    		if(radiusInterpreter(argument,radius_location))
+    			continue;
+    		if(blockInterpreter(argument))
+    			continue;
+    		if(actionInterpreter(argument))
+    			continue;
+    		if(argument != ""){
+    			if(checkForWeirdUserInput) {
+    	    		msgManager.sendMessage("Invalid argument ''" + argument+"''",true);
+    				return;
+    			}
+    			
+    			checkForWeirdUserInput = true;
+    			this.restrict_users = new ArrayList<String>();
+    			this.restrict_users.add(argument);
+    		}
+    		
+    	}
+	}
 	
+	// ARGUMENT INTERPRETERS
+	/**
+	 * 
+	 * @param argument
+	 * @return true if there was a match
+	 */
 	private boolean timeInterpreter(String argument) {
 		List<String> timeAlias = configSektion.getStringList("blockLoggerCommands.arguments.time");
 		argument = checkAndTrimArgument(argument,timeAlias);
@@ -281,6 +315,11 @@ public abstract class loggerManager {
 		return false;
 	}
 	
+	/**
+	 * 
+	 * @param argument
+	 * @return true if there was a match
+	 */
 	private boolean userInterpreter(String argument) {
 		List<String> userAlias = configSektion.getStringList("blockLoggerCommands.arguments.user");
 		
@@ -298,6 +337,11 @@ public abstract class loggerManager {
 		return false;
 	}
 	
+	/**
+	 * 
+	 * @param argument
+	 * @return true if there was a match
+	 */
 	private boolean excludeInterpreter(String argument) {
 		List<String> excludeAlias = configSektion.getStringList("blockLoggerCommands.arguments.exclude");
 		argument = checkAndTrimArgument(argument,excludeAlias);
@@ -311,6 +355,12 @@ public abstract class loggerManager {
 		return false;
 	}
 	
+	/**
+	 * 
+	 * @param argument
+	 * @param radius_location the location where the command was issued, null => console
+	 * @return true if there was a match
+	 */
 	private boolean radiusInterpreter(String argument,Location radius_location) {
 		List<String> radiusAlias = configSektion.getStringList("blockLoggerCommands.arguments.radius");
 		argument = checkAndTrimArgument(argument,radiusAlias);
@@ -324,6 +374,11 @@ public abstract class loggerManager {
 		return false;
 	}
 	
+	/**
+	 * 
+	 * @param argument
+	 * @return true if there was a match
+	 */
 	private boolean blockInterpreter(String argument) {
 		List<String> blockAlias = configSektion.getStringList("blockLoggerCommands.arguments.block");
 		argument = checkAndTrimArgument(argument,blockAlias);
@@ -340,6 +395,11 @@ public abstract class loggerManager {
 		return false;
 	}
 	
+	/**
+	 * 
+	 * @param argument
+	 * @return true if there was a match
+	 */
 	private boolean actionInterpreter(String argument) {
 		List<String> actionAlias = configSektion.getStringList("blockLoggerCommands.arguments.action");
 		argument = checkAndTrimArgument(argument,actionAlias);
@@ -361,7 +421,7 @@ public abstract class loggerManager {
 	 * This just looks if its a block action, and with some hefty logic (if I say so myself) assigns the corresponding integers:
 	 * block (0,1), +block(1), -block(0). Default value is 2
 	 * @param action
-	 * @return
+	 * @return a list off all the actions that this part of the argument implied
 	 */
 	private List<Integer> actionToInt(String action) {
 		//TODO add numbers for all the other alternatives
@@ -382,7 +442,7 @@ public abstract class loggerManager {
 	}
 	
 	/**
-	 * A function used in command processing
+	 * A function used in command processing, checks if the argument contains any alias and return the argument without its alias
 	 * @param argument
 	 * @param aliases
 	 * @return The argument without alias, or "" if there was no match
@@ -403,36 +463,10 @@ public abstract class loggerManager {
 	}
 
 
-    /**
-     * Returns the creative status on the action before the specified action
-     * @param time
-     * @param worldName
-     * @param x
-     * @param y
-     * @param z
-     * @return boolean: [0 1] | not in database: -1
-     */
-    protected int fetchDBIsCreative(int time, String worldName, int x, int y, int z) {
-    	try {
-    	Connection connection = ParamnesticCure.getInstance().getConnection();
-        PreparedStatement getCreativeStatus = connection.prepareStatement(
-        		"SELECT is_creative FROM blockAction"
-        		+ " WHERE time = ? AND world = ? AND x = ? AND y = ? AND z = ?"
-        		+ " ORDER BY time DESC"
-        		);
-        getCreativeStatus.setInt(1, time);
-        getCreativeStatus.setInt(2, WorldManager.getWorldId( worldName ));
-        getCreativeStatus.setInt(3, x);
-        getCreativeStatus.setInt(4, y);
-        getCreativeStatus.setInt(5, z);
-        
-        ResultSet set = getCreativeStatus.executeQuery();
-        if(set.next()) return set.getInt(1);
-    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
-    	
-    	return 0;
-    }
-	
+    
+	/**
+	 * This function is shared between restores and rollbacks
+	 */
 	abstract void executeTask();
 	
 	

@@ -32,6 +32,15 @@ public class RestoreManager extends loggerManager {
     	interpretArguments(arguments,radius_location);
 	}
 	
+	/**
+	 * This runs all the logic that is needed when performing a restore:
+	 * 
+	 * Calls the restore function from blocklogger API and gets all actions that are affected
+	 * 
+	 * It then checks through all the returned values, and selects the most recent action on every location,
+	 * To then call the changeCreativeStatus function on that action
+	 * 
+	 */
 	@Override
 	public void executeTask() {
 		ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
@@ -76,13 +85,13 @@ public class RestoreManager extends loggerManager {
 			    		
 			    		blocks_to_be_changed.put( compareKey , newestTime );
 			    		
-			    		int isCreative = fetchDBIsCreative(newestTime,worldname,x,y,z);
+			    		boolean isCreative = fetchDBIsCreative(newestTime,worldname,x,y,z);
 			    		
 			    		if(blockAction.getActionId() == 0) //Any blockbreak action will result in a survival block (air block)
-			    			isCreative = 0;
+			    			isCreative = false;
 			    		
 
-				    	creativeBlockCounter += isCreative;
+				    	creativeBlockCounter += isCreative? 1 : 0;
 				    	changeCreativeStatus(x,y,z,worldname,isCreative);
 			    	}
 			    	

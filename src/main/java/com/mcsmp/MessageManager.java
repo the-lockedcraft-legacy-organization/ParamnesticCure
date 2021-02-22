@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 /**
+ * A class that allows somewhat fancy messaging to the player
  * @author Thorin
  */
 public class MessageManager {
@@ -40,7 +41,7 @@ public class MessageManager {
 			isConsole = true;
 	}
 	/**
-	 * Compiles a message depending on factors as if it's for console, or if the prefix has been shown or not
+	 * Compiles a message depending on if it's for console, the prefix has been shown or not, or if its an error message
 	 * @param message
 	 * @param isError
 	 */

@@ -38,34 +38,15 @@ public class RollbackManager extends loggerManager{
     }
 
     /**
-     * This is all the logic that prevents any issues during a rollback event. A short summary:
-     * 
-     * Uses the CoreProtect API to get the block actions which is going to be rollbacked. 
-     * Checks in the paramnestic database if any action that happened before the rollbacked event has been logged.
-     * If that was the case and that was a creative blockplace event, add creative status to that location
-     * Otherwise remove creative status
-     * 
-     * Also does the same logic as in a block break event to see if this current block needs to be stored in 
-     * the paramnestic database
+     * This runs all the logic that is needed when performing a rollback:
+	 * 
+	 * Calls the rollback function from blocklogger API and gets all actions that are affected
+	 * 
+	 * It then checks through all the returned values, and selects the oldest action on every location,
+	 * To then call the changeCreativeStatus function on that action
      */
     @Override
     public void executeTask() {
-    	/*
-    	ParamnesticCure.getInstance().getLogger().info("Restrict users:");
-    	if(restrict_users != null)
-	    	for(String debug: restrict_users)
-	    		ParamnesticCure.getInstance().getLogger().info(debug);
-    	ParamnesticCure.getInstance().getLogger().info("Exclude users:");
-    	if(exclude_users != null)
-	    	for(String debug: exclude_users)
-	    		ParamnesticCure.getInstance().getLogger().info(debug);
-    	ParamnesticCure.getInstance().getLogger().info("Action list:");
-    	if(action_list != null)
-	    	for(Integer debug: action_list)
-	    		ParamnesticCure.getInstance().getLogger().info(debug.toString());
-    	if(radius_location != null)
-    		ParamnesticCure.getInstance().getLogger().info("Radius: " + radius + " ,Radius Location:" + radius_location.toString());
-		*/
         
     	ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 
@@ -110,11 +91,11 @@ public class RollbackManager extends loggerManager{
 
 		    		blocks_to_be_changed.put( compareKey , oldestTime );
 			    	
-			    	int isCreative = fetchDBIsCreative(oldestTime,worldname,x,y,z);
+			    	boolean isCreative = fetchDBIsCreative(oldestTime,worldname,x,y,z);
 			    	
 			    	if (blockAction.getActionId() == 1)
-			    		isCreative = 0; //When a creative block place action is rollbacked, then it will get removed, which would change the status of the block to survival
-			    	creativeBlockCounter += isCreative;
+			    		isCreative = false; //When a creative block place action is rollbacked, it will get removed. An airblock must have been before this action, which is survival
+			    	creativeBlockCounter += isCreative ? 1 : 0;
 			    	
 			    	changeCreativeStatus(x,y,z,worldname,isCreative);
 			    }

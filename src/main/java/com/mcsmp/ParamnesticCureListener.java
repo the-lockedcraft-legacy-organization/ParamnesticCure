@@ -47,7 +47,7 @@ public class ParamnesticCureListener implements Listener {
     }
 
     /**
-     * Blockbreak actions are currently deemed as critical actions, some needs to get stored
+     * Only tracking block break events, as those are the only necessary event that needs to get tracked; All critical actions are blockbreak events (except on rollback rollback)
      * @param event BlockBreakEvent
      */
     @EventHandler
@@ -68,8 +68,7 @@ public class ParamnesticCureListener implements Listener {
 	    		
 	    		
 	    		/*
-	    		 * Fixes the door scenario. Checks if the broken block is upper or lower.
-	    		 * Then calls the update creative id function for the other part of the door
+	    		 * Makes it so that both blocks for doors get updated
 	    		 */
 	    		if( blockState.getType().toString().contains("DOOR") ) {
 	    			Location loc = blockState.getLocation();
@@ -87,7 +86,7 @@ public class ParamnesticCureListener implements Listener {
 
     }
     /**
-     * Currently not in use
+     * Currently not in use. It would be unnecessary to track blockplace event's as blocks can be creative even though no blockplace event occured (for example a piston moving a creative block)
      * @param event BlockPlaceEvent
      */
     @EventHandler
@@ -95,7 +94,7 @@ public class ParamnesticCureListener implements Listener {
     	
     }
     /**
-     * Checks for critical rollback commands
+     * Checks for commands that should be intercepted
      * @param event Command being processed
      */
     @EventHandler
@@ -115,14 +114,14 @@ public class ParamnesticCureListener implements Listener {
     		i++;
     	}
     	
-    	//if not containing alias or length is too low
+    	//Unnecessary to process already faulty commands
     	if(!commandAlias.contains(commandListed[0])||commandListed.length < 2) return;
     	
     	if(loggerManager.createLoggerManager(commandListed, event.getPlayer().getLocation(),event.getPlayer()))
     		event.setCancelled(true);
     }
     /**
-     * Checks for critical rollback commands
+     * Checks for commands that should be intercepted
      * @param event Command being processed
      */
     @EventHandler
@@ -142,7 +141,7 @@ public class ParamnesticCureListener implements Listener {
     }
 
     /**
-     * 
+     * If a world get created, its name needs to get stored in the database. TODO I should also add something that tracks if the world was renamed
      * @param event
      */
     @EventHandler

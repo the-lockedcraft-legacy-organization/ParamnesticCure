@@ -18,7 +18,10 @@ import org.bukkit.World;
  *
  */
 public class WorldManager {
-	
+	/**
+	 * Adds the world to the worlds table, which will assign it an id
+	 * @param world
+	 */
 	static public void addWorldToDB(World world) {
 		try {
 			Connection connection = ParamnesticCure.getInstance().getConnection();
@@ -30,7 +33,11 @@ public class WorldManager {
     		statement.execute();
 		}catch(SQLException ex) {}
 	}
-	
+	/**
+	 * 
+	 * @param worldname
+	 * @return The plugins stored id for the world
+	 */
 	static public Integer getWorldId(String worldname) {
 		Integer output = -1;
 		try {
