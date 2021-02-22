@@ -8,7 +8,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spigot-version>1.16</spigot-version>
-        <config-version>7</config-version>
+        <config-version>8</config-version>
     </properties>
     <repositories>
         <repository>

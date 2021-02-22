@@ -48,7 +48,7 @@ public class ParamnesticCure extends JavaPlugin {
         final byte givenVersion = valueOf(getConfig().getString("configVersion"));
         //Temporary variable indicating desired config version.
         //Should ideally be maven-based, but currently isn't due to a bug.
-        final byte currentVersion = 7;
+        final byte currentVersion = 8;
         File configVar = new File(getDataFolder(), "config.yml");
         //if outdated config, rename old config and install a new one.
 
