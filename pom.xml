@@ -23,12 +23,11 @@
             <version>1.16.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.jolbox</groupId>
-            <artifactId>bonecp</artifactId>
-            <version>0.8.0.RELEASE</version>
-            <scope>compile</scope>
-        </dependency>
+		<dependency>
+    		<groupId>com.zaxxer</groupId>
+    		<artifactId>HikariCP</artifactId>
+    		<version>4.0.2</version>
+		</dependency>
         <dependency>
             <groupId>me.prunt.restrictedcreative</groupId>
             <artifactId>RestrictedCreativeAPI</artifactId>
@@ -44,13 +43,8 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.48</version>
+            <version>5.1.41</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-        	<groupId>net.coreprotect</groupId>
-        	<artifactId>CoreProtect</artifactId>
-        	<version>19.4</version>
         </dependency>
         <dependency>
         	<groupId>net.coreprotect</groupId>
@@ -61,6 +55,30 @@
     <build>
         <finalName>ParamnesticCure-${project.version}</finalName>
         <plugins>
+        	<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.xerial</pattern>
+                                    <shadedPattern>com.mcsmp.xerial</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -70,6 +88,7 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
                 <artifactId>replacer</artifactId>

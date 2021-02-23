@@ -37,7 +37,7 @@ public class ParamnesticCure extends JavaPlugin {
     private Logger log = Bukkit.getLogger();
     private CacheData dataCache;
     private Connection connection;
-
+    private boolean isMySql;
 
     
     @Override
@@ -45,6 +45,7 @@ public class ParamnesticCure extends JavaPlugin {
         this.saveDefaultConfig();
         this.getServer().getPluginManager().registerEvents(new ParamnesticCureListener(this), this);
         log = getLogger();
+        
         final byte givenVersion = valueOf(getConfig().getString("configVersion"));
         //Temporary variable indicating desired config version.
         //Should ideally be maven-based, but currently isn't due to a bug.
@@ -67,8 +68,10 @@ public class ParamnesticCure extends JavaPlugin {
             log.warning("[Dev] You have enabled an early development version of this plugin.");
             log.warning("[Dev] It will probably be unstable");
         }
+        
         //Creates new cache
         final String driver = getConfig().getString("defaultconnection.driver");
+        isMySql = (driver.toLowerCase() == "sqlite");
         log.info("[Debug] Set driver to " + driver);
         //sets instance.
         instance = this;
@@ -119,7 +122,7 @@ public class ParamnesticCure extends JavaPlugin {
     		PreparedStatement statement = connection.prepareStatement(
     				"CREATE TABLE IF NOT EXISTS blockAction"
     				+ " (time INTEGER,world INTEGER,x INTEGER, y INTEGER, z INTEGER, is_creative INTEGER"
-    				+ " ,UNIQUE(time,world,x,y,z))"
+    				+ " ,UNIQUE(time,world,x,y,z));"
     				);
     		statement.execute();
     	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
@@ -129,8 +132,9 @@ public class ParamnesticCure extends JavaPlugin {
     		Connection connection = getConnection();
     		PreparedStatement statement = connection.prepareStatement(
     				"CREATE TABLE IF NOT EXISTS worlds ("
-    				+ "world_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-    				+ " world VARCHAR(255) UNIQUE)"
+    				+ "world_id INTEGER PRIMARY KEY AUTOINCREMENT"
+    				+ ", world VARCHAR(255) UNIQUE"
+    				+ " );"
     				);
     		statement.execute();
     	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
