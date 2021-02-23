@@ -67,12 +67,13 @@ public abstract class loggerManager {
     	try {
     	Connection connection = ParamnesticCure.getInstance().getConnection();
         PreparedStatement getCreativeStatus = connection.prepareStatement(
-        		"SELECT is_creative FROM blockAction"
-        		+ " WHERE time = ? AND world = ? AND x = ? AND y = ? AND z = ?"
+        		"SELECT is_creative FROM blockAction INNER JOIN worlds"
+        		+ " ON blockAction.world = worlds.world_id"
+        		+ " WHERE time = ? AND worlds.world = ? AND x = ? AND y = ? AND z = ?"
         		+ " ORDER BY time DESC"
         		);
         getCreativeStatus.setInt(1, time);
-        getCreativeStatus.setInt(2, WorldManager.getWorldId( worldName ));
+        getCreativeStatus.setString(2, worldName );
         getCreativeStatus.setInt(3, x);
         getCreativeStatus.setInt(4, y);
         getCreativeStatus.setInt(5, z);

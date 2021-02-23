@@ -131,7 +131,7 @@ public class ParamnesticCure extends JavaPlugin {
     		Connection connection = getConnection();
     		PreparedStatement statement = connection.prepareStatement(
     				"CREATE TABLE IF NOT EXISTS worlds ("
-    				+ "world_id INTEGER PRIMARY KEY "+ (isMySql? "AUTO_INCREMENT":"AUTOINCREMENT")
+    				+ "world_id INTEGER PRIMARY KEY "+ (isMySql ? "AUTO_INCREMENT":"AUTOINCREMENT")
     				+ ", world VARCHAR(255), UNIQUE(world) );"
     				);
     		statement.execute();
