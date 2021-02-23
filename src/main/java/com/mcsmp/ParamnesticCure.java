@@ -71,7 +71,7 @@ public class ParamnesticCure extends JavaPlugin {
         
         //Creates new cache
         final String driver = getConfig().getString("defaultconnection.driver");
-        isMySql = (driver.toLowerCase() == "sqlite");
+        isMySql = (driver.toLowerCase() != "sqlite");
         log.info("[Debug] Set driver to " + driver);
         //sets instance.
         instance = this;
@@ -127,14 +127,12 @@ public class ParamnesticCure extends JavaPlugin {
     		statement.execute();
     	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     	
-    	
     	try {
     		Connection connection = getConnection();
     		PreparedStatement statement = connection.prepareStatement(
     				"CREATE TABLE IF NOT EXISTS worlds ("
-    				+ "world_id INTEGER PRIMARY KEY AUTOINCREMENT"
-    				+ ", world VARCHAR(255) UNIQUE"
-    				+ " );"
+    				+ "world_id INTEGER PRIMARY KEY "+ (isMySql? "AUTO_INCREMENT":"AUTOINCREMENT")
+    				+ ", world VARCHAR(255), UNIQUE(world) );"
     				);
     		statement.execute();
     	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}

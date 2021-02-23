@@ -35,7 +35,6 @@ public class CacheData {
                 port = plugin.getConfig().getInt("Database_Names." + databases + ".port");
             }
             if (  !(plugin.getConfig().getString("Database_Names." + databases + ".user").chars().allMatch(Character::isWhitespace))) {
-            	plugin.getLogger().info("[CacheData.CacheData] Point 1");
                 user = plugin.getConfig().getString("Database_Names." + databases + ".user");
             }
             if (  !(plugin.getConfig().getString("Database_Names." + databases + ".password").chars().allMatch(Character::isWhitespace))) {
@@ -44,8 +43,7 @@ public class CacheData {
             if (  !(plugin.getConfig().getString("Database_Names." + databases + ".driver").chars().allMatch(Character::isWhitespace))) {
                 driver = plugin.getConfig().getString("Database_Names." + databases + ".driver");
             }
-
-        	plugin.getLogger().info("[CacheData.CacheData] Point 2, user = " + user);
+            
             location = plugin.getConfig().getString("Database_Names." + databases + ".location");
             DataBases bases = new DataBases(databases.toLowerCase(), plugin.getConfig().getString("Database_Names." + databases + ".database").toLowerCase(), address, port, user, password, driver, location);
             databaseMap.put(databases.toLowerCase(), bases);
