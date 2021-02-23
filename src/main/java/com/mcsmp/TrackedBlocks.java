@@ -115,10 +115,11 @@ public class TrackedBlocks {
     	try {
 	    	Connection connection = ParamnesticCure.getInstance().getConnection();
 	        PreparedStatement getCreativeStatus = connection.prepareStatement(
-	        		"SELECT time FROM blockAction"
+	        		"SELECT time FROM blockAction INNER JOIN worlds"
+	                + " ON blockAction.world = worlds.world_id"
 	        		+ " WHERE world = ? AND x = ? AND y = ? AND z = ?"
 	        		);
-	        getCreativeStatus.setInt(  1, WorldManager.getWorldId( block.getWorld().getName() ) );
+	        getCreativeStatus.setString(  1, block.getWorld().getName() );
 	        getCreativeStatus.setInt(  2, block.getX()  );
 	        getCreativeStatus.setInt(  3, block.getY()  );
 	        getCreativeStatus.setInt(  4, block.getZ()  );
