@@ -42,7 +42,7 @@ public class BlockTracker implements Listener {
      */
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-    	generalBlockEventTrigger(event.getBlock());
+    	generalBlockEventTrigger(event.getBlock(),true);
     }
     /**
      * Currently not in use. It would be unnecessary to track blockplace event's as blocks can be creative even though no blockplace event occured (for example a piston moving a creative block)
@@ -50,18 +50,31 @@ public class BlockTracker implements Listener {
      */
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-    	generalBlockEventTrigger(event.getBlock());
+    	generalBlockEventTrigger(event.getBlock(),false);
     }
-    
-    private void generalBlockEventTrigger(Block block) {
+    /**
+     * Fetches the creative id of the block, also takes care of a door bug
+     * @param block the block affected
+     * @param isBlockBreak
+     */
+    private void generalBlockEventTrigger(Block block, boolean isBlockBreak) {
     	
-    	boolean isCreative = RestrictedCreativeAPI.isCreative(block);
-		BlockState blockState = block.getState();
-		
+		final BlockState blockState = block.getState();
+		//due to async thread limitations i have to define a variable like this
+		final boolean extIsCreative = RestrictedCreativeAPI.isCreative(block);
 		
 		ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 			@Override
 			public void run() {
+				boolean isCreative = extIsCreative;
+				/*
+				 * On blockplace events, it is important to wait a while so that the creative logger has time to register the block
+				 * whilst for blockbreak events, the status before the database updates is sought after.
+				 */
+				
+				if(!isBlockBreak)
+					isCreative = RestrictedCreativeAPI.isCreative(block);
+				
 	    		BlockTracker.updateCreativeID(block,isCreative);
 	    		
 	    		

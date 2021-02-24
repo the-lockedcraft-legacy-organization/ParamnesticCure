@@ -71,8 +71,6 @@ public class RestoreManager extends LoggerManager {
 			    	for(String[] parseMSG : blockActionListMSG) {
 			    		ParseResult blockAction = coreprotect.parseResult(parseMSG);
 			    		
-			    		if(!blockAction.isRolledBack())	continue;
-
 			    		int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
 			    		int newestTime = blockAction.getTime(); String worldname = blockAction.worldName();
 				    	
