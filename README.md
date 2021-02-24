@@ -69,9 +69,16 @@ Version 0.0.0
         | |_ Feature Release (Adds a new feature)
         |_ Milestone Release (Adds a major feature from /ParamnesticCure/milestones )
 ```
+#### [Version 0.12.6]
+ - A huge refactor
+ - Fixed a issue which made sqlite unusable
+ - Made blocktracking more rigid
+ - Fixed an issue with restores
+ - removed the trigger of an annoying errormessage
 #### [Version 0.12.0]
  - Implement SQLite
  - Complete and functional logic implementation.
+ - Fixed alot of issues
  - Implements MySQL
 #### [Version 0.3.0]
  - Implemented the plugin's logic.
