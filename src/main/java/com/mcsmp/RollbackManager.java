@@ -21,7 +21,7 @@ import org.bukkit.entity.Player;
  * @author InteriorCamping
  * @author Thorin
  */
-public class RollbackManager extends loggerManager{
+public class RollbackManager extends LoggerManager{
 	
 	/**
      * Constructor for RollbackManager

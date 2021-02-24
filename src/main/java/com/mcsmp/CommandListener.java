@@ -32,7 +32,7 @@ import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 /*
  * Paramnestic's listener class.
  */
-public class ParamnesticCureListener implements Listener {
+public class CommandListener implements Listener {
 
 	
     private ConfigurationSection configSektion;
@@ -41,57 +41,9 @@ public class ParamnesticCureListener implements Listener {
      * Constructor class
      * @param plugin Instance of the plugin.
      */
-    public ParamnesticCureListener(ParamnesticCure plugin) {
+    public CommandListener(ParamnesticCure plugin) {
         //
         configSektion = plugin.getConfig().getConfigurationSection("");
-    }
-
-    /**
-     * Only tracking block break events, as those are the only necessary event that needs to get tracked; All critical actions are blockbreak events (except on rollback rollback)
-     * @param event BlockBreakEvent
-     */
-    @EventHandler
-    public void onBlockBreak(BlockBreakEvent event) {
-    	
-        //Tracked block checks if the block is creative/critical
-
-		boolean isCreative = RestrictedCreativeAPI.isCreative(event.getBlock());
-
-		Block block = event.getBlock();
-		BlockState blockState = block.getState();
-		
-		
-		ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
-			@Override
-			public void run() {
-	    		TrackedBlocks.updateCreativeID(block,isCreative);
-	    		
-	    		
-	    		/*
-	    		 * Makes it so that both blocks for doors get updated
-	    		 */
-	    		if( blockState.getType().toString().contains("DOOR") ) {
-	    			Location loc = blockState.getLocation();
-	    			Bisected door = (Bisected) blockState.getBlockData();
-	    			if(door.getHalf() == Bisected.Half.BOTTOM)
-	    				loc = loc.add(0, 1, 0);
-	    			else
-	    				loc = loc.add(0,-1,0);
-	    			
-	    			TrackedBlocks.updateCreativeID(loc.getBlock(),isCreative);
-	    		}
-			}
-    	},TrackedBlocks.waitPeriod);
-       
-
-    }
-    /**
-     * Currently not in use. It would be unnecessary to track blockplace event's as blocks can be creative even though no blockplace event occured (for example a piston moving a creative block)
-     * @param event BlockPlaceEvent
-     */
-    @EventHandler
-    public void onBlockPlace(BlockPlaceEvent event) {
-    	
     }
     /**
      * Checks for commands that should be intercepted
@@ -117,7 +69,7 @@ public class ParamnesticCureListener implements Listener {
     	//Unnecessary to process already faulty commands
     	if(!commandAlias.contains(commandListed[0])||commandListed.length < 2) return;
     	
-    	if(loggerManager.createLoggerManager(commandListed, event.getPlayer().getLocation(),event.getPlayer()))
+    	if(LoggerManager.createLoggerManager(commandListed, event.getPlayer().getLocation(),event.getPlayer()))
     		event.setCancelled(true);
     }
     /**
@@ -136,16 +88,8 @@ public class ParamnesticCureListener implements Listener {
     	if(!commandAlias.contains(commandListed[0])||commandListed.length < 2) return;
     	
     	
-    	if(loggerManager.createLoggerManager(commandListed, null, null));
+    	if(LoggerManager.createLoggerManager(commandListed, null, null));
     		event.setCancelled(true);
     }
 
-    /**
-     * If a world get created, its name needs to get stored in the database. TODO I should also add something that tracks if the world was renamed
-     * @param event
-     */
-    @EventHandler
-    public void worldInit(WorldInitEvent event) {
-    	WorldManager.addWorldToDB(event.getWorld());
-    }
 }

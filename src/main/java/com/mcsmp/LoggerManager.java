@@ -35,7 +35,7 @@ import net.coreprotect.CoreProtectAPI;
  * methods that are used to create those loggerManagers.
  * @author Thorin
  */
-public abstract class loggerManager {
+public abstract class LoggerManager {
 	
 	
 	protected CoreProtectAPI coreprotect;
@@ -109,7 +109,7 @@ public abstract class loggerManager {
     	
     	//to prevent issues on restores as some actions would not have been tracked otherways
     	if(RestrictedCreativeAPI.isCreative(block)) {
-    		TrackedBlocks.updateCreativeID(block, true);
+    		BlockTracker.updateCreativeID(block, true);
     	}
     	
 		if(DBCreativeStatus) {
@@ -180,7 +180,7 @@ public abstract class loggerManager {
     		//don't look here, this is stupid
     		String[] temp = {command[2]};
     		int time = (new RollbackManager(temp,null,null)).time;
-    		TrackedBlocks.purgeDatabase(time);
+    		BlockTracker.purgeDatabase(time);
     	}
     	List<String> helpAlias = configSektion.getStringList("blockLoggerCommands.help");
     	if(helpAlias.contains(command[1]) && PermissionManager.hasHelp(playerOperator)) {

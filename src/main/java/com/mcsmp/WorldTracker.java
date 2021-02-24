@@ -11,13 +11,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.bukkit.World;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldInitEvent;
 
 /**
  * Keeps track of every world and changes the paramnestic database accordingly
  * @author Thorin
  *
  */
-public class WorldManager {
+public class WorldTracker implements Listener {
+    /**
+     * If a world get created, its name needs to get stored in the database. TODO I should also add something that tracks if the world was renamed
+     * @param event
+     */
+    @EventHandler
+    public void worldInit(WorldInitEvent event) {
+    	WorldTracker.addWorldToDB(event.getWorld());
+    }
 	/**
 	 * Adds the world to the worlds table, which will assign it an id
 	 * @param world

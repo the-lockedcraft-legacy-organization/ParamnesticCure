@@ -22,6 +22,7 @@ import org.bukkit.World;
 import static org.bukkit.Bukkit.getPluginManager;
 
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mcsmp.database.SqlManager;
@@ -51,19 +52,20 @@ public class ParamnesticCure extends JavaPlugin {
         instance = this;
     	
     	
-    	
-    	// All you have to do is adding the following two lines in your onEnable method.
-        // You can find the plugin ids of your plugins on the page https://bstats.org/what-is-my-plugin-id
-    	
-        int pluginId = 10452; // <-- Replace with the id of your plugin!
-        Metrics metrics = new Metrics(this, pluginId);
+        int pluginId = 10452;
+        new Metrics(this, pluginId);
     	
     	
     	
     	
     	
         this.saveDefaultConfig();
-        this.getServer().getPluginManager().registerEvents(new ParamnesticCureListener(this), this);
+        PluginManager pluginManager = this.getServer().getPluginManager();
+        pluginManager.registerEvents(new CommandListener(this), this);
+        pluginManager.registerEvents(new BlockTracker(),this);
+        pluginManager.registerEvents(new WorldTracker(),this);
+        
+        
         log = getLogger();
         
         final byte givenVersion = valueOf(getConfig().getString("configVersion"));
@@ -155,7 +157,7 @@ public class ParamnesticCure extends JavaPlugin {
     	List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
     	
     	for(World world : worldlist) {
-    		WorldManager.addWorldToDB(world);
+    		WorldTracker.addWorldToDB(world);
     	}
     }
     /**

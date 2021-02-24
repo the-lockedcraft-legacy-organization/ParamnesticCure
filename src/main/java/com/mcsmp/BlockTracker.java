@@ -11,7 +11,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import static java.util.logging.Level.SEVERE;
+
+import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.data.Bisected;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+
+import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import net.coreprotect.CoreProtectAPI;
 import net.coreprotect.CoreProtectAPI.ParseResult;
 
@@ -20,12 +30,57 @@ import net.coreprotect.CoreProtectAPI.ParseResult;
  * @author Frostalf
  * @author Thorin
  */
-public class TrackedBlocks {
+public class BlockTracker implements Listener {
 
     private static ParamnesticCure plugin = ParamnesticCure.getInstance();
     private static CoreProtectAPI coreprotect = plugin.getCoreProtect();
     
     public static long waitPeriod = 50L;
+    /**
+     * Only tracking block break events, as those are the only necessary event that needs to get tracked; All critical actions are blockbreak events (except on rollback rollback)
+     * @param event BlockBreakEvent
+     */
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+    	generalBlockEventTrigger(event.getBlock());
+    }
+    /**
+     * Currently not in use. It would be unnecessary to track blockplace event's as blocks can be creative even though no blockplace event occured (for example a piston moving a creative block)
+     * @param event BlockPlaceEvent
+     */
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+    	generalBlockEventTrigger(event.getBlock());
+    }
+    
+    private void generalBlockEventTrigger(Block block) {
+    	
+    	boolean isCreative = RestrictedCreativeAPI.isCreative(block);
+		BlockState blockState = block.getState();
+		
+		
+		ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
+			@Override
+			public void run() {
+	    		BlockTracker.updateCreativeID(block,isCreative);
+	    		
+	    		
+	    		/*
+	    		 * Makes it so that both blocks for doors get updated
+	    		 */
+	    		if( blockState.getType().toString().contains("DOOR") ) {
+	    			Location loc = blockState.getLocation();
+	    			Bisected door = (Bisected) blockState.getBlockData();
+	    			if(door.getHalf() == Bisected.Half.BOTTOM)
+	    				loc = loc.add(0, 1, 0);
+	    			else
+	    				loc = loc.add(0,-1,0);
+	    			
+	    			BlockTracker.updateCreativeID(loc.getBlock(),isCreative);
+	    		}
+			}
+    	},BlockTracker.waitPeriod);
+    }
     /**
      * Checks through the coreprotect database for the most recent block place / remove action. It then calls a function that stores it (if the block fulfils the right criteria)
      *
@@ -40,6 +95,7 @@ public class TrackedBlocks {
 	        
 	        for(String[] actionMsg : actiondataMsg) {
 	        	ParseResult action = coreprotect.parseResult(actionMsg);
+	        	plugin.getLogger().info("[TrackedBlocks.updateCreativeID] Actionid = " + action.getActionId());
 	        	if (   action.getActionId() > 2   ) continue; //has to be block place/break action
 	        		
 	        	time = action.getTime();
@@ -68,16 +124,17 @@ public class TrackedBlocks {
     	if(   !isCreative && ( IsInDB == 0)  || IsInDB == 2 ) return;
     	
     	
-    	if(time == 0) { //this should never trigger, but exists as a safety precaution
+    	if(time == 0) { 
+    		//this should never trigger, but exists as a safety precaution
     		//ParamnesticCure relies on the loggers for block information, as it takes time for these to process, the thread will have to wait
-    		ParamnesticCure.getInstance().getLogger().warning("A action didn't get tracked properly. Please contact plugin author");
+    		plugin.getLogger().warning("A action didn't get tracked properly. Please contact plugin author");
 			try {Thread.sleep(waitPeriod);}catch(InterruptedException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
 			waitPeriod *= 2;
 			updateCreativeID(block,isCreative);
     		return;
     	}
         
-    	
+    	plugin.getLogger().info("[TrackedBlocks.updateCreativeID] storing a block as" + (isCreative? "creative":"survival"));
         try {
 	        Connection connection = ParamnesticCure.getInstance().getConnection();
 	      	PreparedStatement addToDatabase = connection.prepareStatement(
@@ -86,7 +143,7 @@ public class TrackedBlocks {
 	       			);
 	            	
 	       	addToDatabase.setInt( 1, time);
-	       	addToDatabase.setInt( 2, WorldManager.getWorldId( block.getWorld().getName() ));
+	       	addToDatabase.setInt( 2, WorldTracker.getWorldId( block.getWorld().getName() ));
 	       	addToDatabase.setInt( 3, block.getX());
 	       	addToDatabase.setInt( 4, block.getY());
 	       	addToDatabase.setInt( 5, block.getZ());
@@ -117,7 +174,7 @@ public class TrackedBlocks {
 	        PreparedStatement getCreativeStatus = connection.prepareStatement(
 	        		"SELECT time FROM blockAction INNER JOIN worlds"
 	                + " ON blockAction.world = worlds.world_id"
-	        		+ " WHERE world = ? AND x = ? AND y = ? AND z = ?"
+	        		+ " WHERE worlds.world = ? AND x = ? AND y = ? AND z = ?"
 	        		);
 	        getCreativeStatus.setString(  1, block.getWorld().getName() );
 	        getCreativeStatus.setInt(  2, block.getX()  );

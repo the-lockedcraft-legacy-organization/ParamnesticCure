@@ -18,7 +18,7 @@ import net.coreprotect.CoreProtectAPI.ParseResult;
  * 
  * @author Thorin
  */
-public class RestoreManager extends loggerManager {
+public class RestoreManager extends LoggerManager {
 	/**
      * Constructor for RestoreManager
      * @param arguments : The arguments of the command
@@ -90,7 +90,7 @@ public class RestoreManager extends loggerManager {
 			    		if(blockAction.getActionId() == 0) //Any blockbreak action will result in a survival block (air block)
 			    			isCreative = false;
 			    		
-
+			    		msgManager.sendMessage("Looking at blockaction: " + blockAction.getActionString(), false);
 				    	creativeBlockCounter += isCreative? 1 : 0;
 				    	changeCreativeStatus(x,y,z,worldname,isCreative);
 			    	}
