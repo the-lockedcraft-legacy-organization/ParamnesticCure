@@ -67,6 +67,12 @@
                 <version>3.2.4</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <relocations>
+			        	<relocation>
+			            	<pattern>org.bstats</pattern>
+			            	<shadedPattern>com.mcsmp.bstats</shadedPattern>
+			          	</relocation>
+			       	</relocations>
                 </configuration>
                 <executions>
                     <execution>
