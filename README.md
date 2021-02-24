@@ -69,10 +69,11 @@ Version 0.0.0
         | |_ Feature Release (Adds a new feature)
         |_ Milestone Release (Adds a major feature from /ParamnesticCure/milestones )
 ```
-#### [Version 0.4.0] (CURRENT TARGET)
- - Fix all readily apparent runtime bugs with PC
- - Preliminary testing of PC logic.
-#### [Version 0.3.0] (CURRENT RELEASE)
+#### [Version 0.12.0]
+ - Implement SQLite
+ - Complete and functional logic implementation.
+ - Implements MySQL
+#### [Version 0.3.0]
  - Implemented the plugin's logic.
 #### [Version 0.2.0]
  - Outlined the logic needed to accomplish PC's goals.
