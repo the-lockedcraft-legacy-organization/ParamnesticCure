@@ -61,7 +61,7 @@ public class ParamnesticCure extends JavaPlugin {
     	
         this.saveDefaultConfig();
         PluginManager pluginManager = this.getServer().getPluginManager();
-        pluginManager.registerEvents(new CommandListener(this), this);
+        pluginManager.registerEvents(new CommandTracker(this), this);
         pluginManager.registerEvents(new BlockTracker(),this);
         pluginManager.registerEvents(new WorldTracker(),this);
         

@@ -48,7 +48,6 @@ public abstract class LoggerManager {
 	protected int radius;
 	protected Location radius_location;
 	protected MessageManager msgManager;
-	private static HashMap<String,String[]> storedCommands = new HashMap<String,String[]>();
 	private static ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
 	
 	
@@ -120,123 +119,7 @@ public abstract class LoggerManager {
 			RestrictedCreativeAPI.remove(block);
 		}
 	} 
-	/**
-	 * Interprets a part of the command to see if a rollback,restore,undo, or purge should be created
-	 * Whether this method fits better in the listener class is unclear
-	 * @param command The arguments after the logger alias
-	 * @param location Location of the player (can be null)
-	 * @param playerOperator the player who initiated the command
-	 * @return true if command event should be cancelled
-	 */
-	static public boolean createLoggerManager(String[] command, Location location, Player playerOperator) {
-		
-		String operator = (playerOperator == null) ? null : playerOperator.getName();
-		
-		
-		List<String> rollbackAlias = configSektion.getStringList("blockLoggerCommands.rollback");
-		String[] arguments = Arrays.copyOfRange(command, 2, command.length);
-		
-    	if(rollbackAlias.contains(command[1])) { 
-    		if(!PermissionManager.hasRollback(playerOperator)) return false;
-    		
-    		RollbackManager rollback = new RollbackManager( arguments , location , playerOperator);
-    		rollback.executeTask();
-    		storeCommand(operator,command);
-    		return true;
-    	}
-    	List<String> restoreAlias = configSektion.getStringList("blockLoggerCommands.restore");
-    	if(restoreAlias.contains(command[1])) {
-    		
-    		if(!PermissionManager.hasRestore(playerOperator)) return false;
-    		
-    		
-    		RestoreManager restore = new RestoreManager(  arguments, location , playerOperator );
-    		restore.executeTask();
-    		storeCommand(operator,command);
-    		return true;
-    	}
-    	List<String> undoAlias = configSektion.getStringList("blockLoggerCommands.undo");
-    	if(undoAlias.contains(command[1])) {
-    		if(!(PermissionManager.hasRollback(playerOperator)&&PermissionManager.hasRestore(playerOperator))) return false;
-    		//TODO make better undo's, that store location and takes time into consideration
-    		String player = operator;
-    		if(command.length == 3)
-    			player = command[2];
-    		else if(command.length > 3) {
-    			return false;
-    		}
-    		if (undoCommand(player, operator, location))
-    			return true;
-    	}
-    	List<String> purgeAlias = configSektion.getStringList("blockLoggerCommands.purge");
-    	if(purgeAlias.contains(command[1])) {
-    		if(!PermissionManager.hasPurge(playerOperator)) return false;
-    		
-    		if(command.length > 3) {
-    			new MessageManager(playerOperator).sendMessage("Invalid argument " + command[1], true);
-    			return true;
-    		}
-    		
-    		//don't look here, this is stupid
-    		String[] temp = {command[2]};
-    		int time = (new RollbackManager(temp,null,null)).time;
-    		BlockTracker.purgeDatabase(time);
-    	}
-    	List<String> helpAlias = configSektion.getStringList("blockLoggerCommands.help");
-    	if(helpAlias.contains(command[1]) && PermissionManager.hasHelp(playerOperator)) {
-    		//don't know if this is necessary 
-    	}
-    	return false;
-	}
-	/**
-	 * This stores commands for the undo command
-	 * @param operator the player who initiated the command
-	 * @param command the type of logger command that was used
-	 * @param arguments the arguments of that command
-	 */
-	static private void storeCommand(String operator, String[] commandListed) {
-		String command = "";
-		for(String argument:commandListed) command = command+" " + argument;
-		storedCommands.put(operator, commandListed);
-	}
-	
-	/**
-	 * This is the main logic done to convert a command to it's opposite, to then call the
-	 * createLoggerManager with the newly created command. 
-	 * 
-	 * This approximately undoes the previous command. 
-	 * @param player the player which command should be undone
-	 * @param operator the player that initiated the command
-	 * @return true if successful
-	 */
-	static private boolean undoCommand(String player,String operator,Location location) {
-		ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
-		if(storedCommands.containsKey(player)) {
-	       	String[] commandListed = storedCommands.get(player);
-	       	
-	       	List<String> rbAlias = configSektion.getStringList("blockLoggerCommands.rollback");
-	       	List<String> reAlias = configSektion.getStringList("blockLoggerCommands.restore");
-	       	if(rbAlias.contains(commandListed[1]))
-	       		commandListed[1] = reAlias.get(0);
-	       	else
-	       		commandListed[1] = rbAlias.get(0);
-	       	
-	       	String command = "";
-			for(String argument:commandListed) command = command+" " + argument;
-			
-			Player playerPlayer = Bukkit.getServer().getPlayer(player);
-			
-	       	createLoggerManager(commandListed, location, playerPlayer);
-	       	storeCommand(operator,commandListed);
-	       	return true;
-	    }
-		Player playerOperator = (operator == null)? null : Bukkit.getServer().getPlayer(operator);
-		
-		new MessageManager(playerOperator).sendMessage("Could not find the user " + player,true);
-	    
-		return false;
-	}
-	
+
 	/**
 	 * Interprets the argument, and assigns values to the proper blocks
 	 * @param arguments : The arguments of the command
