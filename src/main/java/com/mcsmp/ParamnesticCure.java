@@ -113,9 +113,10 @@ public class ParamnesticCure extends JavaPlugin {
 
     @Override
     public void onDisable() {
-    	try {
-        connection.close();
-    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+    	if(connection != null)
+	    	try {
+	        connection.close();
+	    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     }
 
     /**
