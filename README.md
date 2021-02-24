@@ -75,6 +75,7 @@ Version 0.0.0
  - Made blocktracking more rigid
  - Fixed an issue with restores
  - removed the trigger of an annoying errormessage
+ - Removed unnecessary files
 #### [Version 0.12.0]
  - Implement SQLite
  - Complete and functional logic implementation.
