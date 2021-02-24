@@ -5,88 +5,104 @@
  */
 package com.mcsmp;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import me.prunt.restrictedcreative.RestrictedCreativeAPI;
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import net.coreprotect.CoreProtectAPI.ParseResult;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 /**
- * @author InteriorCamping
- */
-
-/**
- * Does a series of logical operations to minimize opportunities for rollblacks to mess with creative data.
+ * Does a series of logical operations to minimise opportunities for rollblacks to mess with creative block data.
  * Note that this does not include rollback interference with inventories!
+ * 
+ * @author InteriorCamping
+ * @author Thorin
  */
-public class RollbackManager {
-
-    /*
-     * Constructor for Rollbacks.
+public class RollbackManager extends loggerManager{
+	
+	/**
+     * Constructor for RollbackManager
+     * @param arguments : The arguments of the command
+     * @param radius_location : location where command was thrown
      */
-    public RollbackManager() {
+    public RollbackManager(String[] arguments, Location radius_location, Player player) {
+    	
+    	this.msgManager = new MessageManager(player,"Rollback");
+    	
+    	this.coreprotect = ParamnesticCure.getInstance().getCoreProtect();
+    	
+    	interpretArguments(arguments,radius_location);
     }
 
-    // ┌─────────────────────────────────────────── /!\=- 𝗪𝗔𝗥𝗡𝗜𝗡𝗚 /!\ ─────────────────────────────────────────
-    // │
-    // │  𝘛𝘩𝘪𝘴 𝘪𝘴 𝘢 𝘩𝘪𝘨𝘩𝘭𝘺 𝘤𝘰𝘮𝘱𝘭𝘦𝘹 𝘰𝘱𝘦𝘳𝘢𝘵𝘪𝘰𝘯! 𝘐𝘵 𝘤𝘰𝘯𝘴𝘪𝘥𝘦𝘳𝘴 𝘵𝘩𝘳𝘦𝘦 𝘥𝘦𝘨𝘳𝘦𝘦𝘴 𝘰𝘧 𝘣𝘭𝘰𝘤𝘬 𝘰𝘱𝘦𝘳𝘢𝘵𝘪𝘰𝘯𝘴 (𝘵𝘸𝘦𝘭𝘷𝘦 𝘴𝘵𝘢𝘵𝘦𝘴 𝘪𝘯 𝘵𝘰𝘵𝘢𝘭!)
-    // │ 𝘖𝘯𝘭𝘺 𝘵𝘰𝘶𝘤𝘩 𝘵𝘩𝘪𝘴 𝘭𝘰𝘨𝘪𝘤 𝘪𝘧 𝘺𝘰𝘶 𝘩𝘢𝘷𝘦 𝘢 𝘴𝘵𝘳𝘰𝘯𝘨 𝘶𝘯𝘥𝘦𝘳𝘴𝘵𝘢𝘯𝘥𝘪𝘯𝘨 𝘰𝘧 𝘱𝘦𝘳𝘮𝘶𝘵𝘢𝘵𝘪𝘰𝘯𝘴 𝘢𝘯𝘥 𝘮𝘢𝘯𝘺 𝘩𝘰𝘶𝘳𝘴 𝘵𝘰 𝘵𝘦𝘴𝘵 𝘺𝘰𝘶𝘳 𝘤𝘩𝘢𝘯𝘨𝘦𝘴!
-    // │
-    // │           𝗘𝘃𝗲𝗻 𝗼𝗻𝗲 𝘀𝗺𝗮𝗹𝗹 𝗰𝗵𝗮𝗻𝗴𝗲 𝘁𝗼 𝘁𝗵𝗶𝘀 𝘀𝗲𝗰𝘁𝗶𝗼𝗻 𝗶𝘀 𝗲𝗻𝗼𝘂𝗴𝗵 𝘁𝗼 𝗺𝗲𝘀𝘀 𝘁𝗵𝗲 𝘄𝗵𝗼𝗹𝗲 𝘁𝗵𝗶𝗻𝗴 𝘂𝗽!
-    // │
-    // └──────────────────────────────────────────────────────────────────────────────────────────────────────────
-    /*
-     * Performs a series of logical operations to determine if the blocks getting rolled back should be protected by creative mode.
+    /**
+     * This runs all the logic that is needed when performing a rollback:
+	 * 
+	 * Calls the rollback function from blocklogger API and gets all actions that are affected
+	 * 
+	 * It then checks through all the returned values, and selects the oldest action on every location,
+	 * To then call the changeCreativeStatus function on that action
      */
+    @Override
     public void executeTask() {
-        ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Connection connection = ParamnesticCure.getInstance().getCacheData().getDatabaseMap().get("coreprotect").getDatabase().getConnection();
-                    //co_world
-                    PreparedStatement statement = connection.prepareStatement("SELECT * from co_block,co_world INNER JOIN co_world ON co_block.wid=co_world.id");
-                    ResultSet set = statement.executeQuery();
-                    do {
-                        int action = set.getInt("action");
-                        Location location = new Location(ParamnesticCure.getInstance().getServer().getWorld(set.getString("world")), set.getInt("x"), set.getInt("y"), set.getInt("z"));
-                        if(set.getInt("rollback") > 0) {
-                            switch(action) {
-                                case 0:
-                                    if(ParamnesticCure.getInstance().getTrackedBlocks().getBlockList().containsKey(location)) {
-                                        ParamnesticCure.getInstance().getTrackedBlocks().removeFromBlockList(location);
-                                        RestrictedCreativeAPI.add(location.getBlock());
-                                    }
-                                    break;
-                                case 1:
-                                        ParamnesticCure.getInstance().getTrackedBlocks().addToBlockList(location);
-                                        RestrictedCreativeAPI.remove(location.getBlock());
-                                    break;
-                                default: break;
-                            }
-                        } else {
-                            switch(action) {
-                                case 0:
-                                        ParamnesticCure.getInstance().getTrackedBlocks().addToBlockList(location);
-                                        RestrictedCreativeAPI.remove(location.getBlock());
-                                    break;
-                                case 1:
-                                    if(ParamnesticCure.getInstance().getTrackedBlocks().getBlockList().containsKey(location)) {
-                                        ParamnesticCure.getInstance().getTrackedBlocks().removeFromBlockList(location);
-                                        if(!(location.getBlock().isEmpty() || location.getBlock().isLiquid())) {
-                                            RestrictedCreativeAPI.add(location.getBlock());
-                                        }
-                                    }
-                                    break;
-                                default: break;
-                            }
-                        }
-                    } while (set.next());
-                } catch (SQLException ex) {
+        
+    	ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 
-                }
-            }
-        }, 60L);
+			@Override
+			public void run() {
+				
+				long startTime = System.nanoTime(); //nano Seconds
+				List<String[]> blockActionListMSG = new ArrayList<String[]>();
+				
+				blockActionListMSG = coreprotect.performRollback(
+						time,restrict_users, exclude_users, restrict_blocks, exclude_blocks,action_list, radius, radius_location
+		    			);
+		    	
+		    	long endTime = System.nanoTime(); 
+		    	
+		    	msgManager.sendMessage( "Operationall time: " + String.valueOf( (endTime-startTime)*Math.pow(10, -9) ) , false);
+		    	
+		    	if(blockActionListMSG.size() == 0) {
+		    		msgManager.sendMessage("No actions were found",true);
+		    		return;
+		    	}
+		    	
+		    	HashMap<String,Integer> blocks_to_be_changed = new HashMap<String,Integer>();
+		    	Integer creativeBlockCounter = 0;
+			    for(int i = blockActionListMSG.size()-1; i >= 0; i--){//cycles through the list backwards (should be slightly less costly)
+			    	
+			    	ParseResult blockAction = coreprotect.parseResult(blockActionListMSG.get(i));
+			    	
+			    	String worldname = blockAction.worldName();
+			    	
+			    	int oldestTime = blockAction.getTime();
+			    	int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
+			    	
+			    	
+			    	
+			    	String compareKey = String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(z) + worldname;
+			    	
+			    	
+			    	if(blocks_to_be_changed.containsKey(compareKey))
+		    			if(blocks_to_be_changed.get(compareKey) < oldestTime)
+		    				continue;
+
+		    		blocks_to_be_changed.put( compareKey , oldestTime );
+			    	
+			    	boolean isCreative = fetchDBIsCreative(oldestTime,worldname,x,y,z);
+			    	
+			    	if (blockAction.getActionId() == 1)
+			    		isCreative = false; //When a creative block place action is rollbacked, it will get removed. An airblock must have been before this action, which is survival
+			    	creativeBlockCounter += isCreative ? 1 : 0;
+			    	
+			    	changeCreativeStatus(x,y,z,worldname,isCreative);
+			    }
+			    msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block actions were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Blocks were set", false);
+			    msgManager.sendMessage(creativeBlockCounter.toString() + " blocks were set to creative", false);
+			}
+    		
+    	},60L);
     }
 }

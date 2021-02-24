@@ -6,7 +6,6 @@
 package com.mcsmp;
 
 import com.mcsmp.database.DataBases;
-import static java.lang.Byte.valueOf;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -16,7 +15,6 @@ public class CacheData {
 
     private ConcurrentHashMap<String, DataBases> databaseMap = new ConcurrentHashMap<>();
     private final ParamnesticCure plugin = ParamnesticCure.getInstance();
-    private final byte givenVersion = valueOf(ParamnesticCure.getInstance().getConfig().getString("configVersion"));
     private String address = plugin.getConfig().getString("defaultconnection.address");
     private int port = plugin.getConfig().getInt("defaultconnection.port");
     private String user = plugin.getConfig().getString("user");
@@ -28,23 +26,24 @@ public class CacheData {
      * Method to cache database connections.
      */
     public CacheData() {
-
+    	//TODO simplify this
         for (String databases : plugin.getConfig().getConfigurationSection("Database_Names").getKeys(false)) {
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".address").isBlank()) {
+            if (  !(plugin.getConfig().getString("Database_Names." + databases + ".address").chars().allMatch(Character::isWhitespace))) {
                 address = plugin.getConfig().getString("Database_Names." + databases + ".address");
             }
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".port").isBlank()) {
+            if (  !(plugin.getConfig().getString("Database_Names." + databases + ".port").chars().allMatch(Character::isWhitespace))  ) {
                 port = plugin.getConfig().getInt("Database_Names." + databases + ".port");
             }
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".user").isBlank()) {
+            if (  !(plugin.getConfig().getString("Database_Names." + databases + ".user").chars().allMatch(Character::isWhitespace))) {
                 user = plugin.getConfig().getString("Database_Names." + databases + ".user");
             }
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".password").isBlank()) {
+            if (  !(plugin.getConfig().getString("Database_Names." + databases + ".password").chars().allMatch(Character::isWhitespace))) {
                 password = plugin.getConfig().getString("Database_Names." + databases + ".password");
             }
-            if (!plugin.getConfig().getString("Database_Names." + databases + ".driver").isBlank()) {
+            if (  !(plugin.getConfig().getString("Database_Names." + databases + ".driver").chars().allMatch(Character::isWhitespace))) {
                 driver = plugin.getConfig().getString("Database_Names." + databases + ".driver");
             }
+            
             location = plugin.getConfig().getString("Database_Names." + databases + ".location");
             DataBases bases = new DataBases(databases.toLowerCase(), plugin.getConfig().getString("Database_Names." + databases + ".database").toLowerCase(), address, port, user, password, driver, location);
             databaseMap.put(databases.toLowerCase(), bases);

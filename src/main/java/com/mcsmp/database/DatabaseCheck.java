@@ -5,10 +5,12 @@
  */
 package com.mcsmp.database;
 
-import com.jolbox.bonecp.BoneCP;
-import com.jolbox.bonecp.BoneCPConfig;
+
 import com.mcsmp.DriverEnum;
 import com.mcsmp.ParamnesticCure;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,10 +23,10 @@ import java.util.logging.Logger;
  */
 public class DatabaseCheck {
 
-    private BoneCP boneCP;
+    private HikariDataSource boneCP;
     private Connection connection;
 
-    private BoneCPConfig config = null;
+    private HikariConfig config = null;
     private ParamnesticCure plugin = ParamnesticCure.getInstance();
     private String database;
     private String address;
@@ -52,7 +54,7 @@ public class DatabaseCheck {
         this.database = database;
         this.address = address;
         this.port = port;
-        if(user == null || user.isBlank()) {
+        if(user == null || user.chars().allMatch(Character::isWhitespace)) {
             this.user = "default";
         } else {
             this.user = user;
@@ -110,13 +112,12 @@ public class DatabaseCheck {
     }
 
     private void setupMySQL() throws SQLException {
-        final int POOLSIZE = 10;
         final int MAXCONNECT = 20;
-        this.config = new BoneCPConfig();
-        this.config.setPartitionCount(POOLSIZE);
-        this.config.setMaxConnectionsPerPartition(MAXCONNECT);
-        this.config.setUser(this.user);
+        this.config = new HikariConfig();
+        this.config.setMaximumPoolSize(MAXCONNECT);
+        this.config.setUsername(this.user);
         this.config.setPassword(this.password);
+        ParamnesticCure.getInstance().getLogger().info("[DatabaseCheck.setupMySQL] Values: " + this.driver + "," + this.address + "," + this.port + "," + this.database);
         config.setJdbcUrl("jdbc:"+ this.driver +"://" + this.address + ":" + this.port + "/" + this.database);
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -124,13 +125,14 @@ public class DatabaseCheck {
             Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
         }
         DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-        this.boneCP = new BoneCP(config);
+        
+        this.boneCP = new HikariDataSource(config);
     }
 
     private File dbFile;
 
     private void setupSQLITE(String location) throws SQLException {
-        if (location.isBlank()) {
+        if (location.chars().allMatch(Character::isWhitespace)) {
             dbFile = new File(plugin.getDataFolder().getAbsoluteFile(), this.database + ".db");
         } else {
             dbFile = new File(location, this.database + ".db");

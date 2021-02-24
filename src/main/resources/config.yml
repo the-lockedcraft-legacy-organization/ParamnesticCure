@@ -15,31 +15,52 @@ creativeManager: 'restrictedCreative'
 #Note! Paramnestic does NOT yet support creative inventory rollbacks!
 #Please ensure that any such features are disabled in your blocklogger.
 blockLogger: 'coreProtect'
-blockLoggerRollbackCommands:
-    - co rollback
-    - core rollback
-    - coreprotect rollback
-    - co rb
-    - core rb
-    - coreprotect rb
-    - coreprotect:co rollback
-    - coreprotect:core rollback
-    - coreprotect:coreprotect rollback
-    - coreprotect:co rb
-    - coreprotect:core rb
-    - coreprotect:coreprotect rb
-    - co restore
-    - core restore
-    - coreprotect restore
-    - co rs
-    - core rs
-    - coreprotect rs
-    - coreprotect:co restore
-    - coreprotect:core restore
-    - coreprotect:coreprotect restore
-    - coreprotect:co rs
-    - coreprotect:core rs
-    - coreprotect:coreprotect rs
+blockLoggerCommands:
+   alias:
+       - co
+       - core
+       - coreprotect
+       - coreprotect:co
+       - coreprotect:core
+       - coreprotect:coreprotect
+   rollback:
+       - rollback
+       - rb
+   restore:
+       - restore
+       - rs
+   undo:
+       - undo
+   purge:
+       - purge
+   help:
+       - help
+   arguments:
+      time:
+          - t
+          - time
+      radius:
+          - r
+          - radius
+          - area
+      user:
+          - u
+          - user
+          - player
+      action:
+          - a
+          - action
+      exclude:
+          - e
+          - exclude
+      block:
+          - b
+          - block
+blockLoggerPermissions:
+   rollback: coreprotect.rollback
+   purge: coreprotect.purge
+   restore: coreprotect.restore
+   help: coreprotect.help
 # Default information used when a value in Database_Names is blank ("")
 # Please ensure that all three of the databases you intend to use have already been configured by your logger and creative manager.
 defaultconnection:
@@ -56,26 +77,6 @@ defaultconnection:
 # Databases for us to send specific requests to.
 # Paramnestic requires all three databases to be running, set up, and seperate to function.
 Database_Names:
-    # The database for Paramnestic to send requests related to creative block protection
-    # (Your creative manager)
-    creative:
-        database: "rc_database"
-        location: ""
-        driver: ""
-        address: ""
-        port: ""
-        user: ""
-        password: ""
-    # The database for Paramnestic to send requests related to general block logging
-    # (Your block logger)
-    coreprotect:
-        database: "database"
-        location: ""
-        driver: ""
-        address: ""
-        port: ""
-        user: ""
-        password: ""
     # The database for Paramnestic to store its own data.
     # (ParamnesticCure)
     paramnestic:
