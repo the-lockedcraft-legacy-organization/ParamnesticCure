@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -46,6 +45,7 @@ public abstract class LoggerManager {
 	protected Location location;
 	protected MessageManager msgManager;
 	protected boolean isCancelled = false;
+	protected boolean isInterceptCanselled = false;
 	private static ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
 	
 	
@@ -178,18 +178,31 @@ public abstract class LoggerManager {
     		for(String part : splitedArgument) {
 	    		if(part.contains("w")){ 
 	    			time += 604800 * Double.parseDouble(part.substring( 0 , part.indexOf('w') ));
+	    			continue;
 	    		}
 	    		if(part.contains("d")){ 
 	    			time += 86400 * Double.parseDouble(part.substring( 0 , part.indexOf('d') ));
+	    			continue;
 	    		}
 	    		if(part.contains("h")){ 
 	    			time += 3600 * Double.parseDouble(part.substring( 0 , part.indexOf('h') ));
+	    			continue;
 	    		}
 	    		if(part.contains("m")){ 
 	    			time += 60 * Double.parseDouble(part.substring( 0 , part.indexOf('m') ));
+	    			continue;
 	    		}
 	    		if(part.contains("s")){ 
 	    			time += Double.parseDouble(part.substring( 0 , part.indexOf('s') ));
+	    			continue;
+	    		}
+	    		try {
+	    			//this is another way to specify seconds in Coreprotect
+	    			time += Double.parseDouble(part);
+	    		}catch(Exception e) {
+	    			msgManager.sendMessage("Incorrect timeargument, redirecting to blocklogger...", true);
+	    			isCancelled = true;
+	    			break;
 	    		}
     		}
     		this.time = Math.round(time);
@@ -229,13 +242,48 @@ public abstract class LoggerManager {
 		List<String> excludeAlias = configSektion.getStringList("blockLoggerCommands.arguments.exclude");
 		argument = checkAndTrimArgument(argument,excludeAlias);
     	if(argument != "") {
-    			
-    		this.exclude_blocks = new ArrayList<Object>();
-    		String[] argumentSplited = argument.split(",");
-    		for(String part : argumentSplited) {  this.exclude_blocks.add( Bukkit.createBlockData(part) );  }
-    		return true;
-    		}
+    		exclude_blocks = blockStringListToBlockList(argument);
+    		if(exclude_blocks.size() > 0)
+    			return true;
+    	}
 		return false;
+	}
+
+	/**
+	 * 
+	 * @param argument
+	 * @return true if there was a match
+	 */
+	private boolean blockInterpreter(String argument) {
+		List<String> blockAlias = configSektion.getStringList("blockLoggerCommands.arguments.block");
+		argument = checkAndTrimArgument(argument,blockAlias);
+    	if(argument != "") {
+    		restrict_blocks = blockStringListToBlockList(argument);
+    		if(restrict_blocks.size() > 0)
+    			return true;
+    	}
+		return false;
+	}
+	
+	/**
+	 * This should (ehm ehm) be able to convert argument into a list of blockdata
+	 * @param argument
+	 * @return A list with blockdatatypes
+	 */
+	private List<Object> blockStringListToBlockList(String argument){
+		List<Object> tempBlockList = new ArrayList<Object>();
+		String[] argumentSplited = argument.split(",");
+		for(String part : argumentSplited) {  
+			try {
+				tempBlockList.add( Bukkit.createBlockData(part) );  
+			}catch(Exception e) {
+				msgManager.sendMessage("Paramnestic does not currently support non-block rollbacks/restores",false);
+				msgManager.sendMessage("To still allow those kind of rollbacks, the rollback will trigger twice",false);
+				msgManager.sendMessage("Creative status on entities will not be set!",true);
+				isInterceptCanselled = true;
+			}
+		}
+		return tempBlockList;
 	}
 	
 	/**
@@ -249,36 +297,17 @@ public abstract class LoggerManager {
 		argument = checkAndTrimArgument(argument,radiusAlias);
     	if(argument != "") {
     		if(location == null) {
-    			msgManager.sendMessage(" You can't use the radius argument from the console",true);
-    			isCancelled = true;
+    			msgManager.sendMessage(" You can't use the radius argument from console",true);
     		}
+    		else {
     		this.radius = Integer.parseInt(argument); 
     		this.location = location;
+    		}
     		return true;
 		}
 		return false;
 	}
 	
-	/**
-	 * 
-	 * @param argument
-	 * @return true if there was a match
-	 */
-	private boolean blockInterpreter(String argument) {
-		List<String> blockAlias = configSektion.getStringList("blockLoggerCommands.arguments.block");
-		argument = checkAndTrimArgument(argument,blockAlias);
-    	if(argument != "") {
-    			
-    		this.restrict_blocks = new ArrayList<Object>();
-    		String[] argumentSplited = argument.split(",");
-    		
-    		for(String material : argumentSplited) {  
-    			this.restrict_blocks.add( Material.getMaterial("material:" + material) );  
-    			}
-    		return true;
-    		}
-		return false;
-	}
 	
 	/**
 	 * 
@@ -293,7 +322,7 @@ public abstract class LoggerManager {
     		this.action_list = new ArrayList<Integer>();
     		String[] argumentSplited = argument.split(",");
     		for(String actionArgument : argumentSplited) {
-    			for(Integer action:actionToInt(actionArgument))
+    			for(Integer action : actionToInt(actionArgument))
     				action_list.add(action);
     		}
     		return true;
@@ -309,19 +338,20 @@ public abstract class LoggerManager {
 	 * @return a list off all the actions that this part of the argument implied
 	 */
 	private List<Integer> actionToInt(String action) {
-		//TODO add numbers for all the other alternatives
-		List<Integer> output = null;
+		//TODO make this fit better with coreprotect logic
+		List<Integer> output = new ArrayList<Integer>();
 		if(action.contains("block"))
 		{
-			output = new ArrayList<Integer>();
 			if(!action.contains("-"))
 				output.add(1);//place action
 			if(!action.contains("+"))
 				output.add(0);//remove action
 		}
 		else {
-			output = new ArrayList<Integer>();
-			output.add(2);
+			msgManager.sendMessage("Paramnestic does not currently support non-block rollbacks/restores",false);
+			msgManager.sendMessage("To still allow those kind of rollbacks, the rollback will trigger twice",false);
+			msgManager.sendMessage("Creative status on entities will not be set!",true);
+			isInterceptCanselled = true;
 		}
 		return output;
 	}

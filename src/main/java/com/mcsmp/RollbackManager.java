@@ -109,6 +109,6 @@ public class RollbackManager extends LoggerManager{
     		
     	},60L);
     	
-    	return true;
+    	return !isInterceptCanselled;
     }
 }

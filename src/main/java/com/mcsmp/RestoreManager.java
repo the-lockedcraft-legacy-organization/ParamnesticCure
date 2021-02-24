@@ -101,7 +101,7 @@ public class RestoreManager extends LoggerManager {
 				
 		},60L);
 		ParamnesticCure.getInstance().getLogger().info("[RestoreManager.executeTask] iscancelled = " + String.valueOf(isCancelled));
-		return true;
+		return !isInterceptCanselled;
 	}
 
 }
