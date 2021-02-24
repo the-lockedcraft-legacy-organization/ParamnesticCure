@@ -18,39 +18,51 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.configuration.file.FileConfiguration;
+
 /**
  * @author Frostalf
  */
-public class DatabaseCheck {
+public class SqlManager {
 
     private HikariDataSource boneCP;
     private Connection connection;
 
     private HikariConfig config = null;
     private ParamnesticCure plugin = ParamnesticCure.getInstance();
-    private String database;
-    private String address;
-    private int port;
-    private String user;
-    private String password;
-    private String driver;
+    private final String database;
+    private final String address;
+    private final int port;
+    private final String user;
+    private final String password;
+    private final String driver;
     private String url;
-    private boolean mysql = false;
-    private String location;
+    private final boolean mysql;
 
+   /**
+    * Just converts the data in fileconfig so that the other constructor can accept the arguments
+    * @param fileConfig The fileconfig in paramnestic
+    */
+    public SqlManager(FileConfiguration fileConfig) {
+        this(
+        		fileConfig.getString("Database.databasename"),
+        		fileConfig.getString("Database.address"),
+        		fileConfig.getInt("Database.port"),
+        		fileConfig.getString("Database.user"),
+        		fileConfig.getString("Database.password"),
+        		fileConfig.getString("Database.driver")
+        		);
+    }
     /**
      * Caches and checks the status of a certain database..
-     * @param name Name of the plugin this database pertains to.
      * @param database Name of the database being checked.
      * @param address Address of the database being checked.
      * @param port Port on which to communicate with the database being checked.
      * @param user User to use when communicating with the database.
      * @param password Password to be used when communicating with the database as provided user.
      * @param driver Driver to use for this database communication.
-     * @param location location of db file.
      */
-    public DatabaseCheck(String name, String database, String address, int port, String user, String password, String driver, String location) {
-        this.location = location;
+    public SqlManager(String database, String address, int port, String user, String password, String driver) {
         this.database = database;
         this.address = address;
         this.port = port;
@@ -64,16 +76,17 @@ public class DatabaseCheck {
 
         if(getDriver() == DriverEnum.SQLITE) {
             try {
-                setupSQLITE(location);
+                setupSQLITE();
             } catch (SQLException ex) {
-                Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SqlManager.class.getName()).log(Level.SEVERE, null, ex);
             }
+            mysql = false;
         } else {
             mysql = true;
             try {
                 setupMySQL();
             } catch (SQLException ex) {
-                Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SqlManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -117,12 +130,13 @@ public class DatabaseCheck {
         this.config.setMaximumPoolSize(MAXCONNECT);
         this.config.setUsername(this.user);
         this.config.setPassword(this.password);
-        ParamnesticCure.getInstance().getLogger().info("[DatabaseCheck.setupMySQL] Values: " + this.driver + "," + this.address + "," + this.port + "," + this.database);
+        
+        
         config.setJdbcUrl("jdbc:"+ this.driver +"://" + this.address + ":" + this.port + "/" + this.database);
         try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SqlManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         DriverManager.registerDriver(new com.mysql.jdbc.Driver());
         
@@ -131,18 +145,14 @@ public class DatabaseCheck {
 
     private File dbFile;
 
-    private void setupSQLITE(String location) throws SQLException {
-        if (location.chars().allMatch(Character::isWhitespace)) {
-            dbFile = new File(plugin.getDataFolder().getAbsoluteFile(), this.database + ".db");
-        } else {
-            dbFile = new File(location, this.database + ".db");
-        }
+    private void setupSQLITE() throws SQLException {
+        dbFile = new File(plugin.getDataFolder().getAbsoluteFile(), this.database + ".db");
 
         this.url = ("jdbc:sqlite:" + dbFile.getAbsoluteFile());
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(DatabaseCheck.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SqlManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         DriverManager.registerDriver(new org.sqlite.JDBC());
     }

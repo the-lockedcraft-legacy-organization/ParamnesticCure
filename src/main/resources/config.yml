@@ -56,14 +56,15 @@ blockLoggerCommands:
       block:
           - b
           - block
+# The permessions for the blocklogger
 blockLoggerPermissions:
    rollback: coreprotect.rollback
    purge: coreprotect.purge
    restore: coreprotect.restore
    help: coreprotect.help
-# Default information used when a value in Database_Names is blank ("")
-# Please ensure that all three of the databases you intend to use have already been configured by your logger and creative manager.
-defaultconnection:
+
+# All database config for the database of paramnestic
+Database:
   # Database type
   driver: Sqlite
   # Database location
@@ -74,16 +75,5 @@ defaultconnection:
   user: 'root'
   # Password for that username.
   password: 'pass'
-# Databases for us to send specific requests to.
-# Paramnestic requires all three databases to be running, set up, and seperate to function.
-Database_Names:
-    # The database for Paramnestic to store its own data.
-    # (ParamnesticCure)
-    paramnestic:
-        database: "paramnestic"
-        location: ""
-        driver: ""
-        address: ""
-        port: ""
-        user: ""
-        password: ""
+  # The name for the database
+  databasename: "paramnestic"

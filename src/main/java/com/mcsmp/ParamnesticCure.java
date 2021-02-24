@@ -14,6 +14,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Logger;
+
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
@@ -21,6 +23,9 @@ import static org.bukkit.Bukkit.getPluginManager;
 
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.mcsmp.database.SqlManager;
+
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 /**
@@ -35,13 +40,28 @@ public class ParamnesticCure extends JavaPlugin {
 
     private static ParamnesticCure instance;
     private Logger log = Bukkit.getLogger();
-    private CacheData dataCache;
+    private SqlManager database;
     private Connection connection;
     private boolean isMySql;
 
     
     @Override
     public void onEnable() {
+    	//sets so that any external methods that need to log messages wont get any errors
+        instance = this;
+    	
+    	
+    	
+    	// All you have to do is adding the following two lines in your onEnable method.
+        // You can find the plugin ids of your plugins on the page https://bstats.org/what-is-my-plugin-id
+    	/*
+        int pluginId = 10452; // <-- Replace with the id of your plugin!
+        Metrics metrics = new Metrics(this, pluginId);
+    	*/
+    	
+    	
+    	
+    	
         this.saveDefaultConfig();
         this.getServer().getPluginManager().registerEvents(new ParamnesticCureListener(this), this);
         log = getLogger();
@@ -49,7 +69,7 @@ public class ParamnesticCure extends JavaPlugin {
         final byte givenVersion = valueOf(getConfig().getString("configVersion"));
         //Temporary variable indicating desired config version.
         //Should ideally be maven-based, but currently isn't due to a bug.
-        final byte currentVersion = 8;
+        final byte currentVersion = 9;
         File configVar = new File(getDataFolder(), "config.yml");
         //if outdated config, rename old config and install a new one.
 
@@ -70,15 +90,15 @@ public class ParamnesticCure extends JavaPlugin {
         }
         
         //Creates new cache
-        final String driver = getConfig().getString("defaultconnection.driver");
-        isMySql = (driver.toLowerCase() != "sqlite");
-        log.info("[Debug] Set driver to " + driver);
-        //sets instance.
-        instance = this;
-        dataCache = new CacheData();
+        final String driver = getConfig().getString("Database.driver");
+        isMySql = !driver.equalsIgnoreCase("sqlite");
         
+        log.info("[ParamnesticCure.onEnable] Set driver to " + driver);
+        
+        database = new SqlManager(this.getConfig());
+
         try {
-        	this.connection = getCacheData().getDatabaseMap().get("paramnestic").getDatabase().getConnection();
+        	this.connection = database.getConnection();
         }
         catch(SQLException ex) 
         {
@@ -87,6 +107,8 @@ public class ParamnesticCure extends JavaPlugin {
         }
 
         createDB();
+        //sets instance.
+        instance = this;
     }
 
     @Override
@@ -103,14 +125,6 @@ public class ParamnesticCure extends JavaPlugin {
     public static ParamnesticCure getInstance() {
         return instance;
     }
-    /**
-     * Gets cached data
-     * @return Returns dataCache
-     */
-    public CacheData getCacheData() {
-        return this.dataCache;
-    }
-    
     
     /**
      * Creates all the databases for this plugin, also adds all the worlds to the worlds database (if not done already)
@@ -175,4 +189,5 @@ public class ParamnesticCure extends JavaPlugin {
     public Connection getConnection() {
     	return connection;
     }
+
 }
