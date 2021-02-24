@@ -81,6 +81,12 @@ Version 0.0.0
  - Complete and functional logic implementation.
  - Fixed alot of issues
  - Implements MySQL
+ - Added undo
+ - Added purge
+ - Added Restores
+ - Added Rollbacks
+ - Added console commands
+ - Added command interpretation
 #### [Version 0.3.0]
  - Implemented the plugin's logic.
 #### [Version 0.2.0]
