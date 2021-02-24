@@ -43,8 +43,9 @@ public abstract class LoggerManager {
 	protected List<Object> exclude_blocks;
 	protected List<Integer> action_list;
 	protected int radius;
-	protected Location radius_location;
+	protected Location location;
 	protected MessageManager msgManager;
+	protected boolean isCancelled = false;
 	private static ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
 	
 	
@@ -120,9 +121,9 @@ public abstract class LoggerManager {
 	/**
 	 * Interprets the argument, and assigns values to the proper blocks
 	 * @param arguments : The arguments of the command
-	 * @param radius_location : location where command was thrown
+	 * @param location : location where command was thrown
 	 */
-	protected void interpretArguments(String[] arguments, Location radius_location) {
+	protected void interpretArguments(String[] arguments, Location location) {
 		
 		
 		boolean checkForWeirdUserInput = false;
@@ -137,7 +138,7 @@ public abstract class LoggerManager {
     			continue;
     		if(excludeInterpreter(argument))
     			continue;
-    		if(radiusInterpreter(argument,radius_location))
+    		if(radiusInterpreter(argument,location))
     			continue;
     		if(blockInterpreter(argument))
     			continue;
@@ -145,7 +146,8 @@ public abstract class LoggerManager {
     			continue;
     		if(argument != ""){
     			if(checkForWeirdUserInput) {
-    	    		msgManager.sendMessage("Invalid argument ''" + argument+"''",true);
+    	    		msgManager.sendMessage("Invalid argument, redirecting to logger",true);
+    	    		isCancelled = true;
     				return;
     			}
     			
@@ -242,14 +244,16 @@ public abstract class LoggerManager {
 	 * @param radius_location the location where the command was issued, null => console
 	 * @return true if there was a match
 	 */
-	private boolean radiusInterpreter(String argument,Location radius_location) {
+	private boolean radiusInterpreter(String argument,Location location) {
 		List<String> radiusAlias = configSektion.getStringList("blockLoggerCommands.arguments.radius");
 		argument = checkAndTrimArgument(argument,radiusAlias);
     	if(argument != "") {
-    		if(radius_location == null)
+    		if(location == null) {
     			msgManager.sendMessage(" You can't use the radius argument from the console",true);
+    			isCancelled = true;
+    		}
     		this.radius = Integer.parseInt(argument); 
-    		this.radius_location = radius_location;
+    		this.location = location;
     		return true;
 		}
 		return false;
@@ -348,7 +352,7 @@ public abstract class LoggerManager {
 	/**
 	 * This function is shared between restores and rollbacks
 	 */
-	abstract void executeTask();
+	abstract boolean executeTask();
 	
 	
 }

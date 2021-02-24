@@ -45,7 +45,7 @@ public class CommandTracker implements Listener {
      * @param event Command being processed
      */
     @EventHandler
-    public void commandRollBack(PlayerCommandPreprocessEvent event) {
+    public void playerCommand(PlayerCommandPreprocessEvent event) {
     	String command = event.getMessage().toLowerCase();
     	
     	command = command.replaceAll(": ", ":");
@@ -66,13 +66,15 @@ public class CommandTracker implements Listener {
     	
     	if(createLoggerManager(commandListed, event.getPlayer().getLocation(),event.getPlayer()))
     		event.setCancelled(true);
+    	else
+    		ParamnesticCure.getInstance().getLogger().info("[CommandTracker.playerComand] intercept cancelled");
     }
     /**
      * Checks for commands that should be intercepted
      * @param event Command being processed
      */
     @EventHandler
-    public void serverCommandRollBack(ServerCommandEvent event) {
+    public void serverCommand(ServerCommandEvent event) {
         //if someone types that alias cancel it.
     	String command = event.getCommand().toLowerCase();
     	command = command.replaceAll(": ", ":");
@@ -90,6 +92,7 @@ public class CommandTracker implements Listener {
     
     /**
 	 * Interprets a part of the command to see if a rollback,restore,undo, or purge should be created
+	 * also does some relevant setup for those commands
 	 * @param command The arguments after the logger alias
 	 * @param location Location of the player (can be null)
 	 * @param playerOperator the player who initiated the command
@@ -107,7 +110,10 @@ public class CommandTracker implements Listener {
     		if(!PermissionManager.hasRollback(playerOperator)) return false;
     		
     		RollbackManager rollback = new RollbackManager( arguments , location , playerOperator);
-    		rollback.executeTask();
+    		if(!rollback.executeTask()) {
+    			ParamnesticCure.getInstance().getLogger().info("[CommandTracker.createLoggerManager] this function is going to return false");
+    			return false;
+    		}
     		storeCommand(operator,command);
     		return true;
     	}
@@ -118,7 +124,8 @@ public class CommandTracker implements Listener {
     		
     		
     		RestoreManager restore = new RestoreManager(  arguments, location , playerOperator );
-    		restore.executeTask();
+    		if(!restore.executeTask())
+    			return false;
     		storeCommand(operator,command);
     		return true;
     	}
@@ -126,7 +133,9 @@ public class CommandTracker implements Listener {
     	if(undoAlias.contains(command[1])) {
     		if(!(PermissionManager.hasRollback(playerOperator)&&PermissionManager.hasRestore(playerOperator))) return false;
     		//TODO make better undo's, that store location and takes time into consideration
+    		
     		String player = operator;
+    		
     		if(command.length == 3)
     			player = command[2];
     		else if(command.length > 3) {
@@ -193,8 +202,9 @@ public class CommandTracker implements Listener {
 			for(String argument:commandListed) command = command+" " + argument;
 			
 			Player playerPlayer = Bukkit.getServer().getPlayer(player);
-			
-	       	createLoggerManager(commandListed, location, playerPlayer);
+			//if the createLoggerManager does take the command as intercept
+			if(!createLoggerManager(commandListed, location, playerPlayer))
+				return false;
 	       	storeCommand(operator,commandListed);
 	       	return true;
 	    }

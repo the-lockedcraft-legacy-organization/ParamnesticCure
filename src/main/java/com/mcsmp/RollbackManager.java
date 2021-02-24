@@ -44,10 +44,12 @@ public class RollbackManager extends LoggerManager{
 	 * 
 	 * It then checks through all the returned values, and selects the oldest action on every location,
 	 * To then call the changeCreativeStatus function on that action
+	 * @return true if successful
      */
     @Override
-    public void executeTask() {
-        
+    public boolean executeTask() {
+    	if(isCancelled)
+			return false;
     	ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 
 			@Override
@@ -57,12 +59,14 @@ public class RollbackManager extends LoggerManager{
 				List<String[]> blockActionListMSG = new ArrayList<String[]>();
 				
 				blockActionListMSG = coreprotect.performRollback(
-						time,restrict_users, exclude_users, restrict_blocks, exclude_blocks,action_list, radius, radius_location
+						time,restrict_users, exclude_users, restrict_blocks, exclude_blocks,action_list, radius, location
 		    			);
 		    	
 		    	long endTime = System.nanoTime(); 
 		    	
 		    	msgManager.sendMessage( "Operationall time: " + String.valueOf( (endTime-startTime)*Math.pow(10, -9) ) , false);
+		    	
+		    	
 		    	
 		    	if(blockActionListMSG.size() == 0) {
 		    		msgManager.sendMessage("No actions were found",true);
@@ -104,5 +108,7 @@ public class RollbackManager extends LoggerManager{
 			}
     		
     	},60L);
+    	
+    	return true;
     }
 }

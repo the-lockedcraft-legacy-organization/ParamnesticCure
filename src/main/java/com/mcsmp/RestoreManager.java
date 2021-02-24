@@ -22,14 +22,14 @@ public class RestoreManager extends LoggerManager {
 	/**
      * Constructor for RestoreManager
      * @param arguments : The arguments of the command
-     * @param radius_location : location where command was thrown
+     * @param location : location where command was thrown
      */
-	public RestoreManager(String[] arguments, Location radius_location,Player player) {
+	public RestoreManager(String[] arguments, Location location,Player player) {
 		
 		this.msgManager = new MessageManager(player,"Restore");
 		this.coreprotect = ParamnesticCure.getInstance().getCoreProtect();
     	
-    	interpretArguments(arguments,radius_location);
+    	interpretArguments(arguments,location);
 	}
 	
 	/**
@@ -39,10 +39,12 @@ public class RestoreManager extends LoggerManager {
 	 * 
 	 * It then checks through all the returned values, and selects the most recent action on every location,
 	 * To then call the changeCreativeStatus function on that action
-	 * 
+	 * @return true if succesfull
 	 */
 	@Override
-	public void executeTask() {
+	public boolean executeTask() {
+		if(isCancelled)
+			return false;
 		ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 
 				@Override
@@ -50,7 +52,7 @@ public class RestoreManager extends LoggerManager {
 					long startTime = System.nanoTime();
 					
 					List<String[]> blockActionListMSG = coreprotect.performRestore(
-							time,restrict_users, exclude_users, restrict_blocks, exclude_blocks,action_list, radius, radius_location
+							time,restrict_users, exclude_users, restrict_blocks, exclude_blocks,action_list, radius, location
 			    			);
 			    	
 			    	long endTime = System.nanoTime();
@@ -96,10 +98,10 @@ public class RestoreManager extends LoggerManager {
 			    	msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block actions were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Blocks were set", false);
 			    	msgManager.sendMessage(creativeBlockCounter.toString() + " blocks were set to creative", false);
 				}
-			
-				
 				
 		},60L);
+		ParamnesticCure.getInstance().getLogger().info("[RestoreManager.executeTask] iscancelled = " + String.valueOf(isCancelled));
+		return true;
 	}
 
 }
