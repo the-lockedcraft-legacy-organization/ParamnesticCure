@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.mcsmp;
+package com.mcsmp.commands;
 
 
 
@@ -19,6 +19,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
+
+import com.mcsmp.MessageManager;
+import com.mcsmp.ParamnesticCure;
+import com.mcsmp.loggers.BlockTracker;
+import com.mcsmp.loggers.RestoreManager;
+import com.mcsmp.loggers.RollbackManager;
 
 /**
  * Tracks commands, and checks whether they should be intercepted
@@ -163,7 +169,7 @@ public class CommandTracker implements Listener {
     		
     		//don't look here, this is stupid
     		String[] temp = {command[2]};
-    		int time = (new RollbackManager(temp,null,null)).time;
+    		int time = (new RollbackManager(temp,null,null)).getTime();
     		BlockTracker.purgeDatabase(time);
     	}
     	List<String> helpAlias = configSektion.getStringList("blockLoggerCommands.help");

@@ -23,18 +23,18 @@ public class MessageManager {
 	
 	/**
 	 * 
-	 * @param player The player that should get the messages
+	 * @param target The player that should get the messages
 	 * @param ini_type What type of process that the message manager is for
 	 */
-	MessageManager(Player target,String ini_type){
+	public MessageManager(Player target,String ini_type){
 		this(target);
 		sendMessage("Intercepted a " + ini_type + " command",false) ;
 	}
 	/**
 	 * 
-	 * @param player The player that should get the messages
+	 * @param target The player that should get the messages
 	 */
-	MessageManager(Player target){
+	public MessageManager(Player target){
 		if(target != null)
 			this.target = target;
 		else

@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.mcsmp;
+package com.mcsmp.loggers;
 
 import static java.util.logging.Level.SEVERE;
 
@@ -21,6 +21,9 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+
+import com.mcsmp.MessageManager;
+import com.mcsmp.ParamnesticCure;
 
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import net.coreprotect.CoreProtectAPI;
@@ -409,5 +412,8 @@ public abstract class LoggerManager {
 	 */
 	abstract boolean executeTask();
 	
+	public int getTime() {
+		return time;
+	}
 	
 }

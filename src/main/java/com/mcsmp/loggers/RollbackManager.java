@@ -3,7 +3,7 @@
  *  License, v. 2.0. If a copy of the MPL was not distributed with this
  *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.mcsmp;
+package com.mcsmp.loggers;
 
 
 
@@ -13,6 +13,9 @@ import java.util.List;
 import net.coreprotect.CoreProtectAPI.ParseResult;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+
+import com.mcsmp.MessageManager;
+import com.mcsmp.ParamnesticCure;
 
 /**
  * Does a series of logical operations to minimise opportunities for rollblacks to mess with creative block data.

@@ -25,7 +25,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.mcsmp.commands.CommandTracker;
 import com.mcsmp.database.SqlManager;
+import com.mcsmp.loggers.BlockTracker;
 
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
