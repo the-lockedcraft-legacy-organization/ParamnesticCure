@@ -166,7 +166,7 @@ public abstract class LoggerManager {
 	
 	// ARGUMENT INTERPRETERS
 	/**
-	 * 
+	 * Checks if it's a time argument, if so assigns a time 
 	 * @param argument
 	 * @return true if there was a match
 	 */
@@ -217,7 +217,7 @@ public abstract class LoggerManager {
 	}
 	
 	/**
-	 * 
+	 * Checks if it's a user argument, if so assigns a list of all the users
 	 * @param argument
 	 * @return true if there was a match
 	 */
@@ -239,7 +239,7 @@ public abstract class LoggerManager {
 	}
 	
 	/**
-	 * 
+	 * Checks if it's a exclude blocks argument, if so assigns a list of all the blocks that should be excluded
 	 * @param argument
 	 * @return true if there was a match
 	 */
@@ -255,8 +255,7 @@ public abstract class LoggerManager {
 	}
 
 	/**
-	 * 
-	 * @param argument
+	 * Checks if it's a block argument, if so assigns a list of all the blocks that should be selected
 	 * @return true if there was a match
 	 */
 	private boolean blockInterpreter(String argument) {
@@ -303,7 +302,7 @@ public abstract class LoggerManager {
 	}
 	
 	/**
-	 * 
+	 *  Checks if it's a radius argument, if so assigns radius and location of command
 	 * @param argument
 	 * @param radius_location the location where the command was issued, null => console
 	 * @return true if there was a match
@@ -317,8 +316,13 @@ public abstract class LoggerManager {
     			isCancelled = true;
     		}
     		else {
-    		this.radius = Integer.parseInt(argument); 
-    		this.location = location;
+    			try {
+		    		this.radius = Integer.parseInt(argument); 
+		    		this.location = location;
+    			}catch(Exception e) {
+    				msgManager.sendMessage("Invalid radius", true);
+    				isCancelled = true;
+    			}
     		}
     		return true;
 		}
@@ -327,7 +331,7 @@ public abstract class LoggerManager {
 	
 	
 	/**
-	 * 
+	 *  Checks if its a action argument, translates the actions into integer and puts them into a list of actions
 	 * @param argument
 	 * @return true if there was a match
 	 */
@@ -338,11 +342,11 @@ public abstract class LoggerManager {
     		
     		this.action_list = new ArrayList<Integer>();
     		String[] argumentSplited = argument.split(",");
+    		
     		for(String actionArgument : argumentSplited) {
     			if(actionArgument.chars().allMatch(Character::isWhitespace))
     				break;
-    			for(Integer action : actionToInt(actionArgument))
-    				action_list.add(action);
+    			action_list.addAll(actionToInt(actionArgument));
     		}
     		if(isCancelled) {
     			if(isIntercept)
@@ -411,7 +415,9 @@ public abstract class LoggerManager {
 	 * This function is shared between restores and rollbacks
 	 */
 	abstract boolean executeTask();
-	
+	/**
+	 * @return the interpreted time
+	 */
 	public int getTime() {
 		return time;
 	}

@@ -90,8 +90,7 @@ public class ParamnesticCure extends JavaPlugin {
         } else {
             log.info("[Startup] Loaded Config");
             //Temporary Warning.
-            log.warning("[Dev] You have enabled an early development version of this plugin.");
-            log.warning("[Dev] It will probably be unstable");
+            log.warning("[Dev] You have enabled an development version of this plugin.");
         }
         
         //Creates new cache
