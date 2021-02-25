@@ -49,15 +49,13 @@ public class RestoreManager extends LoggerManager {
 
 				@Override
 				public void run() {
-					long startTime = System.nanoTime();
+					long startTime = System.currentTimeMillis();
 					
 					List<String[]> blockActionListMSG = coreprotect.performRestore(
 							time,restrict_users, exclude_users, restrict_blocks, exclude_blocks,action_list, radius, location
 			    			);
 			    	
-			    	long endTime = System.nanoTime();
 			    	
-			    	msgManager.sendMessage( "Operationall time: " + String.valueOf( (endTime-startTime)*Math.pow(10, -9) ) , false);
 			    	
 			    	
 			    	if(blockActionListMSG.size() == 0) {
@@ -94,6 +92,9 @@ public class RestoreManager extends LoggerManager {
 				    	changeCreativeStatus(x,y,z,worldname,isCreative);
 			    	}
 			    	
+			    	long endTime = System.currentTimeMillis();
+			    	
+			    	msgManager.sendMessage( "Operational time: " + String.valueOf( endTime-startTime ) + "ms" , false);
 			    	msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block actions were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Blocks were set", false);
 			    	msgManager.sendMessage(creativeBlockCounter.toString() + " blocks were set to creative", false);
 				}

@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
  */
 public class MessageManager {
 	private Player target;
-	private String prefix = ChatColor.DARK_GRAY + "[" +ChatColor.GRAY + "" + ChatColor.ITALIC + " Paramnestic " + ChatColor.RESET + "" + ChatColor.DARK_GRAY + "] ";
+	private String prefix = ChatColor.DARK_GRAY + "<" +ChatColor.GRAY + "" + ChatColor.ITALIC + " Paramnestic " + ChatColor.RESET + "" + ChatColor.DARK_GRAY + "> ";
 	private ChatColor errorColor = ChatColor.RED;
 	private ChatColor normalColor = ChatColor.WHITE;
 	
@@ -46,8 +46,12 @@ public class MessageManager {
 	 * @param isError
 	 */
 	public void sendMessage(String message, boolean isError) {
-		if(isConsole)
-			ParamnesticCure.getInstance().getLogger().info( message );
+		if(isConsole) {
+			if(isError)
+				ParamnesticCure.getInstance().getLogger().warning( message );
+			else
+				ParamnesticCure.getInstance().getLogger().info( message );
+		}
 		else {
 			message = ( isError ? errorColor : normalColor) + message;
 			if (!hasShownLogo) {

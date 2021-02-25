@@ -22,6 +22,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 /**
  * @author Frostalf
+ * @author Thorin
  */
 public class SqlManager {
 

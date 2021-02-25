@@ -108,7 +108,7 @@ public class BlockTracker implements Listener {
 	        
 	        for(String[] actionMsg : actiondataMsg) {
 	        	ParseResult action = coreprotect.parseResult(actionMsg);
-	        	plugin.getLogger().info("[TrackedBlocks.updateCreativeID] Actionid = " + action.getActionId());
+	        	plugin.getLogger().finer("[BlockTracker.updateCreativeID] Actionid = " + action.getActionId());
 	        	if (   action.getActionId() > 2   ) continue; //has to be block place/break action
 	        		
 	        	time = action.getTime();
@@ -147,7 +147,7 @@ public class BlockTracker implements Listener {
     		return;
     	}
         
-    	plugin.getLogger().info("[TrackedBlocks.updateCreativeID] storing a block as" + (isCreative? "creative":"survival"));
+    	plugin.getLogger().finer("[BlockTracker.updateCreativeID] storing a block as" + (isCreative? "creative":"survival"));
         try {
 	        Connection connection = ParamnesticCure.getInstance().getConnection();
 	      	PreparedStatement addToDatabase = connection.prepareStatement(
@@ -229,7 +229,7 @@ public class BlockTracker implements Listener {
  	    	addToDatabase.execute();
  	       	
  	       	
- 	       plugin.getLogger().info("[Purge] Purged the ParamnesticCure database");
+ 	       plugin.getLogger().info("[Purge] Succesfully purged the ParamnesticCure database");
         }catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
              
     }

@@ -40,6 +40,10 @@ public class CommandTracker implements Listener {
         //
         configSektion = plugin.getConfig().getConfigurationSection("");
     }
+    
+    
+    //EVENT HANDLERS
+    
     /**
      * Checks for commands that should be intercepted
      * @param event Command being processed
@@ -67,7 +71,7 @@ public class CommandTracker implements Listener {
     	if(createLoggerManager(commandListed, event.getPlayer().getLocation(),event.getPlayer()))
     		event.setCancelled(true);
     	else
-    		ParamnesticCure.getInstance().getLogger().info("[CommandTracker.playerComand] intercept cancelled");
+    		ParamnesticCure.getInstance().getLogger().fine("[CommandTracker.playerComand] intercept cancelled");
     }
     /**
      * Checks for commands that should be intercepted
@@ -88,7 +92,11 @@ public class CommandTracker implements Listener {
     	if(createLoggerManager(commandListed, null, null));
     		event.setCancelled(true);
     }
-    
+
+	
+	
+	//INTERNAL FUNCTIONS
+	
     
     /**
 	 * Interprets a part of the command to see if a rollback,restore,undo, or purge should be created
@@ -111,7 +119,7 @@ public class CommandTracker implements Listener {
     		
     		RollbackManager rollback = new RollbackManager( arguments , location , playerOperator);
     		if(!rollback.executeTask()) {
-    			ParamnesticCure.getInstance().getLogger().info("[CommandTracker.createLoggerManager] this function is going to return false");
+    			ParamnesticCure.getInstance().getLogger().finest("[CommandTracker.createLoggerManager] this function is going to return false");
     			return false;
     		}
     		storeCommand(operator,command);
@@ -176,7 +184,6 @@ public class CommandTracker implements Listener {
 		for(String argument:commandListed) command = command+" " + argument;
 		storedCommands.put(operator, commandListed);
 	}
-	
 	/**
 	 * This is the main logic done to convert a command to it's opposite, to then call the
 	 * createLoggerManager with the newly created command. 

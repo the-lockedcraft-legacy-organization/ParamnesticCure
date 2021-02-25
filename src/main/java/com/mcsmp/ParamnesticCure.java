@@ -51,7 +51,8 @@ public class ParamnesticCure extends JavaPlugin {
     	//sets so that any external methods that need to log messages wont get any errors
         instance = this;
     	
-    	
+
+    	//registers bstats metrics
         int pluginId = 10452;
         new Metrics(this, pluginId);
     	
@@ -95,7 +96,7 @@ public class ParamnesticCure extends JavaPlugin {
         final String driver = getConfig().getString("Database.driver");
         isMySql = !driver.equalsIgnoreCase("sqlite");
         
-        log.info("[ParamnesticCure.onEnable] Set driver to " + driver);
+        log.config("[Startup] Set driver to " + driver);
         
         database = new SqlManager(this.getConfig());
 

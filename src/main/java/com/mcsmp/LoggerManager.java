@@ -202,9 +202,8 @@ public abstract class LoggerManager {
 	    			//this is another way to specify seconds in Coreprotect
 	    			time += Double.parseDouble(part);
 	    		}catch(Exception e) {
-	    			msgManager.sendMessage("Incorrect timeargument, redirecting to blocklogger...", true);
+	    			msgManager.sendMessage("Invalid timeargument", true);
 	    			isCancelled = true;
-	    			isIntercept = false;
 	    			break;
 	    		}
     		}
@@ -266,8 +265,8 @@ public abstract class LoggerManager {
     			if(isIntercept)
     				msgManager.sendMessage("Missing action arguments", true);
     			else{
-    				msgManager.sendMessage("Unimplemented command detected",true);
-    				msgManager.sendMessage("Triggering command for logger...",false);
+    				msgManager.sendMessage("Entity selection has not yet been implemented",true);
+    				msgManager.sendMessage("Cancelling intercept...",false);
     			}
     			isCancelled = true;
     		}
@@ -344,10 +343,10 @@ public abstract class LoggerManager {
     		}
     		if(isCancelled) {
     			if(isIntercept)
-    				msgManager.sendMessage("Missing action arguments", true);
+    				msgManager.sendMessage("No action specified", true);
     			else {
-    				msgManager.sendMessage("Unimplemented command detected",true);
-    				msgManager.sendMessage("Triggering command for logger...",false);
+    				msgManager.sendMessage("Entity action selection not implemented yet",true);
+    				msgManager.sendMessage("Cancelling intercept...",false);
     			}
     		}
     		return true;

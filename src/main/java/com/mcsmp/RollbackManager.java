@@ -55,16 +55,14 @@ public class RollbackManager extends LoggerManager{
 			@Override
 			public void run() {
 				
-				long startTime = System.nanoTime(); //nano Seconds
+				long startTime = System.currentTimeMillis(); //nano Seconds
 				List<String[]> blockActionListMSG = new ArrayList<String[]>();
 				
 				blockActionListMSG = coreprotect.performRollback(
 						time,restrict_users, exclude_users, restrict_blocks, exclude_blocks,action_list, radius, location
 		    			);
 		    	
-		    	long endTime = System.nanoTime(); 
 		    	
-		    	msgManager.sendMessage( "Operationall time: " + String.valueOf( (endTime-startTime)*Math.pow(10, -9) ) , false);
 		    	
 		    	
 		    	
@@ -103,6 +101,9 @@ public class RollbackManager extends LoggerManager{
 			    	
 			    	changeCreativeStatus(x,y,z,worldname,isCreative);
 			    }
+			    long endTime = System.currentTimeMillis(); 
+		    	
+		    	msgManager.sendMessage( "Operational time: " + String.valueOf( endTime-startTime ) + "ms", false);
 			    msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block actions were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Blocks were set", false);
 			    msgManager.sendMessage(creativeBlockCounter.toString() + " blocks were set to creative", false);
 			}
