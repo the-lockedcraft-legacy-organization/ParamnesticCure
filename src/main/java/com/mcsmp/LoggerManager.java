@@ -45,7 +45,7 @@ public abstract class LoggerManager {
 	protected Location location;
 	protected MessageManager msgManager;
 	protected boolean isCancelled = false;
-	protected boolean isInterceptCanselled = false;
+	protected boolean isIntercept = true;
 	private static ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
 	
 	
@@ -131,7 +131,8 @@ public abstract class LoggerManager {
 		
     	for(String argument :arguments) {
 			argument.replace(" ", "");
-			
+			if(isCancelled)
+				break;
     		if(timeInterpreter(argument))
     			continue;
     		if(userInterpreter(argument))
@@ -148,6 +149,7 @@ public abstract class LoggerManager {
     			if(checkForWeirdUserInput) {
     	    		msgManager.sendMessage("Invalid argument, redirecting to logger",true);
     	    		isCancelled = true;
+    	    		isIntercept = false;
     				return;
     			}
     			
@@ -202,6 +204,7 @@ public abstract class LoggerManager {
 	    		}catch(Exception e) {
 	    			msgManager.sendMessage("Incorrect timeargument, redirecting to blocklogger...", true);
 	    			isCancelled = true;
+	    			isIntercept = false;
 	    			break;
 	    		}
     		}
@@ -259,8 +262,20 @@ public abstract class LoggerManager {
 		argument = checkAndTrimArgument(argument,blockAlias);
     	if(argument != "") {
     		restrict_blocks = blockStringListToBlockList(argument);
-    		if(restrict_blocks.size() > 0)
-    			return true;
+    		if(restrict_blocks.size() == 0) {
+    			if(isIntercept)
+    				msgManager.sendMessage("Missing action arguments", true);
+    			else{
+    				msgManager.sendMessage("Unimplemented command detected",true);
+    				msgManager.sendMessage("Triggering command for logger...",false);
+    			}
+    			isCancelled = true;
+    		}
+    		else if(!isIntercept){
+    			msgManager.sendMessage("Partially implemented command detected",true);
+    			msgManager.sendMessage("Triggering command for paramnestic and logger...",false);
+    		}
+    		return true;
     	}
 		return false;
 	}
@@ -272,15 +287,14 @@ public abstract class LoggerManager {
 	 */
 	private List<Object> blockStringListToBlockList(String argument){
 		List<Object> tempBlockList = new ArrayList<Object>();
+		if(argument.chars().allMatch(Character::isWhitespace))
+			return tempBlockList;
 		String[] argumentSplited = argument.split(",");
 		for(String part : argumentSplited) {  
 			try {
 				tempBlockList.add( Bukkit.createBlockData(part) );  
 			}catch(Exception e) {
-				msgManager.sendMessage("Paramnestic does not currently support non-block rollbacks/restores",false);
-				msgManager.sendMessage("To still allow those kind of rollbacks, the rollback will trigger twice",false);
-				msgManager.sendMessage("Creative status on entities will not be set!",true);
-				isInterceptCanselled = true;
+				isIntercept = false;
 			}
 		}
 		return tempBlockList;
@@ -297,7 +311,8 @@ public abstract class LoggerManager {
 		argument = checkAndTrimArgument(argument,radiusAlias);
     	if(argument != "") {
     		if(location == null) {
-    			msgManager.sendMessage(" You can't use the radius argument from console",true);
+    			msgManager.sendMessage("You can't use the radius argument from console",true);
+    			isCancelled = true;
     		}
     		else {
     		this.radius = Integer.parseInt(argument); 
@@ -322,8 +337,18 @@ public abstract class LoggerManager {
     		this.action_list = new ArrayList<Integer>();
     		String[] argumentSplited = argument.split(",");
     		for(String actionArgument : argumentSplited) {
+    			if(actionArgument.chars().allMatch(Character::isWhitespace))
+    				break;
     			for(Integer action : actionToInt(actionArgument))
     				action_list.add(action);
+    		}
+    		if(isCancelled) {
+    			if(isIntercept)
+    				msgManager.sendMessage("Missing action arguments", true);
+    			else {
+    				msgManager.sendMessage("Unimplemented command detected",true);
+    				msgManager.sendMessage("Triggering command for logger...",false);
+    			}
     		}
     		return true;
     	}
@@ -347,11 +372,12 @@ public abstract class LoggerManager {
 			if(!action.contains("+"))
 				output.add(0);//remove action
 		}
+		else if(action.chars().allMatch(Character::isWhitespace)) {
+			isCancelled = true;
+		}
 		else {
-			msgManager.sendMessage("Paramnestic does not currently support non-block rollbacks/restores",false);
-			msgManager.sendMessage("To still allow those kind of rollbacks, the rollback will trigger twice",false);
-			msgManager.sendMessage("Creative status on entities will not be set!",true);
-			isInterceptCanselled = true;
+			isIntercept = false;
+			isCancelled = true;
 		}
 		return output;
 	}

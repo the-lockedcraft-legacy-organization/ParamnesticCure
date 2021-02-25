@@ -44,12 +44,12 @@ public class RollbackManager extends LoggerManager{
 	 * 
 	 * It then checks through all the returned values, and selects the oldest action on every location,
 	 * To then call the changeCreativeStatus function on that action
-	 * @return true if successful
+	 * @return true if this should cancel the event
      */
     @Override
     public boolean executeTask() {
     	if(isCancelled)
-			return false;
+			return isIntercept;
     	ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 
 			@Override
@@ -109,6 +109,6 @@ public class RollbackManager extends LoggerManager{
     		
     	},60L);
     	
-    	return !isInterceptCanselled;
+    	return isIntercept;
     }
 }

@@ -39,12 +39,12 @@ public class RestoreManager extends LoggerManager {
 	 * 
 	 * It then checks through all the returned values, and selects the most recent action on every location,
 	 * To then call the changeCreativeStatus function on that action
-	 * @return true if succesfull
+	 * @return true if this should cancel the event
 	 */
 	@Override
 	public boolean executeTask() {
 		if(isCancelled)
-			return false;
+			return isIntercept;
 		ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 
 				@Override
@@ -90,7 +90,6 @@ public class RestoreManager extends LoggerManager {
 			    		if(blockAction.getActionId() == 0) //Any blockbreak action will result in a survival block (air block)
 			    			isCreative = false;
 			    		
-			    		msgManager.sendMessage("Looking at blockaction: " + blockAction.getActionString(), false);
 				    	creativeBlockCounter += isCreative? 1 : 0;
 				    	changeCreativeStatus(x,y,z,worldname,isCreative);
 			    	}
@@ -100,8 +99,8 @@ public class RestoreManager extends LoggerManager {
 				}
 				
 		},60L);
-		ParamnesticCure.getInstance().getLogger().info("[RestoreManager.executeTask] iscancelled = " + String.valueOf(isCancelled));
-		return !isInterceptCanselled;
+		
+		return isIntercept;
 	}
 
 }
