@@ -69,6 +69,8 @@ Version 0.0.0
         | |_ Feature Release (Adds a new feature)
         |_ Milestone Release (Adds a major feature from /ParamnesticCure/milestones )
 ```
+#### [Version 0.12.8]
+ - More formal and clear informational messages
 #### [Version 0.12.7]
  - Now cancells command intercept if the rollback/restore was for entities
  - Better error messages
