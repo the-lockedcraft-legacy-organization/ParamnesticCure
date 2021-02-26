@@ -53,7 +53,7 @@ public class RestoreManager extends LoggerManager {
 				@Override
 				public void run() {
 					long startTime = System.currentTimeMillis();
-					
+					//perform a restore and get a list of the actions specified
 					List<String[]> blockActionListMSG = coreprotect.performRestore(
 							time,restrict_users, exclude_users, restrict_blocks, exclude_blocks,action_list, radius, location
 			    			);
@@ -71,12 +71,14 @@ public class RestoreManager extends LoggerManager {
 			    	HashMap<String,Integer> blocks_to_be_changed = new HashMap<String,Integer>();
 			    	Integer creativeBlockCounter = 0;
 			    	
+			    	//Go through every action
 			    	for(String[] parseMSG : blockActionListMSG) {
 			    		ParseResult blockAction = coreprotect.parseResult(parseMSG);
 			    		
 			    		int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
 			    		int newestTime = blockAction.getTime(); String worldname = blockAction.worldName();
-				    	
+
+				    	//filter every action so that only the newest action on every location is specified
 				    	String compareKey = String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(z) + worldname;
 			    		if(blocks_to_be_changed.containsKey(compareKey))
 			    			if(blocks_to_be_changed.get(compareKey) > newestTime)

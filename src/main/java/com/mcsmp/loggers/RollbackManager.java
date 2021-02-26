@@ -60,7 +60,7 @@ public class RollbackManager extends LoggerManager{
 				
 				long startTime = System.currentTimeMillis(); //nano Seconds
 				List<String[]> blockActionListMSG = new ArrayList<String[]>();
-				
+				//perform a rollback and get a list of the actions specified
 				blockActionListMSG = coreprotect.performRollback(
 						time,restrict_users, exclude_users, restrict_blocks, exclude_blocks,action_list, radius, location
 		    			);
@@ -76,6 +76,8 @@ public class RollbackManager extends LoggerManager{
 		    	
 		    	HashMap<String,Integer> blocks_to_be_changed = new HashMap<String,Integer>();
 		    	Integer creativeBlockCounter = 0;
+		    	
+		    	//Go through every action
 			    for(int i = blockActionListMSG.size()-1; i >= 0; i--){//cycles through the list backwards (should be slightly less costly)
 			    	
 			    	ParseResult blockAction = coreprotect.parseResult(blockActionListMSG.get(i));
@@ -86,10 +88,8 @@ public class RollbackManager extends LoggerManager{
 			    	int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
 			    	
 			    	
-			    	
+			    	//filter every action so that only the oldest action on every location is specified
 			    	String compareKey = String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(z) + worldname;
-			    	
-			    	
 			    	if(blocks_to_be_changed.containsKey(compareKey))
 		    			if(blocks_to_be_changed.get(compareKey) < oldestTime)
 		    				continue;
