@@ -74,7 +74,7 @@ public class ParamnesticCure extends JavaPlugin {
         final byte givenVersion = valueOf(getConfig().getString("configVersion"));
         //Temporary variable indicating desired config version.
         //Should ideally be maven-based, but currently isn't due to a bug.
-        final byte currentVersion = 9;
+        final byte currentVersion = 10;
         File configVar = new File(getDataFolder(), "config.yml");
         //if outdated config, rename old config and install a new one.
 
@@ -99,7 +99,12 @@ public class ParamnesticCure extends JavaPlugin {
         
         log.config("[Startup] Set driver to " + driver);
         
-        database = new SqlManager(this.getConfig());
+        database = new SqlManager(
+        		getConfig().getString("Database.driver"),
+        		getConfig().getString("Database.address"),
+        		getConfig().getInt("Database.port"),
+        		getConfig().getString("Database.databasename")
+        		);
 
         try {
         	this.connection = database.getConnection();

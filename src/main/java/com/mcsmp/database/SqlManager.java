@@ -18,7 +18,6 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.configuration.file.FileConfiguration;
 
 /**
  * @author Frostalf
@@ -34,47 +33,23 @@ public class SqlManager {
     private final String database;
     private final String address;
     private final int port;
-    private final String user;
-    private final String password;
     private final String driver;
     private String url;
     private final boolean mysql;
-
-   /**
-    * Just converts the data in fileconfig so that the other constructor can accept the arguments
-    * @param fileConfig The fileconfig in paramnestic
-    */
-    public SqlManager(FileConfiguration fileConfig) {
-        this(
-        		fileConfig.getString("Database.databasename"),
-        		fileConfig.getString("Database.address"),
-        		fileConfig.getInt("Database.port"),
-        		fileConfig.getString("Database.user"),
-        		fileConfig.getString("Database.password"),
-        		fileConfig.getString("Database.driver")
-        		);
-    }
+    
     /**
      * Caches and checks the status of a certain database..
-     * @param database Name of the database being checked.
+     * @param driver Driver to use for this database communication.
      * @param address Address of the database being checked.
      * @param port Port on which to communicate with the database being checked.
-     * @param user User to use when communicating with the database.
-     * @param password Password to be used when communicating with the database as provided user.
-     * @param driver Driver to use for this database communication.
+     * @param database Name of the database being checked.
      */
-    public SqlManager(String database, String address, int port, String user, String password, String driver) {
+    public SqlManager(String driver, String address, int port, String database) {
+    	
         this.database = database;
-        this.address = address;
-        this.port = port;
-        if(user == null || user.chars().allMatch(Character::isWhitespace)) {
-            this.user = "default";
-        } else {
-            this.user = user;
-        }
-        this.password = password;
         this.driver = setDriver(driver).toString();
-
+        this.port = port;
+        this.address = address;
         if(getDriver() == DriverEnum.SQLITE) {
             try {
                 setupSQLITE();
@@ -105,7 +80,7 @@ public class SqlManager {
         if (mysql) {
             return connection = this.boneCP.getConnection();
         }
-        plugin.getLogger().log(Level.INFO, "{0} {1} {2}", new Object[]{this.url, this.user, this.database, this.connection.toString()});
+        plugin.getLogger().log(Level.INFO, "{0} {1} {2}", new Object[]{this.url, this.database, this.connection.toString()});
         return this.connection;
     }
 
@@ -126,11 +101,14 @@ public class SqlManager {
     }
 
     private void setupMySQL() throws SQLException {
-        final int MAXCONNECT = 20;
-        this.config = new HikariConfig();
-        this.config.setMaximumPoolSize(MAXCONNECT);
-        this.config.setUsername(this.user);
-        this.config.setPassword(this.password);
+    	//Creates a properties file if it doesn't exist
+    	if ( !new File(plugin.getDataFolder(), "hikari.properties").exists() ) {
+    		plugin.getDataFolder().mkdirs();
+    		plugin.saveResource("hikari.properties", true);
+    	}
+    	
+    	//creates a config based on the properties file
+        this.config = new HikariConfig(plugin.getDataFolder()+"/hikari.properties");
         
         
         config.setJdbcUrl("jdbc:"+ this.driver +"://" + this.address + ":" + this.port + "/" + this.database);

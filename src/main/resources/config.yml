@@ -71,9 +71,5 @@ Database:
   address: localhost
   # Port used by your db.
   port: 3306
-  # Username with which to connect to the db.
-  user: 'root'
-  # Password for that username.
-  password: 'pass'
   # The name for the database
   databasename: "paramnestic"
