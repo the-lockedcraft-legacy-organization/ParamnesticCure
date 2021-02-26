@@ -11,6 +11,8 @@ import com.mcsmp.ParamnesticCure;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import static org.bukkit.Bukkit.getPluginManager;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -103,8 +105,11 @@ public class SqlManager {
     private void setupMySQL() throws SQLException {
     	//Creates a properties file if it doesn't exist
     	if ( !new File(plugin.getDataFolder(), "hikari.properties").exists() ) {
+    		plugin.getLogger().warning("[Startup] hikari.properties file is missing.");
+    		plugin.getLogger().info("Providing you with a new properties file");
     		plugin.getDataFolder().mkdirs();
     		plugin.saveResource("hikari.properties", true);
+    		getPluginManager().disablePlugin(plugin);
     	}
     	
     	//creates a config based on the properties file

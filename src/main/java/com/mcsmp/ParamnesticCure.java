@@ -199,5 +199,4 @@ public class ParamnesticCure extends JavaPlugin {
     public Connection getConnection() {
     	return connection;
     }
-
 }
