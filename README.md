@@ -69,6 +69,10 @@ Version 0.0.0
         | |_ Feature Release (Adds a new feature)
         |_ Milestone Release (Adds a major feature from /ParamnesticCure/milestones )
 ```
+#### [Version 0.12.10]
+ - Uses hikari.properties file as config
+ - Added the wait_time setting
+ - Removed unnecessary blocktrackig
 #### [Version 0.12.8]
  - More formal and clear informational messages
 #### [Version 0.12.7]
