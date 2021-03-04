@@ -107,10 +107,6 @@ public abstract class LoggerManager {
     	}
     	Block block = world.getBlockAt(x, y, z);
     	
-    	//to prevent issues on restores as some actions would not have been tracked otherways
-    	if(RestrictedCreativeAPI.isCreative(block)) {
-    		BlockTracker.updateCreativeID(block, true);
-    	}
     	
 		if(DBCreativeStatus) {
 			RestrictedCreativeAPI.add(block);

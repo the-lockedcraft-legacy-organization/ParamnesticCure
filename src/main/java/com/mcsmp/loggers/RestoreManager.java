@@ -78,7 +78,7 @@ public class RestoreManager extends LoggerManager {
 			    		int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
 			    		int newestTime = blockAction.getTime(); String worldname = blockAction.worldName();
 
-				    	//filter every action so that only the newest action on every location is specified
+				    	//filter every action so that only the newest action on every location is selected
 				    	String compareKey = String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(z) + worldname;
 			    		if(blocks_to_be_changed.containsKey(compareKey))
 			    			if(blocks_to_be_changed.get(compareKey) > newestTime)

@@ -88,7 +88,7 @@ public class RollbackManager extends LoggerManager{
 			    	int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
 			    	
 			    	
-			    	//filter every action so that only the oldest action on every location is specified
+			    	//filter every action so that only the oldest action on every location is selected
 			    	String compareKey = String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(z) + worldname;
 			    	if(blocks_to_be_changed.containsKey(compareKey))
 		    			if(blocks_to_be_changed.get(compareKey) < oldestTime)

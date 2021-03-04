@@ -7,7 +7,6 @@ package com.mcsmp.loggers;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import static java.util.logging.Level.SEVERE;
@@ -38,9 +37,8 @@ public class BlockTracker implements Listener {
     private static ParamnesticCure plugin = ParamnesticCure.getInstance();
     private static CoreProtectAPI coreprotect = plugin.getCoreProtect();
     
-    public static long waitPeriod = 50L;
+    public static long waitPeriod = plugin.getConfig().getLong("Plugin_settings.wait_time");
     /**
-     * Only tracking block break events, as those are the only necessary event that needs to get tracked; All critical actions are blockbreak events (except on rollback rollback)
      * @param event BlockBreakEvent
      */
     @EventHandler
@@ -48,8 +46,7 @@ public class BlockTracker implements Listener {
     	generalBlockEventTrigger(event.getBlock(),true);
     }
     /**
-     * Currently not in use. It would be unnecessary to track blockplace event's as blocks can be creative even though no blockplace event occured (for example a piston moving a creative block)
-     * @param event BlockPlaceEvent
+     *  @param event BlockPlaceEvent
      */
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
@@ -63,6 +60,7 @@ public class BlockTracker implements Listener {
     private void generalBlockEventTrigger(Block block, boolean isBlockBreak) {
     	
 		final BlockState blockState = block.getState();
+		
 		//due to async thread limitations i have to define a variable like this
 		final boolean extIsCreative = RestrictedCreativeAPI.isCreative(block);
 		
@@ -95,7 +93,7 @@ public class BlockTracker implements Listener {
 	    			BlockTracker.updateCreativeID(loc.getBlock(),isCreative);
 	    		}
 			}
-    	},BlockTracker.waitPeriod);
+    	},waitPeriod);
     }
     /**
      * Checks through the coreprotect database for the most recent block place / remove action. It then calls a function that stores it (if the block fulfils the right criteria)
@@ -130,27 +128,18 @@ public class BlockTracker implements Listener {
      */
     public static void updateCreativeID(int time, Block block, boolean isCreative) 
     {
-    	
-    	/*
-    	 * Avoids duplicate entries, but also irrelevant blocks
-    	 */
-    	int IsInDB = isInDatabase(block,time);
-    	
-    	
-    	if(   !isCreative && ( IsInDB == 0)  || IsInDB == 2 ) return;
-    	
-    	
     	if(time == 0) { 
     		//this should never trigger, but exists as a safety precaution
     		//ParamnesticCure relies on the loggers for block information, as it takes time for these to process, the thread will have to wait
-    		plugin.getLogger().warning("A action didn't get tracked properly. Please contact plugin author");
+    		plugin.getLogger().warning("An action did not get tracked properly, please increase the wait time in Plugin_settings");
+    		plugin.getLogger().info("The wait time will temporarily be doubled, to avoid any further issues in this session");
 			try {Thread.sleep(waitPeriod);}catch(InterruptedException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
 			waitPeriod *= 2;
 			updateCreativeID(block,isCreative);
     		return;
     	}
         
-    	plugin.getLogger().finer("[BlockTracker.updateCreativeID] storing a block as" + (isCreative? "creative":"survival"));
+    	plugin.getLogger().finer("[BlockTracker.updateCreativeID] storing a action as" + (isCreative? "creative":"survival"));
         try {
 	        Connection connection = ParamnesticCure.getInstance().getConnection();
 	      	PreparedStatement addToDatabase = connection.prepareStatement(
@@ -169,48 +158,10 @@ public class BlockTracker implements Listener {
 	       	addToDatabase.execute();
 	       	
 	       	
-	       	//plugin.getLogger().info("[Manual Debug] Added the block action into the database as " + (isCreative ? "creative" : "survival") );
-        }catch(SQLException ex) {}
+        }catch(SQLException ex) {
+	       	plugin.getLogger().finer("[BlockTracker.updateCreativeID] Action has already been stored" );
+	       	}
             
-    }
-    /**
-     * 
-     * @param block
-     * @param time the time of an action
-     * 
-     * @return Is this block in the database?
-     *  0 => No.   
-     *  1 => yes, but not this action.   
-     *  2 => yes, this action is already stored.
-     */
-    public static int isInDatabase(Block block, int time) {
-
-    	try {
-	    	Connection connection = ParamnesticCure.getInstance().getConnection();
-	        PreparedStatement getCreativeStatus = connection.prepareStatement(
-	        		"SELECT time FROM blockAction INNER JOIN worlds"
-	                + " ON blockAction.world = worlds.world_id"
-	        		+ " WHERE worlds.world = ? AND x = ? AND y = ? AND z = ?"
-	        		);
-	        getCreativeStatus.setString(  1, block.getWorld().getName() );
-	        getCreativeStatus.setInt(  2, block.getX()  );
-	        getCreativeStatus.setInt(  3, block.getY()  );
-	        getCreativeStatus.setInt(  4, block.getZ()  );
-	        
-	        ResultSet set = getCreativeStatus.executeQuery();
-	        
-	        
-	        if(set.next()) {
-		        do{
-		        	if( set.getInt(1) == time ) // An action at the same timeperiod exist
-		        		return 2;
-	        	}while ( set.next() );
-		        
-		        return 1; // No replica action was found
-	        }
-    	}
-    	catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
-    	return 0;
     }
     
     /**

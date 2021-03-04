@@ -70,18 +70,18 @@ public class ParamnesticCure extends JavaPlugin {
         
         
         log = getLogger();
-        
         final byte givenVersion = valueOf(getConfig().getString("configVersion"));
         //Temporary variable indicating desired config version.
         //Should ideally be maven-based, but currently isn't due to a bug.
-        final byte currentVersion = 10;
+        final byte currentVersion = 11;
         File configVar = new File(getDataFolder(), "config.yml");
         //if outdated config, rename old config and install a new one.
 
         // Manages plugins config.
         if (givenVersion != currentVersion) {
             if (configVar.exists()){
-                configVar.renameTo(new File(getDataFolder(), "config.old"));
+            	new File(getDataFolder(),"config.old").deleteOnExit();
+            	configVar.renameTo(new File(getDataFolder(), "config.old"));
             }
             this.saveDefaultConfig();
             log.warning("[Startup] Invalid config! This is either your first time running PC, or, the config has updated since you last used it.");
@@ -92,7 +92,7 @@ public class ParamnesticCure extends JavaPlugin {
             //Temporary Warning.
             log.warning("[Dev] You have enabled an development version of this plugin.");
         }
-        
+
         //Creates new cache
         final String driver = getConfig().getString("Database.driver");
         isMySql = !driver.equalsIgnoreCase("sqlite");
@@ -126,6 +126,7 @@ public class ParamnesticCure extends JavaPlugin {
 	    	try {
 	        connection.close();
 	    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+    	
     }
 
     /**
