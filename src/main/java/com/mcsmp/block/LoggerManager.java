@@ -140,8 +140,8 @@ public abstract class LoggerManager {
     	if(argument != "") {
     		long time = 0;//s
     		
-    		
-    		
+    		//might as well, right?
+    		argument.replaceAll("seconds|second|sec", "s").replaceAll("minute|min","m").replaceAll("hours|hour", "h").replaceAll("days|day", "d").replaceAll("weeks|week", "w");
     		String[] splitedArgument = argument.split("(?<=[w*d*h*m*s])");
     		//convert to seconds
     		for(String part : splitedArgument) {
