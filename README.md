@@ -69,6 +69,11 @@ Version 0.0.0
         | |_ Feature Release (Adds a new feature)
         |_ Milestone Release (Adds a major feature from /ParamnesticCure/milestones )
 ```
+#### [Version 1.0.0]
+ - Fixed a stupid sql structure
+ - Made the logic for rollbacks / restores more rigid
+ - Somewhat better language interpretation
+ - Added debug option
 #### [Version 0.12.10]
  - Uses hikari.properties file as config
  - Added the wait_time setting
