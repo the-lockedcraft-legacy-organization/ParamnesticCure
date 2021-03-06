@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.mcsmp.loggers;
+package com.mcsmp.block;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -76,6 +76,8 @@ public class BlockTracker implements Listener {
 				if(!isBlockBreak)
 					isCreative = RestrictedCreativeAPI.isCreative(block);
 				
+				
+				if(!isCreative) return;
 	    		BlockTracker.updateCreativeID(block,isCreative);
 	    		
 	    		
@@ -116,9 +118,7 @@ public class BlockTracker implements Listener {
 	        	
 	        	break;//The returned data from parseResult seems to be ordered highest time to lowest, this should therefore return the most recent block action
 	        }
-	        
-	    	updateCreativeID(time,block,isCreative);
-			
+	        updateCreativeID(time,block,isCreative);
     }
     /**
      * Stores the specified action if it was creative, or if there already has been a creative action already on it's location
@@ -139,27 +139,27 @@ public class BlockTracker implements Listener {
     		return;
     	}
         
-    	plugin.getLogger().finer("[BlockTracker.updateCreativeID] storing a action as" + (isCreative? "creative":"survival"));
+    	ParamnesticCure.debug("BlockTracker.updateCreativeID"," storing a action at " + block.getWorld().getName() + "," + block.getX() +" "+ block.getY() +" "+ block.getZ() + " time = " + time +  (isCreative? "creative":"survival"));
         try {
 	        Connection connection = ParamnesticCure.getInstance().getConnection();
-	      	PreparedStatement addToDatabase = connection.prepareStatement(
+	      	PreparedStatement statement = connection.prepareStatement(
 	       			"INSERT INTO blockAction (time,world,x,y,z,is_creative)"
 	       			+ " VALUES (?,?,?,?,?,?);"
 	       			);
 	            	
-	       	addToDatabase.setInt( 1, time);
-	       	addToDatabase.setInt( 2, WorldTracker.getWorldId( block.getWorld().getName() ));
-	       	addToDatabase.setInt( 3, block.getX());
-	       	addToDatabase.setInt( 4, block.getY());
-	       	addToDatabase.setInt( 5, block.getZ());
-	       	addToDatabase.setInt( 6,  isCreative ? 1 : 0  );
+	      	statement.setInt( 1, time);
+	      	statement.setInt( 2, WorldTracker.getWorldId( block.getWorld().getName()) );
+	      	statement.setInt( 3, block.getX());
+	      	statement.setInt( 4, block.getY());
+	      	statement.setInt( 5, block.getZ());
+	      	statement.setInt( 6,  isCreative ? 1 : 0  );
 
 	       	
-	       	addToDatabase.execute();
-	       	
-	       	
+	      	statement.execute();
+	      	statement.close();
+	       	connection.close();
         }catch(SQLException ex) {
-	       	plugin.getLogger().finer("[BlockTracker.updateCreativeID] Action has already been stored" );
+	       	ParamnesticCure.debug("BlockTracker.updateCreativeID"," Action has already been stored" );
 	       	}
             
     }
@@ -173,15 +173,16 @@ public class BlockTracker implements Listener {
     	int oldestDataPoint = Math.round(System.currentTimeMillis()/1000) - time;//seconds
     	try {
     		Connection connection = ParamnesticCure.getInstance().getConnection();
- 	    	PreparedStatement addToDatabase = connection.prepareStatement(
+ 	    	PreparedStatement statement = connection.prepareStatement(
  	      			"DELETE FROM blockAction"
  	      			+ " WHERE time < ?"
  	      			);
  	            	
- 	    	addToDatabase.setInt( 1, oldestDataPoint);
+ 	    	statement.setInt( 1, oldestDataPoint);
  	       	
- 	    	addToDatabase.execute();
- 	       	
+ 	    	statement.execute();
+ 	    	statement.close();
+ 	       	connection.close();
  	       	
  	       plugin.getLogger().info("[Purge] Succesfully purged the ParamnesticCure database");
         }catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}

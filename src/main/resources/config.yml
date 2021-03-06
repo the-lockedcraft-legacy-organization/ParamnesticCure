@@ -79,3 +79,5 @@ Plugin_settings:
    # The time between the ocurence of the action and when it's going to be logged
    # Keep it high if you dont want any issues to arise
    wait_time: 100
+   # For development
+   debug: false

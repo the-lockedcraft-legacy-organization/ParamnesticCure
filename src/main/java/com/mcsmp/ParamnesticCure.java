@@ -6,6 +6,8 @@
 package com.mcsmp;
 
 import java.io.File;
+import java.io.IOException;
+
 import static java.lang.Byte.valueOf;
 import static java.util.logging.Level.SEVERE;
 
@@ -25,9 +27,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.mcsmp.block.BlockTracker;
 import com.mcsmp.commands.CommandTracker;
 import com.mcsmp.database.SqlManager;
-import com.mcsmp.loggers.BlockTracker;
 
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
@@ -42,9 +44,9 @@ import net.coreprotect.CoreProtectAPI;
 public class ParamnesticCure extends JavaPlugin {
 
     private static ParamnesticCure instance;
+    private static boolean isDebug;
     private Logger log = Bukkit.getLogger();
     private SqlManager database;
-    private Connection connection;
     private boolean isMySql;
 
     
@@ -73,14 +75,14 @@ public class ParamnesticCure extends JavaPlugin {
         final byte givenVersion = valueOf(getConfig().getString("configVersion"));
         //Temporary variable indicating desired config version.
         //Should ideally be maven-based, but currently isn't due to a bug.
-        final byte currentVersion = 11;
+        final byte currentVersion = 12;
         File configVar = new File(getDataFolder(), "config.yml");
         //if outdated config, rename old config and install a new one.
 
         // Manages plugins config.
         if (givenVersion != currentVersion) {
             if (configVar.exists()){
-            	new File(getDataFolder(),"config.old").deleteOnExit();
+            	new File(getDataFolder(),"config.old").delete();
             	configVar.renameTo(new File(getDataFolder(), "config.old"));
             }
             this.saveDefaultConfig();
@@ -106,26 +108,14 @@ public class ParamnesticCure extends JavaPlugin {
         		getConfig().getString("Database.databasename")
         		);
 
-        try {
-        	this.connection = database.getConnection();
-        }
-        catch(SQLException ex) 
-        {
-        	ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());
-            getPluginManager().disablePlugin(this);
-        }
-
         createDB();
+        isDebug =  getConfig().getBoolean("Plugin_settings.debug");
         //sets instance.
         instance = this;
     }
 
     @Override
     public void onDisable() {
-    	if(connection != null)
-	    	try {
-	        connection.close();
-	    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     	
     }
 
@@ -150,7 +140,9 @@ public class ParamnesticCure extends JavaPlugin {
     				+ " ,UNIQUE(time,world,x,y,z));"
     				);
     		statement.execute();
-    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+    		statement.close();
+    		connection.close();
+    	}catch(SQLException ex) {getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     	
     	try {
     		Connection connection = getConnection();
@@ -160,9 +152,11 @@ public class ParamnesticCure extends JavaPlugin {
     				+ ", world VARCHAR(255), UNIQUE(world) );"
     				);
     		statement.execute();
-    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+    		statement.close();
+    		connection.close();
+    	}catch(SQLException ex) {getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
     	
-    	List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
+    	List<World> worldlist = getServer().getWorlds();
     	
     	for(World world : worldlist) {
     		WorldTracker.addWorldToDB(world);
@@ -198,6 +192,17 @@ public class ParamnesticCure extends JavaPlugin {
      * @return Return's this plugin's shared connection
      */
     public Connection getConnection() {
+    	Connection connection = null;
+    	try {
+    		connection = database.getConnection();
+    	}catch(SQLException ex) {getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
+    	
     	return connection;
+    }
+    static public void debug(String location, String message) {
+    	if(isDebug)
+    		instance.getLogger().info(location+"::"+message);
+    	else
+    		instance.getLogger().fine(location+"::"+message);
     }
 }

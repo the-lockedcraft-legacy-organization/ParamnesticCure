@@ -3,14 +3,17 @@
  *  License, v. 2.0. If a copy of the MPL was not distributed with this
  *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.mcsmp.loggers;
+package com.mcsmp.block;
 
 
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import net.coreprotect.CoreProtectAPI.ParseResult;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -53,7 +56,7 @@ public class RollbackManager extends LoggerManager{
     public boolean executeTask() {
     	if(isCancelled)
 			return isIntercept;
-    	ParamnesticCure.getInstance().getServer().getScheduler().runTaskLaterAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
+    	ParamnesticCure.getInstance().getServer().getScheduler().runTaskAsynchronously(ParamnesticCure.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
@@ -74,36 +77,31 @@ public class RollbackManager extends LoggerManager{
 		    		return;
 		    	}
 		    	
-		    	HashMap<String,Integer> blocks_to_be_changed = new HashMap<String,Integer>();
-		    	Integer creativeBlockCounter = 0;
+		    	HashMap<ParamnesticLocation,Integer> blocks_to_be_changed = new HashMap<ParamnesticLocation,Integer>();
+		    	
 		    	
 		    	//Go through every action
 			    for(int i = blockActionListMSG.size()-1; i >= 0; i--){//cycles through the list backwards (should be slightly less costly)
 			    	
 			    	ParseResult blockAction = coreprotect.parseResult(blockActionListMSG.get(i));
 			    	
-			    	String worldname = blockAction.worldName();
-			    	
 			    	int oldestTime = blockAction.getTime();
-			    	int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
 			    	
 			    	
-			    	//filter every action so that only the oldest action on every location is selected
-			    	String compareKey = String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(z) + worldname;
+			    	
+			    	//Block can only be creative if blockAction.getActionId == 0 (block break)
+			    	ParamnesticLocation compareKey = new ParamnesticLocation( blockAction.worldName() , blockAction.getX() , blockAction.getY() ,blockAction.getZ() , blockAction.getActionId() == 0);
+			    	//Only the oldest action on every location should be selected
 			    	if(blocks_to_be_changed.containsKey(compareKey))
 		    			if(blocks_to_be_changed.get(compareKey) < oldestTime)
 		    				continue;
-
-		    		blocks_to_be_changed.put( compareKey , oldestTime );
 			    	
-			    	boolean isCreative = fetchDBIsCreative(oldestTime,worldname,x,y,z);
-			    	
-			    	if (blockAction.getActionId() == 1)
-			    		isCreative = false; //When a creative block place action is rollbacked, it will get removed. An airblock must have been before this action, which is survival
-			    	creativeBlockCounter += isCreative ? 1 : 0;
-			    	
-			    	changeCreativeStatus(x,y,z,worldname,isCreative);
+			    	blocks_to_be_changed.put( compareKey , oldestTime );
 			    }
+			    
+			    
+			    Integer creativeBlockCounter = changeCreativeStatus(blocks_to_be_changed);
+			    
 			    long endTime = System.currentTimeMillis(); 
 		    	
 		    	msgManager.sendMessage( "Operational time: " + String.valueOf( endTime-startTime ) + "ms", false);
@@ -111,7 +109,7 @@ public class RollbackManager extends LoggerManager{
 			    msgManager.sendMessage(creativeBlockCounter.toString() + " blocks were set to creative", false);
 			}
     		
-    	},60L);
+    	});
     	
     	return isIntercept;
     }

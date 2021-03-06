@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.mcsmp.loggers;
+package com.mcsmp.block;
 
 
 import java.util.HashMap;
@@ -68,34 +68,24 @@ public class RestoreManager extends LoggerManager {
 			    	
 			    	
 			    	
-			    	HashMap<String,Integer> blocks_to_be_changed = new HashMap<String,Integer>();
-			    	Integer creativeBlockCounter = 0;
+			    	HashMap<ParamnesticLocation,Integer> blocks_to_be_changed = new HashMap<ParamnesticLocation,Integer>();
 			    	
 			    	//Go through every action
 			    	for(String[] parseMSG : blockActionListMSG) {
 			    		ParseResult blockAction = coreprotect.parseResult(parseMSG);
+			    		int newestTime = blockAction.getTime();
 			    		
-			    		int x = blockAction.getX(); 	int y = blockAction.getY(); 	int z = blockAction.getZ();
-			    		int newestTime = blockAction.getTime(); String worldname = blockAction.worldName();
-
-				    	//filter every action so that only the newest action on every location is selected
-				    	String compareKey = String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(z) + worldname;
-			    		if(blocks_to_be_changed.containsKey(compareKey))
+			    		//Block can only be creative if blockAction.getActionId == 1 (block place)
+				    	ParamnesticLocation compareKey = new ParamnesticLocation( blockAction.worldName() , blockAction.getX() , blockAction.getY() ,blockAction.getZ() , blockAction.getActionId() == 1);
+				    	//Only the most recent action on every location should be selected
+				    	if(blocks_to_be_changed.containsKey(compareKey))
 			    			if(blocks_to_be_changed.get(compareKey) > newestTime)
 			    				continue;
-			    		
-			    		
-			    		
-			    		blocks_to_be_changed.put( compareKey , newestTime );
-			    		
-			    		boolean isCreative = fetchDBIsCreative(newestTime,worldname,x,y,z);
-			    		
-			    		if(blockAction.getActionId() == 0) //Any blockbreak action will result in a survival block (air block)
-			    			isCreative = false;
-			    		
-				    	creativeBlockCounter += isCreative? 1 : 0;
-				    	changeCreativeStatus(x,y,z,worldname,isCreative);
+				    	
+				    	blocks_to_be_changed.put( compareKey , newestTime );
 			    	}
+			    	
+			    	Integer creativeBlockCounter = changeCreativeStatus(blocks_to_be_changed);
 			    	
 			    	long endTime = System.currentTimeMillis();
 			    	

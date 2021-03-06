@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.mcsmp.loggers;
+package com.mcsmp.block;
 
 import static java.util.logging.Level.SEVERE;
 
@@ -12,20 +12,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.mcsmp.MessageManager;
 import com.mcsmp.ParamnesticCure;
 
-import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import net.coreprotect.CoreProtectAPI;
 
 
@@ -52,71 +50,41 @@ public abstract class LoggerManager {
 	private static ConfigurationSection configSektion = ParamnesticCure.getInstance().getConfig().getConfigurationSection("");
 	
 	
-	
-	
 	/**
-     * Checks the database if this action has been stored as creative
-     * @param time The time of action
-     * @param worldName
-     * @param x
-     * @param y
-     * @param z
-     * @return true if a creative action at this time and location was stored in the database
-     */
-    protected boolean fetchDBIsCreative(int time, String worldName, int x, int y, int z) {
-    	try {
-    	Connection connection = ParamnesticCure.getInstance().getConnection();
-        PreparedStatement getCreativeStatus = connection.prepareStatement(
-        		"SELECT is_creative FROM blockAction INNER JOIN worlds"
-        		+ " ON blockAction.world = worlds.world_id"
-        		+ " WHERE time = ? AND worlds.world = ? AND x = ? AND y = ? AND z = ?"
-        		+ " ORDER BY time DESC"
-        		);
-        getCreativeStatus.setInt(1, time);
-        getCreativeStatus.setString(2, worldName );
-        getCreativeStatus.setInt(3, x);
-        getCreativeStatus.setInt(4, y);
-        getCreativeStatus.setInt(5, z);
-        
-        ResultSet set = getCreativeStatus.executeQuery();
-        if(set.next()) return (set.getInt(1) == 1); // is_creative = 1 -> action was creative
-    	}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
-    	
-    	return false;
-    }
-	
-	/**
-	 * Takes an action as input, then calls a function which adds the block into the
-	 *  database (an important function if you want restores to work properly).
-	 * 
-	 * It also updates the creative status on the location
-	 * 
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param worldname
-	 * @param DBCreativeStatus true if this location should be set to creative
+	 * This function checks if any of the actions has been stored as creative and updates the creative status on that location
+	 * @param actions
 	 */
-	protected void changeCreativeStatus(Integer x, Integer y, Integer z, String worldname, boolean DBCreativeStatus) {
-		
-		
-		List<World> worldlist = ParamnesticCure.getInstance().getServer().getWorlds();
-    	World world = null;
-    	for (World worldTest : worldlist) {
-    		if(worldTest.getName().equals(worldname)) { world = worldTest; break; }
-    	}
-    	Block block = world.getBlockAt(x, y, z);
-    	
-    	
-		if(DBCreativeStatus) {
-			RestrictedCreativeAPI.add(block);
-			
+	protected int changeCreativeStatus(HashMap<ParamnesticLocation,Integer> actions){
+		int creativeBlockCounter = 0;
+		for(ParamnesticLocation actionKey: actions.keySet()) {
+			try {
+				Connection connection = ParamnesticCure.getInstance().getConnection();
+				PreparedStatement statement = connection.prepareStatement(
+		        		"SELECT is_creative FROM blockAction INNER JOIN worlds"
+		        		+ " ON blockAction.world = worlds.world_id"
+		        		+ " WHERE time = ? AND worlds.world = ? AND x = ? AND y = ? AND z = ?"
+		        		+ " ORDER BY time DESC"
+		        		);
+				statement.setInt(1, actions.get(actionKey));
+		        statement.setString(2,  actionKey.getWorld().getName());
+		        statement.setInt(3, actionKey.getBlockX());
+		        statement.setInt(4, actionKey.getBlockY());
+		        statement.setInt(5, actionKey.getBlockZ());
+		        
+		        ResultSet set = statement.executeQuery();
+		        boolean isCreative = false;
+		        if(set.next()) 
+		        	if(set.getInt(1) == 1)   // is_creative == 1 -> action was creative
+		        		isCreative = true;
+		        
+		        ParamnesticCure.debug("LoggerManager.ChangeCreativeStatus", "Selected location " +  actionKey.getWorld().getName() + "," + actionKey.getBlockX() + "," + actionKey.getBlockY() + "," + actionKey.getBlockZ() + ",time=" + actions.get(actionKey));
+		        creativeBlockCounter += actionKey.setCreativeStatus(isCreative);
+        		statement.close();
+		        connection.close();
+			}catch(SQLException ex) {ParamnesticCure.getInstance().getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
 		}
-		else {
-			RestrictedCreativeAPI.remove(block);
-		}
-	} 
-
+		return creativeBlockCounter;
+	}
 	/**
 	 * Interprets the argument, and assigns values to the proper blocks
 	 * @param arguments : The arguments of the command

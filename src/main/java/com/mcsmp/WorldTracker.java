@@ -42,6 +42,8 @@ public class WorldTracker implements Listener {
     				);
     		statement.setString(1, world.getName());
     		statement.execute();
+    		statement.close();
+    		connection.close();
 		}catch(SQLException ex) {}
 	}
 	/**
@@ -61,7 +63,8 @@ public class WorldTracker implements Listener {
     		ResultSet set = statement.executeQuery();
     		if(set.next())
     			output = set.getInt(1);
-    		
+    		statement.close();
+    		connection.close();
 		}catch(SQLException ex) {}
 		return output;
 	}

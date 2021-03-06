@@ -22,9 +22,9 @@ import org.bukkit.event.server.ServerCommandEvent;
 
 import com.mcsmp.MessageManager;
 import com.mcsmp.ParamnesticCure;
-import com.mcsmp.loggers.BlockTracker;
-import com.mcsmp.loggers.RestoreManager;
-import com.mcsmp.loggers.RollbackManager;
+import com.mcsmp.block.BlockTracker;
+import com.mcsmp.block.RestoreManager;
+import com.mcsmp.block.RollbackManager;
 
 /**
  * Tracks commands, and checks whether they should be intercepted
