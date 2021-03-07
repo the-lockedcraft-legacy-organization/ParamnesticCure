@@ -253,7 +253,7 @@ public abstract class LoggerManager {
 		
 		if(tempBlockList.size() == 0) {
 			if(isIntercept)
-				msgManager.sendMessage("Missing block arguments", true);
+				msgManager.sendMessage("No block specified", true);
 			else{
 				msgManager.sendMessage("Entity selection has not yet been implemented",true);
 				msgManager.sendMessage("Cancelling intercept...",false);
@@ -261,7 +261,7 @@ public abstract class LoggerManager {
 			isCancelled = true;
 		}
 		else if(!isIntercept){
-			msgManager.sendMessage("Partially implemented command detected",true);
+			msgManager.sendMessage("Entity selection has not yet been implemented",true);
 			msgManager.sendMessage("Cancelling intercept, paramnestic will still trigger...",false);
 		}
 		
