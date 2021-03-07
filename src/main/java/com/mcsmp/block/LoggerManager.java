@@ -144,36 +144,37 @@ public abstract class LoggerManager {
     		argument.replaceAll("seconds|second|sec", "s").replaceAll("minute|min","m").replaceAll("hours|hour", "h").replaceAll("days|day", "d").replaceAll("weeks|week", "w");
     		String[] splitedArgument = argument.split("(?<=[w*d*h*m*s])");
     		//convert to seconds
-    		for(String part : splitedArgument) {
-	    		if(part.contains("w")){ 
-	    			time += 604800 * Double.parseDouble(part.substring( 0 , part.indexOf('w') ));
-	    			continue;
+    		try {
+	    		for(String part : splitedArgument) {
+		    		if(part.contains("w")){ 
+		    			time += 604800 * Double.parseDouble(part.substring( 0 , part.indexOf('w') ));
+		    			continue;
+		    		}
+		    		if(part.contains("d")){ 
+		    			time += 86400 * Double.parseDouble(part.substring( 0 , part.indexOf('d') ));
+		    			continue;
+		    		}
+		    		if(part.contains("h")){ 
+		    			time += 3600 * Double.parseDouble(part.substring( 0 , part.indexOf('h') ));
+		    			continue;
+		    		}
+		    		if(part.contains("m")){ 
+		    			time += 60 * Double.parseDouble(part.substring( 0 , part.indexOf('m') ));
+		    			continue;
+		    		}
+		    		if(part.contains("s")){ 
+		    			time += Double.parseDouble(part.substring( 0 , part.indexOf('s') ));
+		    			continue;
+		    		}
+		    		//this is another way to specify seconds in Coreprotect
+		    		time += Double.parseDouble(part);
+		    		
 	    		}
-	    		if(part.contains("d")){ 
-	    			time += 86400 * Double.parseDouble(part.substring( 0 , part.indexOf('d') ));
-	    			continue;
-	    		}
-	    		if(part.contains("h")){ 
-	    			time += 3600 * Double.parseDouble(part.substring( 0 , part.indexOf('h') ));
-	    			continue;
-	    		}
-	    		if(part.contains("m")){ 
-	    			time += 60 * Double.parseDouble(part.substring( 0 , part.indexOf('m') ));
-	    			continue;
-	    		}
-	    		if(part.contains("s")){ 
-	    			time += Double.parseDouble(part.substring( 0 , part.indexOf('s') ));
-	    			continue;
-	    		}
-	    		try {
-	    			//this is another way to specify seconds in Coreprotect
-	    			time += Double.parseDouble(part);
-	    		}catch(Exception e) {
-	    			msgManager.sendMessage("Invalid timeargument", true);
-	    			isCancelled = true;
-	    			break;
-	    		}
-    		}
+    		}catch(NumberFormatException e) {
+    			msgManager.sendMessage("Invalid timeargument", true);
+    			isCancelled = true;
+    			}
+    		
     		this.time = Math.round(time);
     		return true;
 		}
@@ -190,7 +191,6 @@ public abstract class LoggerManager {
 		
 		argument = checkAndTrimArgument(argument,userAlias);
     	if(argument != "") {
-    			
     		this.restrict_users = new ArrayList<String>();
     		
     		String[] argumentSplited = argument.split(",");
@@ -198,7 +198,7 @@ public abstract class LoggerManager {
     			this.restrict_users.add(part); 
     		}
     		return true;
-    		}
+    	}
 		return false;
 	}
 	
@@ -212,8 +212,8 @@ public abstract class LoggerManager {
 		argument = checkAndTrimArgument(argument,excludeAlias);
     	if(argument != "") {
     		exclude_blocks = blockStringListToBlockList(argument);
-    		if(exclude_blocks.size() > 0)
-    			return true;
+    		
+    		return true;
     	}
 		return false;
 	}
@@ -227,19 +227,7 @@ public abstract class LoggerManager {
 		argument = checkAndTrimArgument(argument,blockAlias);
     	if(argument != "") {
     		restrict_blocks = blockStringListToBlockList(argument);
-    		if(restrict_blocks.size() == 0) {
-    			if(isIntercept)
-    				msgManager.sendMessage("Missing action arguments", true);
-    			else{
-    				msgManager.sendMessage("Entity selection has not yet been implemented",true);
-    				msgManager.sendMessage("Cancelling intercept...",false);
-    			}
-    			isCancelled = true;
-    		}
-    		else if(!isIntercept){
-    			msgManager.sendMessage("Partially implemented command detected",true);
-    			msgManager.sendMessage("Triggering command for paramnestic and logger...",false);
-    		}
+    		
     		return true;
     	}
 		return false;
@@ -262,6 +250,22 @@ public abstract class LoggerManager {
 				isIntercept = false;
 			}
 		}
+		
+		if(tempBlockList.size() == 0) {
+			if(isIntercept)
+				msgManager.sendMessage("Missing block arguments", true);
+			else{
+				msgManager.sendMessage("Entity selection has not yet been implemented",true);
+				msgManager.sendMessage("Cancelling intercept...",false);
+			}
+			isCancelled = true;
+		}
+		else if(!isIntercept){
+			msgManager.sendMessage("Partially implemented command detected",true);
+			msgManager.sendMessage("Cancelling intercept, paramnestic will still trigger...",false);
+		}
+		
+		
 		return tempBlockList;
 	}
 	
