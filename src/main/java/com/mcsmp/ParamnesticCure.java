@@ -191,13 +191,8 @@ public class ParamnesticCure extends JavaPlugin {
      * Whether this is a good solution or not, i don't know. But it gives no errors
      * @return Return's this plugin's shared connection
      */
-    public Connection getConnection() {
-    	Connection connection = null;
-    	try {
-    		connection = database.getConnection();
-    	}catch(SQLException ex) {getLogger().log(SEVERE, ex.getMessage(), ex.getCause());}
-    	
-    	return connection;
+    public Connection getConnection() throws SQLException{
+    	return database.getConnection();
     }
     static public void debug(String location, String message) {
     	if(isDebug)
