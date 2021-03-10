@@ -90,8 +90,9 @@ public class RestoreManager extends LoggerManager {
 			    	long endTime = System.currentTimeMillis();
 			    	
 			    	msgManager.sendMessage( "Operational time: " + String.valueOf( endTime-startTime ) + "ms" , false);
-			    	msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block actions were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Blocks were set", false);
-			    	msgManager.sendMessage(creativeBlockCounter.toString() + " blocks were set to creative", false);
+			    	msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block "+ "action"+ (blockActionListMSG.size() == 1?"":"s") +" were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Block"+ (blocks_to_be_changed.size() == 1?"":"s") + " were set"
+				    		, false);
+			    	msgManager.sendMessage(creativeBlockCounter.toString() + " Block"+ (creativeBlockCounter == 1?"":"s") +" were set to creative", false);
 				}
 				
 		},60L);

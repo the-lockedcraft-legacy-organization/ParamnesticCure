@@ -9,11 +9,9 @@ package com.mcsmp.block;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import net.coreprotect.CoreProtectAPI.ParseResult;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -103,10 +101,11 @@ public class RollbackManager extends LoggerManager{
 			    Integer creativeBlockCounter = changeCreativeStatus(blocks_to_be_changed);
 			    
 			    long endTime = System.currentTimeMillis(); 
-		    	
 		    	msgManager.sendMessage( "Operational time: " + String.valueOf( endTime-startTime ) + "ms", false);
-			    msgManager.sendMessage( String.valueOf(blockActionListMSG.size()) + " block actions were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Blocks were set", false);
-			    msgManager.sendMessage(creativeBlockCounter.toString() + " blocks were set to creative", false);
+			    msgManager.sendMessage(
+			    		String.valueOf(blockActionListMSG.size()) + " block "+ "action"+ (blockActionListMSG.size() == 1?"":"s") +" were found, " + String.valueOf( blocks_to_be_changed.size() ) + " Block"+ (blocks_to_be_changed.size() == 1?"":"s") + " were set"
+			    		, false);
+			    msgManager.sendMessage(creativeBlockCounter.toString() + " Block"+ (creativeBlockCounter == 1?"":"s")+" were set to creative", false);
 			}
     		
     	});
