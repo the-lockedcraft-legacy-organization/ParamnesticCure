@@ -1,12 +1,14 @@
+##***[PULL REQUESTS](https://github.com/the-lockedcraft-legacy-organization/ParamnesticCure/pulls) WELCOME!***
+
 # Description
-Block Logging plugins allow admins to restore/revert any area's blocks to the way they were any point in time.<br />
-Unfortunately, when doing this, Loggers do not consider the data stored by Creative Limiter plugins.<br />
+Block Logging Plugins allow admins to restore/revert any area's blocks to the way they were any point in time.<br />
+Unfortunately, when doing this, Loggers do not consider the data stored by Creative Limiter Plugins.<br />
 
 For that reason, **Block Logger Plugins are NOT compatible with Creative Limiter Plugins**!<br />
 Specifically, **they can UNPROTECT CREATIVE BLOCKS and MARK SURVIVAL BLOCKS AS CREATIVE**!<br />
 
 For a technical explanation of the problem, see [this logic chain](https://i.imgur.com/KsChAdh.png).<br />
-Note that it can be rather complex given that thet chain can occur recursively, in any order, and/or at any time.
+Note that it can be rather complex as chain can occur recursively, in any order, and/or at any time.
 <br /><br />
 **PARAMNESTIC SOLVES THIS INCOMPATIBILITY**!<br />
 PC stores the location and status of potential block conflicts in a third database.<br />
@@ -31,17 +33,17 @@ PC will then correct detected conflicts using the Logger and Limiter's APIs
 
 # Instructions
 ## Installing:
-PC is drag-and-drop; simply put it in the plugins folder of the server instance running your block logger and creative limiter.<br /><br />
+PC is drag-and-drop; drop the jar into the plugins folder of whatever instance is running your logger and limiter.
 
 Note that PC requires a database; by default, it uses SQLite.<br />
 If you would like to use a different engine, please specify it in the configuration.<br />
 ## Usage:
-Once PC is installed, simply ignore its presence.
+Once PC is installed, simply ignore forget it is there.
 Commands sent to the block logger will be intercepted and executed with corrections for incompatibilities.
 
 # Configuration
-Note that, on first installation, Paramnestic will default to a config suited for RestrictedCreative and CoreProtect<br />
-In that regard, it is helpful to first view the default configuration, as found [here](https://github.com/the-lockedcraft-legacy-organization/ParamnesticCure/blob/main/src/main/resources/config.yml).
+Note that, on its first installation, Paramnestic will default to a config suited for RestrictedCreative and CoreProtect.<br />
+Viewing that default configuration can be very helpful; it can be found [here](https://github.com/the-lockedcraft-legacy-organization/ParamnesticCure/blob/main/src/main/resources/config.yml).
 ```yaml
 configVersion: Last update of PC that substantially changed the config. Please do not change this.
 creativeManager: The plugin being used to manage creative block states. 
@@ -79,6 +81,7 @@ Version 0.0.0
  - Improved UI messages
  - Bumped dependencies
  - Rewrote ReadME for release.
+ - Added metrics.
 #### [Version 1.0.0]
  - Fixed a stupid sql structure
  - Made the logic for rollbacks / restores more rigid
