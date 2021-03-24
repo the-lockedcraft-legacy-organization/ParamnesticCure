@@ -1,4 +1,4 @@
-##***[PULL REQUESTS](https://github.com/the-lockedcraft-legacy-organization/ParamnesticCure/pulls) WELCOME!***
+## ***[PULL REQUESTS](https://github.com/the-lockedcraft-legacy-organization/ParamnesticCure/pulls) WELCOME!***
 
 # Description
 Block Logging Plugins allow admins to restore/revert any area's blocks to the way they were any point in time.<br />
