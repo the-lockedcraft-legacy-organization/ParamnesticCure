@@ -1,66 +1,73 @@
+## ***[PULL REQUESTS](https://github.com/the-lockedcraft-legacy-organization/ParamnesticCure/pulls) WELCOME!***
+
 # Description
-A spigot patch to prevent rollbacks from stripping creative block data.
+Block Logging Plugins allow admins to restore/revert any area's blocks to the way they were any point in time.<br />
+Unfortunately, when doing this, Loggers do not consider the data stored by Creative Limiter Plugins.<br />
 
-### Supported Loggers
-- https://www.spigotmc.org/resources/coreprotect.8631/
+For that reason, **Block Logger Plugins are NOT compatible with Creative Limiter Plugins**!<br />
+Specifically, **they can UNPROTECT CREATIVE BLOCKS and MARK SURVIVAL BLOCKS AS CREATIVE**!<br />
 
-### Supported Creative Limiters
-- https://www.spigotmc.org/resources/restrictedcreative.42790/
+For a technical explanation of the problem, see [this logic chain](https://i.imgur.com/KsChAdh.png).<br />
+Note that it can be rather complex as chain can occur recursively, in any order, and/or at any time.
+<br /><br />
+**PARAMNESTIC SOLVES THIS INCOMPATIBILITY**!<br />
+PC stores the location and status of potential block conflicts in a third database.<br />
+PC will then correct detected conflicts using the Logger and Limiter's APIs
 
-
-## Scope
-This project is currently a bare-bones patchwork which may or may not be fully featured in future.
-
-### Features
-- Blocks removed by a rollback are stripped of their creative data to ensure survival blocks later placed in that spot are not declared as creative.
-- Creative data is restored to blocks modified by a rollback.
+### Paramnestic Has Support For:
+##### Block Loggers:
+- [CoreProtect by Intelli](https://www.spigotmc.org/resources/coreprotect.8631/)
+##### Creative Limiters
+- [RestrictedCreative by Prunt](https://www.spigotmc.org/resources/restrictedcreative.42790/)
+> Click [here](https://github.com/the-lockedcraft-legacy-organization/ParamnesticCure/issues/17) for a the list of loggers/limiters that may be supported in the future.
 
 ## Background
-- This plugin was developed for a temporary collaborative public SMP project
-  - It was possible to obtain creative mode, which would be used within the context of a survival world.
-  - Griefing was prohibited by the rules; a block-logger was needed for enforcement.
-- RB operations from any and all block loggers interfered with creative block protection, and as such, a temporary solution was needed.
-- This is that temporary solution.
+- The LCLO was a small (temporary) non-profit that hosted a temporary collaborative SMP event.
+  1. Players could obtain creative mode within the context of a survival world.
+  2. As griefing was prohibited by the rules, a block-logger was needed for enforcement.
+  - RestrictedCreative was used to accomplish `i` and CoreProtect was used to accomplish `ii`
+- RC is a limiter plugin and CO is a logger plugin; the two are not compatible.
+  - This plugin was created to fix that incompatibility.
 
-# Permissions
-> This version of the plugin has no permissions, although some may be added in future!
-```
-pc.* -- Description of a parent node
-  pc.subnode -- Description of a node
-```
-## Default Permissions
-```
-NO PERMISSIONS YET -- Everyone
-```
+**NOTE: AS THIS WAS MADE FOR A TEMPORARY PROJECT, SUPPORT BEYOND 1.17 IS NOT GUARANTEED**
 
 # Instructions
 ## Installing:
-This plugin is a drag-and-drop; simply put it in the plugins folder of whatever instance is running your creative limiter.
-Note that, if your creative logger and/or block logger uses a database, you will need to supply that information in the config.
-Also note that Paramnestic requires its own database (to track creative info for risk-prone blocks).
+PC is drag-and-drop; drop the jar into the plugins folder of whatever instance is running your logger and limiter.
+
+Note that PC requires a database; by default, it uses SQLite.<br />
+If you would like to use a different engine, please specify it in the configuration.<br />
+## Usage:
+Once PC is installed, simply ignore forget it is there.
+Commands sent to the block logger will be intercepted and executed with corrections for incompatibilities.
 
 # Configuration
-```
-configVersion - Last update of PC that substantially changed the config. Do not change.
-creativeManager - The plugin being used to manage creative block states.
-blockLogger - The plugin being used to log, and roll back, player block placement.
-blockLoggerRollbackCommands - All aliases of any command that can be used to trigger a rollback.
-defaultconnection - The database information to be used if nothing is provided under Database_Names
-  driver - Type of database (options Sqlite, MySQL, or MariaDB)
-  address - Location of that database
-  port - Port database can be reached on
-  user - Username used to connect to database
-  password - Password used to connect to database
-Database_Names - Specific database specifications.
-    creative - Database being used by your creativeManager
-        database - Database's name.
-        {See fields under defaultconnection}
-    logger - Database being used by your blockLogger
-        database - Database's name.
-        {See fields under defaultconnection}
-    paramestic - Database to be used by this plugin.
-        database - Database's name.
-        {See fields under defaultconnection}
+Note that, on its first installation, Paramnestic will default to a config suited for RestrictedCreative and CoreProtect.<br />
+Viewing that default configuration can be very helpful; it can be found [here](https://github.com/the-lockedcraft-legacy-organization/ParamnesticCure/blob/main/src/main/resources/config.yml).
+```yaml
+configVersion: Last update of PC that substantially changed the config. Please do not change this.
+creativeManager: The plugin being used to manage creative block states. 
+blockLogger: The plugin being used to log, and roll back, player block placement.
+blockLoggerRollbackCommands:
+  alias: All aliases of the rollback logger's primary command
+  rollback: The prefix before any subcommand which triggers a rollback.
+  restore: The prefix before any subcommand which triggers a reverse rollback.
+  undo: The prefix before any subcommand which reverts a rollback or restore function.
+  purge: The prefix before any subcommand that deletes past server blockdata.
+  help: The prefix of any subcommand which prints the plugin's command list.
+blockLoggerPermissions:
+   rollback: The permission a mod needs to trigger a rollback.
+   purge: The permission an admin needs to purge block logger data.
+   restore: The permission a mod needs to trigger a reverse rollback.
+   help: The permission a player needs to see a logger's help files.
+Database:
+  driver: The engine being used to run PC's database (valid options Sqlite & Mysql)
+  address: The IP of paramnestic's database
+  port: The port of paramnestic's database
+  databasename: The name of Paramnestic's database
+Plugin_settings:
+   wait_time: The time to between the action and when paramnestic corrects it... higher numbers minimize issues.
+   debug: Whether or not to spam console with debug info
 ```
 # Changelog
 ```
@@ -69,11 +76,18 @@ Version 0.0.0
         | |_ Feature Release (Adds a new feature)
         |_ Milestone Release (Adds a major feature from /ParamnesticCure/milestones )
 ```
+#### [Version 1.0.1]
+ - Improved language interpretation
+ - Improved UI messages
+ - Bumped dependencies
+ - Rewrote ReadME for release.
+ - Added metrics.
 #### [Version 1.0.0]
  - Fixed a stupid sql structure
  - Made the logic for rollbacks / restores more rigid
- - Somewhat better language interpretation
- - Added debug option
+ - Improved command interpretation
+ - Added a debug option
+ - Code cleanup
 #### [Version 0.12.10]
  - Uses hikari.properties file as config
  - Added the wait_time setting
