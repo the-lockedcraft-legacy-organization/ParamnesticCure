@@ -20,14 +20,14 @@ import org.bukkit.event.world.WorldInitEvent;
  * @author Thorin
  *
  */
-public class WorldTracker implements Listener {
+public class WorldListener implements Listener {
     /**
      * If a world get created, its name needs to get stored in the database. TODO I should also add something that tracks if the world was renamed
      * @param event
      */
     @EventHandler
     public void worldInit(WorldInitEvent event) {
-    	WorldTracker.addWorldToDB(event.getWorld());
+    	WorldListener.addWorldToDB(event.getWorld());
     }
 	/**
 	 * Adds the world to the worlds table, which will assign it an id

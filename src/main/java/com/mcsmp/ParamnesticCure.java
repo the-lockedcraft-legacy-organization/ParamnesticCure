@@ -27,8 +27,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.mcsmp.block.BlockTracker;
-import com.mcsmp.commands.CommandTracker;
+import com.mcsmp.block.BlockListener;
+import com.mcsmp.commands.CommandListener;
 import com.mcsmp.database.SqlManager;
 
 import net.coreprotect.CoreProtect;
@@ -52,7 +52,8 @@ public class ParamnesticCure extends JavaPlugin {
     
     @Override
     public void onEnable() {
-    	//sets so that any external methods that need to log messages wont get any errors
+
+        //sets instance.
         instance = this;
     	
 
@@ -66,9 +67,9 @@ public class ParamnesticCure extends JavaPlugin {
     	
         this.saveDefaultConfig();
         PluginManager pluginManager = this.getServer().getPluginManager();
-        pluginManager.registerEvents(new CommandTracker(this), this);
-        pluginManager.registerEvents(new BlockTracker(),this);
-        pluginManager.registerEvents(new WorldTracker(),this);
+        pluginManager.registerEvents(new CommandListener(this), this);
+        pluginManager.registerEvents(new BlockListener(),this);
+        pluginManager.registerEvents(new WorldListener(),this);
         
         
         log = getLogger();
@@ -110,8 +111,6 @@ public class ParamnesticCure extends JavaPlugin {
 
         createDB();
         isDebug =  getConfig().getBoolean("Plugin_settings.debug");
-        //sets instance.
-        instance = this;
     }
 
     @Override
@@ -159,7 +158,7 @@ public class ParamnesticCure extends JavaPlugin {
     	List<World> worldlist = getServer().getWorlds();
     	
     	for(World world : worldlist) {
-    		WorldTracker.addWorldToDB(world);
+    		WorldListener.addWorldToDB(world);
     	}
     }
     /**

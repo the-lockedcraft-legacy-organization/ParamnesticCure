@@ -16,12 +16,13 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import com.mcsmp.ParamnesticCure;
-import com.mcsmp.WorldTracker;
+import com.mcsmp.WorldListener;
 
 import me.prunt.restrictedcreative.RestrictedCreativeAPI;
 import net.coreprotect.CoreProtectAPI;
@@ -32,7 +33,7 @@ import net.coreprotect.CoreProtectAPI.ParseResult;
  * @author Frostalf
  * @author Thorin
  */
-public class BlockTracker implements Listener {
+public class BlockListener implements Listener {
 
     private static ParamnesticCure plugin = ParamnesticCure.getInstance();
     private static CoreProtectAPI coreprotect = plugin.getCoreProtect();
@@ -41,14 +42,14 @@ public class BlockTracker implements Listener {
     /**
      * @param event BlockBreakEvent
      */
-    @EventHandler
+    @EventHandler(ignoreCancelled = true,priority = EventPriority.MONITOR)
     public void onBlockBreak(BlockBreakEvent event) {
     	generalBlockEventTrigger(event.getBlock(),true);
     }
     /**
      *  @param event BlockPlaceEvent
      */
-    @EventHandler
+    @EventHandler(ignoreCancelled = true,priority = EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event) {
     	generalBlockEventTrigger(event.getBlock(),false);
     }
@@ -78,7 +79,7 @@ public class BlockTracker implements Listener {
 				
 				
 				if(!isCreative) return;
-	    		BlockTracker.updateCreativeID(block,isCreative);
+	    		BlockListener.updateCreativeID(block,isCreative);
 	    		
 	    		
 	    		/*
@@ -92,7 +93,7 @@ public class BlockTracker implements Listener {
 	    			else
 	    				loc = loc.add(0,-1,0);
 	    			
-	    			BlockTracker.updateCreativeID(loc.getBlock(),isCreative);
+	    			BlockListener.updateCreativeID(loc.getBlock(),isCreative);
 	    		}
 			}
     	},waitPeriod);
@@ -148,7 +149,7 @@ public class BlockTracker implements Listener {
 	       			);
 	            	
 	      	statement.setInt( 1, time);
-	      	statement.setInt( 2, WorldTracker.getWorldId( block.getWorld().getName()) );
+	      	statement.setInt( 2, WorldListener.getWorldId( block.getWorld().getName()) );
 	      	statement.setInt( 3, block.getX());
 	      	statement.setInt( 4, block.getY());
 	      	statement.setInt( 5, block.getZ());

@@ -22,7 +22,7 @@ import org.bukkit.event.server.ServerCommandEvent;
 
 import com.mcsmp.MessageManager;
 import com.mcsmp.ParamnesticCure;
-import com.mcsmp.block.BlockTracker;
+import com.mcsmp.block.BlockListener;
 import com.mcsmp.block.RestoreManager;
 import com.mcsmp.block.RollbackManager;
 
@@ -31,7 +31,7 @@ import com.mcsmp.block.RollbackManager;
  * @author Frostalf
  * @author Thorin
  */
-public class CommandTracker implements Listener {
+public class CommandListener implements Listener {
 
 
 	private static HashMap<String,String[]> storedCommands = new HashMap<String,String[]>();
@@ -42,7 +42,7 @@ public class CommandTracker implements Listener {
      * Constructor class
      * @param plugin Instance of the plugin.
      */
-    public CommandTracker(ParamnesticCure plugin) {
+    public CommandListener(ParamnesticCure plugin) {
         //
         configSektion = plugin.getConfig().getConfigurationSection("");
     }
@@ -170,7 +170,7 @@ public class CommandTracker implements Listener {
     		//don't look here, this is stupid
     		String[] temp = {command[2]};
     		int time = (new RollbackManager(temp,null,null)).getTime();
-    		BlockTracker.purgeDatabase(time);
+    		BlockListener.purgeDatabase(time);
     	}
     	List<String> helpAlias = configSektion.getStringList("blockLoggerCommands.help");
     	if(helpAlias.contains(command[1]) && PermissionManager.hasHelp(playerOperator)) {
