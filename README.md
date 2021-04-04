@@ -1,18 +1,18 @@
 ## ***[PULL REQUESTS](https://github.com/the-lockedcraft-legacy-organization/ParamnesticCure/pulls) WELCOME!***
 
 # Description
-Block Logging Plugins allow admins to restore/revert any area's blocks to the way they were any point in time.<br />
-Unfortunately, when doing this, Loggers do not consider the data stored by Creative Limiter Plugins.<br />
+Block Logging Plugins allow admins to restore/revert the blocks of any area to the way they were any point in time.<br />
+Unfortunately, when doing this, Loggers do not consider the data Creative Limiter Plugins store.<br />
 
 For that reason, **Block Logger Plugins are NOT compatible with Creative Limiter Plugins**!<br />
 Specifically, **they can UNPROTECT CREATIVE BLOCKS and MARK SURVIVAL BLOCKS AS CREATIVE**!<br />
 
 For a technical explanation of the problem, see [this logic chain](https://i.imgur.com/KsChAdh.png).<br />
-Note that it can be rather complex as chain can occur recursively, in any order, and/or at any time.
+Note that it can be rather complex as that chain can occur recursively, in any order, and/or at any time.
 <br /><br />
 **PARAMNESTIC SOLVES THIS INCOMPATIBILITY**!<br />
 PC stores the location and status of potential block conflicts in a third database.<br />
-PC will then correct detected conflicts using the Logger and Limiter's APIs
+PC will then correct detected conflicts using the Logger's and the Limiter's APIs
 
 ### Paramnestic Has Support For:
 ##### Block Loggers:
@@ -26,7 +26,7 @@ PC will then correct detected conflicts using the Logger and Limiter's APIs
   1. Players could obtain creative mode within the context of a survival world.
   2. As griefing was prohibited by the rules, a block-logger was needed for enforcement.
   - RestrictedCreative was used to accomplish `i` and CoreProtect was used to accomplish `ii`
-- RC is a limiter plugin and CO is a logger plugin; the two are not compatible.
+- RC is a limiter plugin and CO is a logger plugin; the two were not compatible.
   - This plugin was created to fix that incompatibility.
 
 **NOTE: AS THIS WAS MADE FOR A TEMPORARY PROJECT, SUPPORT BEYOND 1.17 IS NOT GUARANTEED**
@@ -38,11 +38,11 @@ PC is drag-and-drop; drop the jar into the plugins folder of whatever instance i
 Note that PC requires a database; by default, it uses SQLite.<br />
 If you would like to use a different engine, please specify it in the configuration.<br />
 ## Usage:
-Once PC is installed, simply ignore forget it is there.
+Once PC is installed, simply forget it is there.
 Commands sent to the block logger will be intercepted and executed with corrections for incompatibilities.
 
 # Configuration
-Note that, on its first installation, Paramnestic will default to a config suited for RestrictedCreative and CoreProtect.<br />
+On its first installation, Paramnestic will default to a config designed for RestrictedCreative and CoreProtect.<br />
 Viewing that default configuration can be very helpful; it can be found [here](https://github.com/the-lockedcraft-legacy-organization/ParamnesticCure/blob/main/src/main/resources/config.yml).
 ```yaml
 configVersion: Last update of PC that substantially changed the config. Please do not change this.
